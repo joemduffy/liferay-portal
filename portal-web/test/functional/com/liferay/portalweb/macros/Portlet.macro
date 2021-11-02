@@ -312,8 +312,9 @@ definition {
 	}
 
 	macro expandTree {
+		WaitForVisible(locator1 = "Treeview#NODE_LIST");
+
 		while (IsElementPresent(locator1 = "Treeview#NODE_COLLAPSED")) {
-			Pause(locator1 = "3000");
 			Click(locator1 = "Treeview#NODE_COLLAPSED");
 		}
 
@@ -545,6 +546,12 @@ definition {
 			value1 = "${message}");
 	}
 
+	macro viewHomePage {
+		AssertElementPresent(
+			key_pageName = "${pageName}",
+			locator1 = "Home#PAGE");
+	}
+
 	macro viewNoPermissionPG {
 		AssertTextEquals(
 			locator1 = "Message#ERROR",
@@ -581,6 +588,18 @@ definition {
 				portletBody = "${portletBody}",
 				portletName = "${portletName}");
 		}
+	}
+
+	macro viewPortletBodyNotPresent {
+		AssertElementNotPresent(
+			key_portletName = "${portletName}",
+			locator1 = "Portlet#BODY");
+	}
+
+	macro viewPortletCouldNotBeFoundInfo {
+		AssertTextEquals(
+			locator1 = "Message#INFO_MAIN_CONTENT",
+			value1 = "This portlet could not be found. Please redeploy it or remove it from the page.");
 	}
 
 	macro viewPortletOptions {

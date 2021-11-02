@@ -249,6 +249,7 @@
 			<category name="Performance" />
 			<description name="Checks that modules are not depending on other modules." />
 			<property name="checkPetraDependencies" value="true" />
+			<property name="checkTestIntegrationCompileDependencies" value="false" />
 		</check>
 		<check name="GradleDependencyArtifactsCheck">
 			<category name="Bug Prevention" />
@@ -806,6 +807,11 @@
 			<category name="Bug Prevention" />
 			<description name="Checks that there are no calls to `java.util.ResourceBundle.getBundle`." />
 		</check>
+		<check name="SetUtilMethodsCheck">
+			<category name="Performance" />
+			<description name="Finds cases of inefficient SetUtil operations." />
+			<property name="enabled" value="false" />
+		</check>
 		<check name="StringMethodsCheck">
 			<category name="Performance" />
 			<description name="Checks if performance can be improved by using different String operation methods." />
@@ -1084,6 +1090,11 @@
 			<category name="Bug Prevention" />
 			<description name="Checks that there are no calls to `java.util.ResourceBundle.getBundle`." />
 		</check>
+		<check name="SetUtilMethodsCheck">
+			<category name="Performance" />
+			<description name="Finds cases of inefficient SetUtil operations." />
+			<property name="enabled" value="false" />
+		</check>
 		<check name="StringMethodsCheck">
 			<category name="Performance" />
 			<description name="Finds cases of inefficient String operations." />
@@ -1189,6 +1200,11 @@
 		<check name="PoshiCommandsOrderCheck">
 			<category name="Styling" />
 			<description name="Checks the order of poshi commands." />
+		</check>
+		<check name="PoshiDependenciesFileLocationCheck">
+			<category name="Bug Prevention" />
+			<description name="Checks that dependencies files are located in the correct directory." />
+			<property name="enabled" value="false" />
 		</check>
 		<check name="PoshiEmptyLinesCheck">
 			<category name="Styling" />
@@ -1542,6 +1558,7 @@
 		<check name="XMLServiceReferenceCheck">
 			<category name="Bug Prevention" />
 			<description name="Checks for unused references in `service.xml` file." />
+			<property name="avoidReferences" value="false" />
 		</check>
 		<check name="XMLSourcechecksFileCheck">
 			<category name="Bug Prevention" />

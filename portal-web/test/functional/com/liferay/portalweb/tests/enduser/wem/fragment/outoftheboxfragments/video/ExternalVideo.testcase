@@ -37,6 +37,7 @@ definition {
 
 	@description = "This is a test for LPS-130453. Display video from Documents and Media in External Video fragment."
 	@priority = "5"
+	@uitest
 	test DisplayVideoFromDocumentsAndMediaInExternalVideo {
 		property portal.acceptance = "true";
 
@@ -92,9 +93,10 @@ definition {
 		}
 
 		task ("View the selected video name is shown in item selector input") {
-			AssertVisible(
-				key_contentName = "Liferay Digital Experience Platform",
-				locator1 = "PageEditor#ITEM_SELECTOR_CONTENT_INPUT");
+			AssertTextEquals(
+				key_fieldLabel = "Video",
+				locator1 = "PageEditor#ITEM_SELECTOR_CONTENT_INPUT",
+				value1 = "Liferay Digital Experience Platform");
 
 			PageEditor.clickPublish();
 		}
@@ -110,6 +112,7 @@ definition {
 
 	@description = "This is a test for LPS-130453. Display video from URL in External Video fragment."
 	@priority = "5"
+	@uitest
 	test DisplayVideoFromURLInExternalVideo {
 		property portal.acceptance = "true";
 
@@ -157,9 +160,10 @@ definition {
 		}
 
 		task ("View the selected video name is shown in item selector input") {
-			AssertVisible(
-				key_contentName = "Liferay Digital Experience Platform",
-				locator1 = "PageEditor#ITEM_SELECTOR_CONTENT_INPUT");
+			AssertTextEquals(
+				key_fieldLabel = "Video",
+				locator1 = "PageEditor#ITEM_SELECTOR_CONTENT_INPUT",
+				value1 = "Liferay Digital Experience Platform");
 
 			PageEditor.clickPublish();
 		}

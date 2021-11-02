@@ -59,9 +59,9 @@ definition {
 
 	@description = "This ensures that image in basic article in depot can be deleted and republished in staging site when enabling remote staging."
 	@priority = "5"
-	@refactorneeded
-	test DeleteImageInDepot {
-		property test.name.skip.portal.instance = "DepotRemoteStagingWC#DeleteImageInDepot";
+	@refactordone
+	test CanDeleteWCInlineImage {
+		property test.name.skip.portal.instance = "DepotRemoteStagingWC#CanDeleteWCInlineImage";
 
 		JSONDocument.addFileWithUploadedFile(
 			dmDocumentDescription = "DM Document Description",
@@ -181,9 +181,9 @@ definition {
 
 	@description = "This ensures that friendly URL in basic article in depot can be edited and republished in staging site when enabling remote staging."
 	@priority = "5"
-	@refactorneeded
-	test EditFriendlyURLInDepot {
-		property test.name.skip.portal.instance = "DepotRemoteStagingWC#EditFriendlyURLInDepot";
+	@refactordone
+	test CanEditFriendlyURL {
+		property test.name.skip.portal.instance = "DepotRemoteStagingWC#CanEditFriendlyURL";
 
 		DepotNavigator.openDepotWebContentAdmin(depotName = "Test Depot Name");
 
@@ -198,11 +198,14 @@ definition {
 
 		Staging.publishToLive(remoteStaging = "true");
 
+		JSONLayout.addWidgetToPublicLayout(
+			groupName = "Site Name",
+			layoutName = "Test Page",
+			widgetName = "Web Content Display");
+
 		Navigator.openSitePage(
 			pageName = "Test Page",
 			siteName = "Site Name");
-
-		Portlet.addPG(portletName = "Web Content Display");
 
 		WebContentDisplayPortlet.selectWebContent(
 			depotName = "Test Depot Name",
@@ -300,10 +303,10 @@ definition {
 
 	@description = "This ensures that image in basic article in depot can be edited and republished in staging site when enabling remote staging."
 	@priority = "5"
-	@refactorneeded
-	test EditImageInDepot {
+	@refactordone
+	test CanEditWCInlineImage {
 		property portal.acceptance = "true";
-		property test.name.skip.portal.instance = "DepotRemoteStagingWC#EditImageInDepot";
+		property test.name.skip.portal.instance = "DepotRemoteStagingWC#CanEditWCInlineImage";
 
 		JSONDocument.addFileWithUploadedFile(
 			dmDocumentDescription = "DM Document Description",
@@ -410,9 +413,9 @@ definition {
 
 	@description = "This ensures that an article using a structure stored in depot can be deleted and republished in remote staging site."
 	@priority = "5"
-	@refactorneeded
-	test PublishDeletedWCCustomization {
-		property test.name.skip.portal.instance = "DepotRemoteStagingWC#PublishDeletedWCCustomization";
+	@refactordone
+	test CanPublishDeletedWCCustomization {
+		property test.name.skip.portal.instance = "DepotRemoteStagingWC#CanPublishDeletedWCCustomization";
 
 		DepotNavigator.openDepotAdmin();
 
@@ -501,9 +504,9 @@ definition {
 
 	@description = "This ensures that an article using a structure stored in depot can be edited and republished in remote staging site."
 	@priority = "5"
-	@refactorneeded
-	test PublishEditedWCCustomization {
-		property test.name.skip.portal.instance = "DepotRemoteStagingWC#PublishEditedWCCustomization";
+	@refactordone
+	test CanPublishEditedWCCustomization {
+		property test.name.skip.portal.instance = "DepotRemoteStagingWC#CanPublishEditedWCCustomization";
 
 		DepotNavigator.openDepotAdmin();
 
@@ -614,144 +617,11 @@ definition {
 			webContentTitle = "Web Content Title Edit");
 	}
 
-	@description = "This test covers LPS-122790. It ensures that web content with a category in depot can be published in remote staging site."
-	@priority = "4"
-	@refactorneeded
-	test PublishWCWithCategory {
-		property test.name.skip.portal.instance = "DepotRemoteStagingWC#PublishWCWithCategory";
-
-		DepotNavigator.openDepotCategoriesAdmin(depotName = "Test Depot Name");
-
-		Vocabulary.addCP(vocabularyName = "Vocabulary Name");
-
-		Category.addCP(
-			categoryName = "Category Name",
-			vocabularyName = "Vocabulary Name");
-
-		DepotNavigator.openDepotWebContentAdmin(depotName = "Test Depot Name");
-
-		WebContentNavigator.gotoAddCP();
-
-		WebContent.addWithCategoryCP(
-			categoryName = "Category Name",
-			vocabularyName = "Vocabulary Name",
-			webContentContent = "Depot web content with a category",
-			webContentTitle = "WC WebContent Title");
-
-		DepotNavigator.openDepotWebContentAdmin(depotName = "Test Depot Name");
-
-		DepotNavigator.switchStagingStatus(stagingItem = "Publish to Live");
-
-		Staging.publishToLive(remoteStaging = "true");
-
-		Navigator.openSitePage(
-			pageName = "Test Page",
-			siteName = "Site Name");
-
-		Portlet.addPG(portletName = "Asset Publisher");
-
-		AssetPublisherPortlet.configureManualAssetSelectionPG(
-			assetTitle = "WC WebContent Title",
-			assetType = "Basic Web Content",
-			depotName = "Test Depot Name");
-
-		Navigator.openSitePage(
-			pageName = "Test Page",
-			siteName = "Site Name");
-
-		Staging.gotoPublishToLive();
-
-		Staging.publishToLive(remoteStaging = "true");
-
-		User.logoutPG();
-
-		User.firstLoginUI(
-			password = "test",
-			specificURL = "http://localhost:9080",
-			userEmailAddress = "test@liferay.com");
-
-		Navigator.openSitePage(
-			baseURL = "http://localhost:9080",
-			pageName = "Test Page",
-			siteName = "Remote Site");
-
-		AssertTextEquals(
-			locator1 = "AP#ASSET_ABSTRACT_DETAIL_CONTENT",
-			value1 = "Depot web content with a category");
-	}
-
-	@description = "This test ensures that a depot WC with an embedded video added from the item selector can be published on a connected remote staging site."
-	@priority = "4"
-	@refactorneeded
-	test PublishWCWithEmbeddedVideo {
-		property test.name.skip.portal.instance = "DepotRemoteStagingWC#PublishWCWithEmbeddedVideo";
-
-		DepotNavigator.openDepotWebContentAdmin(depotName = "Test Depot Name");
-
-		WebContentNavigator.gotoAddCP();
-
-		WebContent.addCP(
-			embedVideo = "true",
-			extractedVideoShortcutTitle = "Liferay Digital Experience Platform",
-			videoShortcutDescription = "Video Shortcut Description",
-			videoShortcutPreview = "https://www.youtube.com",
-			videoShortcutTitle = "Test YouTube Video",
-			videoURL = "https://youtu.be/HOdbzGCI5ME",
-			webContentContent = "WC WebContent Content",
-			webContentTitle = "WC WebContent Title");
-
-		PortletEntry.publish();
-
-		DepotNavigator.openDepotWebContentAdmin(depotName = "Test Depot Name");
-
-		DepotNavigator.switchStagingStatus(stagingItem = "Publish to Live");
-
-		Staging.publishToLive(remoteStaging = "true");
-
-		Navigator.openSitePage(
-			pageName = "Test Page",
-			siteName = "Site Name");
-
-		Portlet.addPG(portletName = "Web Content Display");
-
-		WebContentDisplayPortlet.selectWebContent(
-			depotName = "Test Depot Name",
-			webContentTitle = "WC WebContent Title");
-
-		Navigator.openSitePage(
-			pageName = "Test Page",
-			siteName = "Site Name");
-
-		AssertVisible(
-			key_service = "youtube",
-			locator1 = "WCPreview#BODY_FIELD_VIDEO");
-
-		Staging.gotoPublishToLive();
-
-		Staging.publishToLive(remoteStaging = "true");
-
-		User.logoutPG();
-
-		User.firstLoginUI(
-			password = "test",
-			specificURL = "http://localhost:9080",
-			userEmailAddress = "test@liferay.com");
-
-		Navigator.openSitePage(
-			baseURL = "http://localhost:9080",
-			pageName = "Test Page",
-			siteName = "Remote Site");
-
-		AssertVisible(
-			key_service = "youtube",
-			locator1 = "WCPreview#BODY_FIELD_VIDEO");
-	}
-
 	@description = "This ensures that a web content folder with an article in depot can be published in AP through widget config manual selection when enabling remote staging."
 	@priority = "5"
-	@refactorneeded
-	test PublishWebContentFolder {
-		property test.name.skip.portal.instance = "DepotRemoteStagingWC#PublishWebContentFolder";
+	@refactordone
+	test CanPublishWCFolder {
+		property test.name.skip.portal.instance = "DepotRemoteStagingWC#CanPublishWCFolder";
 
 		DepotNavigator.openDepotWebContentAdmin(depotName = "Test Depot Name");
 
@@ -775,13 +645,14 @@ definition {
 
 		Staging.publishToLive(remoteStaging = "true");
 
-		DMNavigator.openDocumentsAndMediaAdmin(siteURLKey = "site-name");
+		JSONLayout.addWidgetToPublicLayout(
+			groupName = "Site Name",
+			layoutName = "Test Page",
+			widgetName = "Asset Publisher");
 
 		Navigator.openSitePage(
 			pageName = "Test Page",
 			siteName = "Site Name");
-
-		Portlet.addPG(portletName = "Asset Publisher");
 
 		AssetPublisherPortlet.configureManualAssetSelectionPG(
 			assetTitle = "WC Folder Name",
@@ -819,6 +690,141 @@ definition {
 			assetSubfolderDetails = "0 Subfolders",
 			assetTitle = "WC Folder Name",
 			assetType = "Web Content Folder");
+	}
+
+	@description = "This test covers LPS-122790. It ensures that web content with a category in depot can be published in remote staging site."
+	@priority = "4"
+	@refactordone
+	test CanPublishWCWithCategory {
+		property test.name.skip.portal.instance = "DepotRemoteStagingWC#CanPublishWCWithCategory";
+
+		DepotNavigator.openDepotCategoriesAdmin(depotName = "Test Depot Name");
+
+		Vocabulary.addCP(vocabularyName = "Vocabulary Name");
+
+		Category.addCP(
+			categoryName = "Category Name",
+			vocabularyName = "Vocabulary Name");
+
+		DepotNavigator.openDepotWebContentAdmin(depotName = "Test Depot Name");
+
+		WebContentNavigator.gotoAddCP();
+
+		WebContent.addWithCategoryCP(
+			categoryName = "Category Name",
+			vocabularyName = "Vocabulary Name",
+			webContentContent = "Depot web content with a category",
+			webContentTitle = "WC WebContent Title");
+
+		DepotNavigator.openDepotWebContentAdmin(depotName = "Test Depot Name");
+
+		DepotNavigator.switchStagingStatus(stagingItem = "Publish to Live");
+
+		Staging.publishToLive(remoteStaging = "true");
+
+		JSONLayout.addWidgetToPublicLayout(
+			groupName = "Site Name",
+			layoutName = "Test Page",
+			widgetName = "Asset Publisher");
+
+		Navigator.openSitePage(
+			pageName = "Test Page",
+			siteName = "Site Name");
+
+		AssetPublisherPortlet.configureManualAssetSelectionPG(
+			assetTitle = "WC WebContent Title",
+			assetType = "Basic Web Content",
+			depotName = "Test Depot Name");
+
+		Navigator.openSitePage(
+			pageName = "Test Page",
+			siteName = "Site Name");
+
+		Staging.gotoPublishToLive();
+
+		Staging.publishToLive(remoteStaging = "true");
+
+		User.logoutPG();
+
+		User.firstLoginUI(
+			password = "test",
+			specificURL = "http://localhost:9080",
+			userEmailAddress = "test@liferay.com");
+
+		Navigator.openSitePage(
+			baseURL = "http://localhost:9080",
+			pageName = "Test Page",
+			siteName = "Remote Site");
+
+		AssertTextEquals(
+			locator1 = "AP#ASSET_ABSTRACT_DETAIL_CONTENT",
+			value1 = "Depot web content with a category");
+	}
+
+	@description = "This test ensures that a depot WC with an embedded video added from the item selector can be published on a connected remote staging site."
+	@priority = "4"
+	@refactordone
+	test CanPublishWCWithEmbeddedVideo {
+		property test.name.skip.portal.instance = "DepotRemoteStagingWC#CanPublishWCWithEmbeddedVideo";
+
+		DepotNavigator.openDepotWebContentAdmin(depotName = "Test Depot Name");
+
+		WebContentNavigator.gotoAddCP();
+
+		WebContent.addCP(
+			embedVideo = "true",
+			extractedVideoShortcutTitle = "Liferay Digital Experience Platform",
+			videoShortcutDescription = "Video Shortcut Description",
+			videoShortcutPreview = "https://www.youtube.com",
+			videoShortcutTitle = "Test YouTube Video",
+			videoURL = "https://youtu.be/HOdbzGCI5ME",
+			webContentContent = "WC WebContent Content",
+			webContentTitle = "WC WebContent Title");
+
+		PortletEntry.publish();
+
+		DepotNavigator.openDepotWebContentAdmin(depotName = "Test Depot Name");
+
+		DepotNavigator.switchStagingStatus(stagingItem = "Publish to Live");
+
+		Staging.publishToLive(remoteStaging = "true");
+
+		JSONLayout.addWidgetToPublicLayout(
+			groupName = "Site Name",
+			layoutName = "Test Page",
+			widgetName = "Web Content Display");
+
+		Navigator.openSitePage(
+			pageName = "Test Page",
+			siteName = "Site Name");
+
+		WebContentDisplayPortlet.selectWebContent(
+			depotName = "Test Depot Name",
+			webContentTitle = "WC WebContent Title");
+
+		Navigator.openSitePage(
+			pageName = "Test Page",
+			siteName = "Site Name");
+
+		WebContent.viewVideoPreview(service = "youtube");
+
+		Staging.gotoPublishToLive();
+
+		Staging.publishToLive(remoteStaging = "true");
+
+		User.logoutPG();
+
+		User.firstLoginUI(
+			password = "test",
+			specificURL = "http://localhost:9080",
+			userEmailAddress = "test@liferay.com");
+
+		Navigator.openSitePage(
+			baseURL = "http://localhost:9080",
+			pageName = "Test Page",
+			siteName = "Remote Site");
+
+		WebContent.viewVideoPreview(service = "youtube");
 	}
 
 }

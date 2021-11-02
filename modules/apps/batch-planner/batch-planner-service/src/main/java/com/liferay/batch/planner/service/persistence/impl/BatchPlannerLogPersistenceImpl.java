@@ -20,6 +20,7 @@ import com.liferay.batch.planner.model.BatchPlannerLogTable;
 import com.liferay.batch.planner.model.impl.BatchPlannerLogImpl;
 import com.liferay.batch.planner.model.impl.BatchPlannerLogModelImpl;
 import com.liferay.batch.planner.service.persistence.BatchPlannerLogPersistence;
+import com.liferay.batch.planner.service.persistence.BatchPlannerLogUtil;
 import com.liferay.batch.planner.service.persistence.impl.constants.BatchPlannerPersistenceConstants;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.configuration.Configuration;
@@ -44,11 +45,14 @@ import com.liferay.portal.kernel.util.PropsKeys;
 import com.liferay.portal.kernel.util.PropsUtil;
 import com.liferay.portal.kernel.util.ProxyUtil;
 import com.liferay.portal.kernel.util.SetUtil;
+import com.liferay.portal.kernel.util.StringUtil;
 
 import java.io.Serializable;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationHandler;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -95,73 +99,70 @@ public class BatchPlannerLogPersistenceImpl
 	private FinderPath _finderPathWithPaginationFindAll;
 	private FinderPath _finderPathWithoutPaginationFindAll;
 	private FinderPath _finderPathCountAll;
-	private FinderPath _finderPathWithPaginationFindByBatchPlannerPlanId;
-	private FinderPath _finderPathWithoutPaginationFindByBatchPlannerPlanId;
-	private FinderPath _finderPathCountByBatchPlannerPlanId;
+	private FinderPath _finderPathWithPaginationFindByCompanyId;
+	private FinderPath _finderPathWithoutPaginationFindByCompanyId;
+	private FinderPath _finderPathCountByCompanyId;
 
 	/**
-	 * Returns all the batch planner logs where batchPlannerPlanId = &#63;.
+	 * Returns all the batch planner logs where companyId = &#63;.
 	 *
-	 * @param batchPlannerPlanId the batch planner plan ID
+	 * @param companyId the company ID
 	 * @return the matching batch planner logs
 	 */
 	@Override
-	public List<BatchPlannerLog> findByBatchPlannerPlanId(
-		long batchPlannerPlanId) {
-
-		return findByBatchPlannerPlanId(
-			batchPlannerPlanId, QueryUtil.ALL_POS, QueryUtil.ALL_POS, null);
+	public List<BatchPlannerLog> findByCompanyId(long companyId) {
+		return findByCompanyId(
+			companyId, QueryUtil.ALL_POS, QueryUtil.ALL_POS, null);
 	}
 
 	/**
-	 * Returns a range of all the batch planner logs where batchPlannerPlanId = &#63;.
+	 * Returns a range of all the batch planner logs where companyId = &#63;.
 	 *
 	 * <p>
 	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>BatchPlannerLogModelImpl</code>.
 	 * </p>
 	 *
-	 * @param batchPlannerPlanId the batch planner plan ID
+	 * @param companyId the company ID
 	 * @param start the lower bound of the range of batch planner logs
 	 * @param end the upper bound of the range of batch planner logs (not inclusive)
 	 * @return the range of matching batch planner logs
 	 */
 	@Override
-	public List<BatchPlannerLog> findByBatchPlannerPlanId(
-		long batchPlannerPlanId, int start, int end) {
+	public List<BatchPlannerLog> findByCompanyId(
+		long companyId, int start, int end) {
 
-		return findByBatchPlannerPlanId(batchPlannerPlanId, start, end, null);
+		return findByCompanyId(companyId, start, end, null);
 	}
 
 	/**
-	 * Returns an ordered range of all the batch planner logs where batchPlannerPlanId = &#63;.
+	 * Returns an ordered range of all the batch planner logs where companyId = &#63;.
 	 *
 	 * <p>
 	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>BatchPlannerLogModelImpl</code>.
 	 * </p>
 	 *
-	 * @param batchPlannerPlanId the batch planner plan ID
+	 * @param companyId the company ID
 	 * @param start the lower bound of the range of batch planner logs
 	 * @param end the upper bound of the range of batch planner logs (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
 	 * @return the ordered range of matching batch planner logs
 	 */
 	@Override
-	public List<BatchPlannerLog> findByBatchPlannerPlanId(
-		long batchPlannerPlanId, int start, int end,
+	public List<BatchPlannerLog> findByCompanyId(
+		long companyId, int start, int end,
 		OrderByComparator<BatchPlannerLog> orderByComparator) {
 
-		return findByBatchPlannerPlanId(
-			batchPlannerPlanId, start, end, orderByComparator, true);
+		return findByCompanyId(companyId, start, end, orderByComparator, true);
 	}
 
 	/**
-	 * Returns an ordered range of all the batch planner logs where batchPlannerPlanId = &#63;.
+	 * Returns an ordered range of all the batch planner logs where companyId = &#63;.
 	 *
 	 * <p>
 	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>BatchPlannerLogModelImpl</code>.
 	 * </p>
 	 *
-	 * @param batchPlannerPlanId the batch planner plan ID
+	 * @param companyId the company ID
 	 * @param start the lower bound of the range of batch planner logs
 	 * @param end the upper bound of the range of batch planner logs (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
@@ -169,8 +170,8 @@ public class BatchPlannerLogPersistenceImpl
 	 * @return the ordered range of matching batch planner logs
 	 */
 	@Override
-	public List<BatchPlannerLog> findByBatchPlannerPlanId(
-		long batchPlannerPlanId, int start, int end,
+	public List<BatchPlannerLog> findByCompanyId(
+		long companyId, int start, int end,
 		OrderByComparator<BatchPlannerLog> orderByComparator,
 		boolean useFinderCache) {
 
@@ -181,15 +182,14 @@ public class BatchPlannerLogPersistenceImpl
 			(orderByComparator == null)) {
 
 			if (useFinderCache) {
-				finderPath =
-					_finderPathWithoutPaginationFindByBatchPlannerPlanId;
-				finderArgs = new Object[] {batchPlannerPlanId};
+				finderPath = _finderPathWithoutPaginationFindByCompanyId;
+				finderArgs = new Object[] {companyId};
 			}
 		}
 		else if (useFinderCache) {
-			finderPath = _finderPathWithPaginationFindByBatchPlannerPlanId;
+			finderPath = _finderPathWithPaginationFindByCompanyId;
 			finderArgs = new Object[] {
-				batchPlannerPlanId, start, end, orderByComparator
+				companyId, start, end, orderByComparator
 			};
 		}
 
@@ -201,9 +201,7 @@ public class BatchPlannerLogPersistenceImpl
 
 			if ((list != null) && !list.isEmpty()) {
 				for (BatchPlannerLog batchPlannerLog : list) {
-					if (batchPlannerPlanId !=
-							batchPlannerLog.getBatchPlannerPlanId()) {
-
+					if (companyId != batchPlannerLog.getCompanyId()) {
 						list = null;
 
 						break;
@@ -225,7 +223,7 @@ public class BatchPlannerLogPersistenceImpl
 
 			sb.append(_SQL_SELECT_BATCHPLANNERLOG_WHERE);
 
-			sb.append(_FINDER_COLUMN_BATCHPLANNERPLANID_BATCHPLANNERPLANID_2);
+			sb.append(_FINDER_COLUMN_COMPANYID_COMPANYID_2);
 
 			if (orderByComparator != null) {
 				appendOrderByComparator(
@@ -246,7 +244,7 @@ public class BatchPlannerLogPersistenceImpl
 
 				QueryPos queryPos = QueryPos.getInstance(query);
 
-				queryPos.add(batchPlannerPlanId);
+				queryPos.add(companyId);
 
 				list = (List<BatchPlannerLog>)QueryUtil.list(
 					query, getDialect(), start, end);
@@ -269,21 +267,21 @@ public class BatchPlannerLogPersistenceImpl
 	}
 
 	/**
-	 * Returns the first batch planner log in the ordered set where batchPlannerPlanId = &#63;.
+	 * Returns the first batch planner log in the ordered set where companyId = &#63;.
 	 *
-	 * @param batchPlannerPlanId the batch planner plan ID
+	 * @param companyId the company ID
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the first matching batch planner log
 	 * @throws NoSuchLogException if a matching batch planner log could not be found
 	 */
 	@Override
-	public BatchPlannerLog findByBatchPlannerPlanId_First(
-			long batchPlannerPlanId,
+	public BatchPlannerLog findByCompanyId_First(
+			long companyId,
 			OrderByComparator<BatchPlannerLog> orderByComparator)
 		throws NoSuchLogException {
 
-		BatchPlannerLog batchPlannerLog = fetchByBatchPlannerPlanId_First(
-			batchPlannerPlanId, orderByComparator);
+		BatchPlannerLog batchPlannerLog = fetchByCompanyId_First(
+			companyId, orderByComparator);
 
 		if (batchPlannerLog != null) {
 			return batchPlannerLog;
@@ -293,8 +291,8 @@ public class BatchPlannerLogPersistenceImpl
 
 		sb.append(_NO_SUCH_ENTITY_WITH_KEY);
 
-		sb.append("batchPlannerPlanId=");
-		sb.append(batchPlannerPlanId);
+		sb.append("companyId=");
+		sb.append(companyId);
 
 		sb.append("}");
 
@@ -302,19 +300,18 @@ public class BatchPlannerLogPersistenceImpl
 	}
 
 	/**
-	 * Returns the first batch planner log in the ordered set where batchPlannerPlanId = &#63;.
+	 * Returns the first batch planner log in the ordered set where companyId = &#63;.
 	 *
-	 * @param batchPlannerPlanId the batch planner plan ID
+	 * @param companyId the company ID
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the first matching batch planner log, or <code>null</code> if a matching batch planner log could not be found
 	 */
 	@Override
-	public BatchPlannerLog fetchByBatchPlannerPlanId_First(
-		long batchPlannerPlanId,
-		OrderByComparator<BatchPlannerLog> orderByComparator) {
+	public BatchPlannerLog fetchByCompanyId_First(
+		long companyId, OrderByComparator<BatchPlannerLog> orderByComparator) {
 
-		List<BatchPlannerLog> list = findByBatchPlannerPlanId(
-			batchPlannerPlanId, 0, 1, orderByComparator);
+		List<BatchPlannerLog> list = findByCompanyId(
+			companyId, 0, 1, orderByComparator);
 
 		if (!list.isEmpty()) {
 			return list.get(0);
@@ -324,21 +321,21 @@ public class BatchPlannerLogPersistenceImpl
 	}
 
 	/**
-	 * Returns the last batch planner log in the ordered set where batchPlannerPlanId = &#63;.
+	 * Returns the last batch planner log in the ordered set where companyId = &#63;.
 	 *
-	 * @param batchPlannerPlanId the batch planner plan ID
+	 * @param companyId the company ID
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the last matching batch planner log
 	 * @throws NoSuchLogException if a matching batch planner log could not be found
 	 */
 	@Override
-	public BatchPlannerLog findByBatchPlannerPlanId_Last(
-			long batchPlannerPlanId,
+	public BatchPlannerLog findByCompanyId_Last(
+			long companyId,
 			OrderByComparator<BatchPlannerLog> orderByComparator)
 		throws NoSuchLogException {
 
-		BatchPlannerLog batchPlannerLog = fetchByBatchPlannerPlanId_Last(
-			batchPlannerPlanId, orderByComparator);
+		BatchPlannerLog batchPlannerLog = fetchByCompanyId_Last(
+			companyId, orderByComparator);
 
 		if (batchPlannerLog != null) {
 			return batchPlannerLog;
@@ -348,8 +345,8 @@ public class BatchPlannerLogPersistenceImpl
 
 		sb.append(_NO_SUCH_ENTITY_WITH_KEY);
 
-		sb.append("batchPlannerPlanId=");
-		sb.append(batchPlannerPlanId);
+		sb.append("companyId=");
+		sb.append(companyId);
 
 		sb.append("}");
 
@@ -357,25 +354,24 @@ public class BatchPlannerLogPersistenceImpl
 	}
 
 	/**
-	 * Returns the last batch planner log in the ordered set where batchPlannerPlanId = &#63;.
+	 * Returns the last batch planner log in the ordered set where companyId = &#63;.
 	 *
-	 * @param batchPlannerPlanId the batch planner plan ID
+	 * @param companyId the company ID
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the last matching batch planner log, or <code>null</code> if a matching batch planner log could not be found
 	 */
 	@Override
-	public BatchPlannerLog fetchByBatchPlannerPlanId_Last(
-		long batchPlannerPlanId,
-		OrderByComparator<BatchPlannerLog> orderByComparator) {
+	public BatchPlannerLog fetchByCompanyId_Last(
+		long companyId, OrderByComparator<BatchPlannerLog> orderByComparator) {
 
-		int count = countByBatchPlannerPlanId(batchPlannerPlanId);
+		int count = countByCompanyId(companyId);
 
 		if (count == 0) {
 			return null;
 		}
 
-		List<BatchPlannerLog> list = findByBatchPlannerPlanId(
-			batchPlannerPlanId, count - 1, count, orderByComparator);
+		List<BatchPlannerLog> list = findByCompanyId(
+			companyId, count - 1, count, orderByComparator);
 
 		if (!list.isEmpty()) {
 			return list.get(0);
@@ -385,17 +381,17 @@ public class BatchPlannerLogPersistenceImpl
 	}
 
 	/**
-	 * Returns the batch planner logs before and after the current batch planner log in the ordered set where batchPlannerPlanId = &#63;.
+	 * Returns the batch planner logs before and after the current batch planner log in the ordered set where companyId = &#63;.
 	 *
 	 * @param batchPlannerLogId the primary key of the current batch planner log
-	 * @param batchPlannerPlanId the batch planner plan ID
+	 * @param companyId the company ID
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the previous, current, and next batch planner log
 	 * @throws NoSuchLogException if a batch planner log with the primary key could not be found
 	 */
 	@Override
-	public BatchPlannerLog[] findByBatchPlannerPlanId_PrevAndNext(
-			long batchPlannerLogId, long batchPlannerPlanId,
+	public BatchPlannerLog[] findByCompanyId_PrevAndNext(
+			long batchPlannerLogId, long companyId,
 			OrderByComparator<BatchPlannerLog> orderByComparator)
 		throws NoSuchLogException {
 
@@ -408,15 +404,13 @@ public class BatchPlannerLogPersistenceImpl
 
 			BatchPlannerLog[] array = new BatchPlannerLogImpl[3];
 
-			array[0] = getByBatchPlannerPlanId_PrevAndNext(
-				session, batchPlannerLog, batchPlannerPlanId, orderByComparator,
-				true);
+			array[0] = getByCompanyId_PrevAndNext(
+				session, batchPlannerLog, companyId, orderByComparator, true);
 
 			array[1] = batchPlannerLog;
 
-			array[2] = getByBatchPlannerPlanId_PrevAndNext(
-				session, batchPlannerLog, batchPlannerPlanId, orderByComparator,
-				false);
+			array[2] = getByCompanyId_PrevAndNext(
+				session, batchPlannerLog, companyId, orderByComparator, false);
 
 			return array;
 		}
@@ -428,9 +422,8 @@ public class BatchPlannerLogPersistenceImpl
 		}
 	}
 
-	protected BatchPlannerLog getByBatchPlannerPlanId_PrevAndNext(
-		Session session, BatchPlannerLog batchPlannerLog,
-		long batchPlannerPlanId,
+	protected BatchPlannerLog getByCompanyId_PrevAndNext(
+		Session session, BatchPlannerLog batchPlannerLog, long companyId,
 		OrderByComparator<BatchPlannerLog> orderByComparator,
 		boolean previous) {
 
@@ -447,7 +440,7 @@ public class BatchPlannerLogPersistenceImpl
 
 		sb.append(_SQL_SELECT_BATCHPLANNERLOG_WHERE);
 
-		sb.append(_FINDER_COLUMN_BATCHPLANNERPLANID_BATCHPLANNERPLANID_2);
+		sb.append(_FINDER_COLUMN_COMPANYID_COMPANYID_2);
 
 		if (orderByComparator != null) {
 			String[] orderByConditionFields =
@@ -518,7 +511,7 @@ public class BatchPlannerLogPersistenceImpl
 
 		QueryPos queryPos = QueryPos.getInstance(query);
 
-		queryPos.add(batchPlannerPlanId);
+		queryPos.add(companyId);
 
 		if (orderByComparator != null) {
 			for (Object orderByConditionValue :
@@ -540,19 +533,234 @@ public class BatchPlannerLogPersistenceImpl
 	}
 
 	/**
-	 * Removes all the batch planner logs where batchPlannerPlanId = &#63; from the database.
+	 * Removes all the batch planner logs where companyId = &#63; from the database.
 	 *
-	 * @param batchPlannerPlanId the batch planner plan ID
+	 * @param companyId the company ID
 	 */
 	@Override
-	public void removeByBatchPlannerPlanId(long batchPlannerPlanId) {
+	public void removeByCompanyId(long companyId) {
 		for (BatchPlannerLog batchPlannerLog :
-				findByBatchPlannerPlanId(
-					batchPlannerPlanId, QueryUtil.ALL_POS, QueryUtil.ALL_POS,
-					null)) {
+				findByCompanyId(
+					companyId, QueryUtil.ALL_POS, QueryUtil.ALL_POS, null)) {
 
 			remove(batchPlannerLog);
 		}
+	}
+
+	/**
+	 * Returns the number of batch planner logs where companyId = &#63;.
+	 *
+	 * @param companyId the company ID
+	 * @return the number of matching batch planner logs
+	 */
+	@Override
+	public int countByCompanyId(long companyId) {
+		FinderPath finderPath = _finderPathCountByCompanyId;
+
+		Object[] finderArgs = new Object[] {companyId};
+
+		Long count = (Long)finderCache.getResult(finderPath, finderArgs);
+
+		if (count == null) {
+			StringBundler sb = new StringBundler(2);
+
+			sb.append(_SQL_COUNT_BATCHPLANNERLOG_WHERE);
+
+			sb.append(_FINDER_COLUMN_COMPANYID_COMPANYID_2);
+
+			String sql = sb.toString();
+
+			Session session = null;
+
+			try {
+				session = openSession();
+
+				Query query = session.createQuery(sql);
+
+				QueryPos queryPos = QueryPos.getInstance(query);
+
+				queryPos.add(companyId);
+
+				count = (Long)query.uniqueResult();
+
+				finderCache.putResult(finderPath, finderArgs, count);
+			}
+			catch (Exception exception) {
+				throw processException(exception);
+			}
+			finally {
+				closeSession(session);
+			}
+		}
+
+		return count.intValue();
+	}
+
+	private static final String _FINDER_COLUMN_COMPANYID_COMPANYID_2 =
+		"batchPlannerLog.companyId = ?";
+
+	private FinderPath _finderPathFetchByBatchPlannerPlanId;
+	private FinderPath _finderPathCountByBatchPlannerPlanId;
+
+	/**
+	 * Returns the batch planner log where batchPlannerPlanId = &#63; or throws a <code>NoSuchLogException</code> if it could not be found.
+	 *
+	 * @param batchPlannerPlanId the batch planner plan ID
+	 * @return the matching batch planner log
+	 * @throws NoSuchLogException if a matching batch planner log could not be found
+	 */
+	@Override
+	public BatchPlannerLog findByBatchPlannerPlanId(long batchPlannerPlanId)
+		throws NoSuchLogException {
+
+		BatchPlannerLog batchPlannerLog = fetchByBatchPlannerPlanId(
+			batchPlannerPlanId);
+
+		if (batchPlannerLog == null) {
+			StringBundler sb = new StringBundler(4);
+
+			sb.append(_NO_SUCH_ENTITY_WITH_KEY);
+
+			sb.append("batchPlannerPlanId=");
+			sb.append(batchPlannerPlanId);
+
+			sb.append("}");
+
+			if (_log.isDebugEnabled()) {
+				_log.debug(sb.toString());
+			}
+
+			throw new NoSuchLogException(sb.toString());
+		}
+
+		return batchPlannerLog;
+	}
+
+	/**
+	 * Returns the batch planner log where batchPlannerPlanId = &#63; or returns <code>null</code> if it could not be found. Uses the finder cache.
+	 *
+	 * @param batchPlannerPlanId the batch planner plan ID
+	 * @return the matching batch planner log, or <code>null</code> if a matching batch planner log could not be found
+	 */
+	@Override
+	public BatchPlannerLog fetchByBatchPlannerPlanId(long batchPlannerPlanId) {
+		return fetchByBatchPlannerPlanId(batchPlannerPlanId, true);
+	}
+
+	/**
+	 * Returns the batch planner log where batchPlannerPlanId = &#63; or returns <code>null</code> if it could not be found, optionally using the finder cache.
+	 *
+	 * @param batchPlannerPlanId the batch planner plan ID
+	 * @param useFinderCache whether to use the finder cache
+	 * @return the matching batch planner log, or <code>null</code> if a matching batch planner log could not be found
+	 */
+	@Override
+	public BatchPlannerLog fetchByBatchPlannerPlanId(
+		long batchPlannerPlanId, boolean useFinderCache) {
+
+		Object[] finderArgs = null;
+
+		if (useFinderCache) {
+			finderArgs = new Object[] {batchPlannerPlanId};
+		}
+
+		Object result = null;
+
+		if (useFinderCache) {
+			result = finderCache.getResult(
+				_finderPathFetchByBatchPlannerPlanId, finderArgs);
+		}
+
+		if (result instanceof BatchPlannerLog) {
+			BatchPlannerLog batchPlannerLog = (BatchPlannerLog)result;
+
+			if (batchPlannerPlanId != batchPlannerLog.getBatchPlannerPlanId()) {
+				result = null;
+			}
+		}
+
+		if (result == null) {
+			StringBundler sb = new StringBundler(3);
+
+			sb.append(_SQL_SELECT_BATCHPLANNERLOG_WHERE);
+
+			sb.append(_FINDER_COLUMN_BATCHPLANNERPLANID_BATCHPLANNERPLANID_2);
+
+			String sql = sb.toString();
+
+			Session session = null;
+
+			try {
+				session = openSession();
+
+				Query query = session.createQuery(sql);
+
+				QueryPos queryPos = QueryPos.getInstance(query);
+
+				queryPos.add(batchPlannerPlanId);
+
+				List<BatchPlannerLog> list = query.list();
+
+				if (list.isEmpty()) {
+					if (useFinderCache) {
+						finderCache.putResult(
+							_finderPathFetchByBatchPlannerPlanId, finderArgs,
+							list);
+					}
+				}
+				else {
+					if (list.size() > 1) {
+						Collections.sort(list, Collections.reverseOrder());
+
+						if (_log.isWarnEnabled()) {
+							if (!useFinderCache) {
+								finderArgs = new Object[] {batchPlannerPlanId};
+							}
+
+							_log.warn(
+								"BatchPlannerLogPersistenceImpl.fetchByBatchPlannerPlanId(long, boolean) with parameters (" +
+									StringUtil.merge(finderArgs) +
+										") yields a result set with more than 1 result. This violates the logical unique restriction. There is no order guarantee on which result is returned by this finder.");
+						}
+					}
+
+					BatchPlannerLog batchPlannerLog = list.get(0);
+
+					result = batchPlannerLog;
+
+					cacheResult(batchPlannerLog);
+				}
+			}
+			catch (Exception exception) {
+				throw processException(exception);
+			}
+			finally {
+				closeSession(session);
+			}
+		}
+
+		if (result instanceof List<?>) {
+			return null;
+		}
+		else {
+			return (BatchPlannerLog)result;
+		}
+	}
+
+	/**
+	 * Removes the batch planner log where batchPlannerPlanId = &#63; from the database.
+	 *
+	 * @param batchPlannerPlanId the batch planner plan ID
+	 * @return the batch planner log that was removed
+	 */
+	@Override
+	public BatchPlannerLog removeByBatchPlannerPlanId(long batchPlannerPlanId)
+		throws NoSuchLogException {
+
+		BatchPlannerLog batchPlannerLog = findByBatchPlannerPlanId(
+			batchPlannerPlanId);
+
+		return remove(batchPlannerLog);
 	}
 
 	/**
@@ -1445,6 +1653,11 @@ public class BatchPlannerLogPersistenceImpl
 			batchPlannerLog);
 
 		finderCache.putResult(
+			_finderPathFetchByBatchPlannerPlanId,
+			new Object[] {batchPlannerLog.getBatchPlannerPlanId()},
+			batchPlannerLog);
+
+		finderCache.putResult(
 			_finderPathFetchByBPPI_BEETERC,
 			new Object[] {
 				batchPlannerLog.getBatchPlannerPlanId(),
@@ -1543,6 +1756,16 @@ public class BatchPlannerLogPersistenceImpl
 		BatchPlannerLogModelImpl batchPlannerLogModelImpl) {
 
 		Object[] args = new Object[] {
+			batchPlannerLogModelImpl.getBatchPlannerPlanId()
+		};
+
+		finderCache.putResult(
+			_finderPathCountByBatchPlannerPlanId, args, Long.valueOf(1));
+		finderCache.putResult(
+			_finderPathFetchByBatchPlannerPlanId, args,
+			batchPlannerLogModelImpl);
+
+		args = new Object[] {
 			batchPlannerLogModelImpl.getBatchPlannerPlanId(),
 			batchPlannerLogModelImpl.getBatchEngineExportTaskERC()
 		};
@@ -2036,17 +2259,27 @@ public class BatchPlannerLogPersistenceImpl
 			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "countAll",
 			new String[0], new String[0], false);
 
-		_finderPathWithPaginationFindByBatchPlannerPlanId = new FinderPath(
-			FINDER_CLASS_NAME_LIST_WITH_PAGINATION, "findByBatchPlannerPlanId",
+		_finderPathWithPaginationFindByCompanyId = new FinderPath(
+			FINDER_CLASS_NAME_LIST_WITH_PAGINATION, "findByCompanyId",
 			new String[] {
 				Long.class.getName(), Integer.class.getName(),
 				Integer.class.getName(), OrderByComparator.class.getName()
 			},
-			new String[] {"batchPlannerPlanId"}, true);
+			new String[] {"companyId"}, true);
 
-		_finderPathWithoutPaginationFindByBatchPlannerPlanId = new FinderPath(
-			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION,
-			"findByBatchPlannerPlanId", new String[] {Long.class.getName()},
+		_finderPathWithoutPaginationFindByCompanyId = new FinderPath(
+			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "findByCompanyId",
+			new String[] {Long.class.getName()}, new String[] {"companyId"},
+			true);
+
+		_finderPathCountByCompanyId = new FinderPath(
+			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "countByCompanyId",
+			new String[] {Long.class.getName()}, new String[] {"companyId"},
+			false);
+
+		_finderPathFetchByBatchPlannerPlanId = new FinderPath(
+			FINDER_CLASS_NAME_ENTITY, "fetchByBatchPlannerPlanId",
+			new String[] {Long.class.getName()},
 			new String[] {"batchPlannerPlanId"}, true);
 
 		_finderPathCountByBatchPlannerPlanId = new FinderPath(
@@ -2087,11 +2320,31 @@ public class BatchPlannerLogPersistenceImpl
 			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "countByBPPI_DTERC",
 			new String[] {Long.class.getName(), String.class.getName()},
 			new String[] {"batchPlannerPlanId", "dispatchTriggerERC"}, false);
+
+		_setBatchPlannerLogUtilPersistence(this);
 	}
 
 	@Deactivate
 	public void deactivate() {
+		_setBatchPlannerLogUtilPersistence(null);
+
 		entityCache.removeCache(BatchPlannerLogImpl.class.getName());
+	}
+
+	private void _setBatchPlannerLogUtilPersistence(
+		BatchPlannerLogPersistence batchPlannerLogPersistence) {
+
+		try {
+			Field field = BatchPlannerLogUtil.class.getDeclaredField(
+				"_persistence");
+
+			field.setAccessible(true);
+
+			field.set(null, batchPlannerLogPersistence);
+		}
+		catch (ReflectiveOperationException reflectiveOperationException) {
+			throw new RuntimeException(reflectiveOperationException);
+		}
 	}
 
 	@Override

@@ -250,6 +250,14 @@ public class BatchPlannerLogLocalServiceWrapper
 	}
 
 	@Override
+	public com.liferay.batch.planner.model.BatchPlannerLog
+		fetchBatchPlannerPlanBatchPlannerLog(long batchPlannerPlanId) {
+
+		return _batchPlannerLogLocalService.
+			fetchBatchPlannerPlanBatchPlannerLog(batchPlannerPlanId);
+	}
+
+	@Override
 	public com.liferay.portal.kernel.dao.orm.ActionableDynamicQuery
 		getActionableDynamicQuery() {
 
@@ -298,6 +306,57 @@ public class BatchPlannerLogLocalServiceWrapper
 	@Override
 	public int getBatchPlannerLogsCount() {
 		return _batchPlannerLogLocalService.getBatchPlannerLogsCount();
+	}
+
+	@Override
+	public int getBatchPlannerLogsCount(long batchPlannerPlanId) {
+		return _batchPlannerLogLocalService.getBatchPlannerLogsCount(
+			batchPlannerPlanId);
+	}
+
+	@Override
+	public com.liferay.batch.planner.model.BatchPlannerLog
+			getBatchPlannerPlanBatchPlannerLog(long batchPlannerPlanId)
+		throws com.liferay.portal.kernel.exception.PortalException {
+
+		return _batchPlannerLogLocalService.getBatchPlannerPlanBatchPlannerLog(
+			batchPlannerPlanId);
+	}
+
+	@Override
+	public java.util.List<com.liferay.batch.planner.model.BatchPlannerLog>
+		getCompanyBatchPlannerLogs(
+			long companyId, boolean export, int start, int end,
+			com.liferay.portal.kernel.util.OrderByComparator
+				<com.liferay.batch.planner.model.BatchPlannerLog>
+					orderByComparator) {
+
+		return _batchPlannerLogLocalService.getCompanyBatchPlannerLogs(
+			companyId, export, start, end, orderByComparator);
+	}
+
+	@Override
+	public java.util.List<com.liferay.batch.planner.model.BatchPlannerLog>
+		getCompanyBatchPlannerLogs(
+			long companyId, int start, int end,
+			com.liferay.portal.kernel.util.OrderByComparator
+				<com.liferay.batch.planner.model.BatchPlannerLog>
+					orderByComparator) {
+
+		return _batchPlannerLogLocalService.getCompanyBatchPlannerLogs(
+			companyId, start, end, orderByComparator);
+	}
+
+	@Override
+	public int getCompanyBatchPlannerLogsCount(long companyId) {
+		return _batchPlannerLogLocalService.getCompanyBatchPlannerLogsCount(
+			companyId);
+	}
+
+	@Override
+	public int getCompanyBatchPlannerLogsCount(long companyId, boolean export) {
+		return _batchPlannerLogLocalService.getCompanyBatchPlannerLogsCount(
+			companyId, export);
 	}
 
 	@Override

@@ -45,7 +45,7 @@ describe('Field Numeric Input Mask', () => {
 
 	afterEach(cleanup);
 
-	it('shows the Thousands Separator, Decimal Separator and Prefix or Suffix field by default', () => {
+	it('shows the Thousands Separator, Decimal Separator, Decimal places and Prefix or Suffix field by default', () => {
 		const {container} = render(
 			<NumericInputMask
 				append=""

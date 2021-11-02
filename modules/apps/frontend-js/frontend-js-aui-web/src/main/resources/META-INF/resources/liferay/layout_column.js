@@ -94,7 +94,7 @@ AUI.add(
 			},
 
 			register() {
-				var columnLayoutDefaults = A.merge(
+				var columnLayoutDefaults = Object.assign(
 					Layout.DEFAULT_LAYOUT_OPTIONS,
 					{
 						after: {
@@ -133,7 +133,7 @@ AUI.add(
 							'drop:exit'() {
 								Liferay.Layout.updateOverNestedPortletInfo();
 							},
-							placeholderAlign(event) {
+							'placeholderAlign'(event) {
 								var portalLayout = event.currentTarget;
 
 								var activeDrop = portalLayout.activeDrop;

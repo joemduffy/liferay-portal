@@ -14,16 +14,16 @@
 
 import ClayLayout from '@clayui/layout';
 import {
+	EVENT_TYPES as CORE_EVENT_TYPES,
 	FormFieldSettings,
 	Pages,
 	useConfig,
 	useForm,
 	useFormState,
 } from 'data-engine-js-components-web';
-import {EVENT_TYPES as CORE_EVENT_TYPES} from 'data-engine-js-components-web/js/core/actions/eventTypes.es';
 import React, {useMemo} from 'react';
 
-import {getFilteredSettingsContext} from '../../../utils/settingsForm.es';
+import {useSettingsContextFilter} from '../../../utils/settingsForm.es';
 
 /**
  * This component will override the Column from Form Renderer.
@@ -41,7 +41,7 @@ const getColumn = ({objectFields}) => ({children, column, index}) => {
 				// Avoid using repeatable and searchable fields when object storage type is selected
 
 				if (
-					objectFields.length &&
+					!!objectFields.length &&
 					(fieldName === 'repeatable' || fieldName === 'indexType')
 				) {
 					return <React.Fragment key={index} />;
@@ -53,31 +53,21 @@ const getColumn = ({objectFields}) => ({children, column, index}) => {
 	);
 };
 
-export default function FieldsSidebarSettingsBody() {
+export default function FieldsSidebarSettingsBody({field}) {
 	const {
 		defaultLanguageId,
 		editingLanguageId,
-		focusedField,
 		objectFields,
 		pages,
 		rules,
 	} = useFormState();
-	const config = useConfig();
+	const {submitButtonId} = useConfig();
 	const dispatch = useForm();
 
 	const Column = useMemo(() => getColumn({objectFields}), [objectFields]);
 
-	const {settingsContext} = focusedField;
-
-	const filteredSettingsContext = useMemo(
-		() =>
-			getFilteredSettingsContext({
-				config,
-				defaultLanguageId,
-				editingLanguageId,
-				settingsContext,
-			}),
-		[config, defaultLanguageId, editingLanguageId, settingsContext]
+	const filteredSettingsContext = useSettingsContextFilter(
+		field.settingsContext
 	);
 
 	return (
@@ -90,7 +80,7 @@ export default function FieldsSidebarSettingsBody() {
 				displayable={true}
 				editable={false}
 				editingLanguageId={editingLanguageId}
-				focusedField={focusedField}
+				focusedField={field}
 				objectFields={objectFields}
 				onAction={({payload, type}) => {
 					switch (type) {
@@ -117,7 +107,7 @@ export default function FieldsSidebarSettingsBody() {
 							break;
 					}
 				}}
-				submitButtonId={config.submitButtonId}
+				submitButtonId={submitButtonId}
 			>
 				<Pages
 					editable={false}

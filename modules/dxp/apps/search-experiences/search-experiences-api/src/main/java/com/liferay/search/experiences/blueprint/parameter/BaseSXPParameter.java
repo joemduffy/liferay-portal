@@ -15,6 +15,10 @@
 package com.liferay.search.experiences.blueprint.parameter;
 
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.util.GetterUtil;
+
+import java.util.Map;
+import java.util.Objects;
 
 /**
  * @author Petteri Karttunen
@@ -24,6 +28,50 @@ public abstract class BaseSXPParameter implements SXPParameter {
 	public BaseSXPParameter(String name, boolean templateVariable) {
 		this.name = name;
 		this.templateVariable = templateVariable;
+	}
+
+	@Override
+	public boolean equals(Object object) {
+		SXPParameter sxpParameter = (SXPParameter)object;
+
+		return Objects.equals(name, sxpParameter.getName());
+	}
+
+	@Override
+	public boolean evaluateContains(Object value, Object[] values) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public boolean evaluateEquals(Object object) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public boolean evaluateEquals(String format, Object object) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public boolean evaluateIn(Object[] values) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public boolean evaluateRange(Object gt, Object gte, Object lt, Object lte) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public boolean evaluateRange(
+		String format, Object gt, Object gte, Object lt, Object lte) {
+
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public String evaluateToString(Map<String, String> options) {
+		return GetterUtil.getString(getValue());
 	}
 
 	@Override
@@ -41,22 +89,23 @@ public abstract class BaseSXPParameter implements SXPParameter {
 	}
 
 	@Override
+	public int hashCode() {
+		return name.hashCode();
+	}
+
+	@Override
 	public boolean isTemplateVariable() {
 		return templateVariable;
 	}
 
 	@Override
 	public String toString() {
-		return toString(String.valueOf(getValue()));
-	}
-
-	protected String toString(String valueString) {
 		Class<?> clazz = getClass();
 
 		return StringBundler.concat(
 			"{className=", clazz.getSimpleName(), ", name=", name,
-			", templateVariable=", templateVariable, ", value=", valueString,
-			"}");
+			", templateVariable=", templateVariable, ", value=",
+			evaluateToString(null), "}");
 	}
 
 	protected final String name;

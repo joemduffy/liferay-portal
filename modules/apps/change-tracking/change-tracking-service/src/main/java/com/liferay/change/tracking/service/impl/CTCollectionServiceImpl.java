@@ -28,6 +28,7 @@ import com.liferay.change.tracking.model.CTEntry;
 import com.liferay.change.tracking.service.CTProcessLocalService;
 import com.liferay.change.tracking.service.base.CTCollectionServiceBaseImpl;
 import com.liferay.change.tracking.service.persistence.CTAutoResolutionInfoPersistence;
+import com.liferay.change.tracking.service.persistence.CTEntryPersistence;
 import com.liferay.petra.sql.dsl.DSLFunctionFactoryUtil;
 import com.liferay.petra.sql.dsl.DSLQueryFactoryUtil;
 import com.liferay.petra.sql.dsl.expression.Predicate;
@@ -193,7 +194,7 @@ public class CTCollectionServiceImpl extends CTCollectionServiceBaseImpl {
 			long classNameId = parentEntry.getKey();
 			long classPK = parentEntry.getValue();
 
-			int count = ctEntryPersistence.countByC_MCNI_MCPK(
+			int count = _ctEntryPersistence.countByC_MCNI_MCPK(
 				ctCollectionId, classNameId, classPK);
 
 			if (count > 0) {
@@ -214,7 +215,7 @@ public class CTCollectionServiceImpl extends CTCollectionServiceBaseImpl {
 			List<CTEntry> ctEntries = new ArrayList<>(classPKs.size());
 
 			for (long classPK : classPKs) {
-				CTEntry ctEntry = ctEntryPersistence.fetchByC_MCNI_MCPK(
+				CTEntry ctEntry = _ctEntryPersistence.fetchByC_MCNI_MCPK(
 					ctCollectionId, classNameId, classPK);
 
 				if (ctEntry != null) {
@@ -391,7 +392,7 @@ public class CTCollectionServiceImpl extends CTCollectionServiceBaseImpl {
 		for (CTEntry ctEntry : ctEntries) {
 			modelClassPKs.add(ctEntry.getModelClassPK());
 
-			ctEntryPersistence.remove(ctEntry);
+			_ctEntryPersistence.remove(ctEntry);
 		}
 
 		for (CTAutoResolutionInfo ctAutoResolutionInfo :
@@ -436,13 +437,17 @@ public class CTCollectionServiceImpl extends CTCollectionServiceBaseImpl {
 		long companyId, int[] statuses, String keywords) {
 
 		Predicate predicate = CTCollectionTable.INSTANCE.companyId.eq(
-			companyId);
+			companyId
+		).and(
+			() -> {
+				if (!ArrayUtil.isEmpty(statuses)) {
+					return CTCollectionTable.INSTANCE.status.in(
+						ArrayUtil.toArray(statuses));
+				}
 
-		if (!ArrayUtil.isEmpty(statuses)) {
-			predicate = predicate.and(
-				CTCollectionTable.INSTANCE.status.in(
-					ArrayUtil.toArray(statuses)));
-		}
+				return null;
+			}
+		);
 
 		String[] keywordsArray = _customSQL.keywords(
 			keywords, true, WildcardMode.SURROUND);
@@ -510,6 +515,9 @@ public class CTCollectionServiceImpl extends CTCollectionServiceBaseImpl {
 	)
 	private ModelResourcePermission<CTCollection>
 		_ctCollectionModelResourcePermission;
+
+	@Reference
+	private CTEntryPersistence _ctEntryPersistence;
 
 	@Reference
 	private CTProcessLocalService _ctProcessLocalService;

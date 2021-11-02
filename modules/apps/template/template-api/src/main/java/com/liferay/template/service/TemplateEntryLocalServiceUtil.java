@@ -46,12 +46,13 @@ public class TemplateEntryLocalServiceUtil {
 	 */
 	public static TemplateEntry addTemplateEntry(
 			long userId, long groupId, long ddmTemplateId,
-			String infoItemClassName, String infoItemFormVariationKey)
+			String infoItemClassName, String infoItemFormVariationKey,
+			com.liferay.portal.kernel.service.ServiceContext serviceContext)
 		throws PortalException {
 
 		return getService().addTemplateEntry(
 			userId, groupId, ddmTemplateId, infoItemClassName,
-			infoItemFormVariationKey);
+			infoItemFormVariationKey, serviceContext);
 	}
 
 	/**
@@ -299,6 +300,20 @@ public class TemplateEntryLocalServiceUtil {
 
 		return getService().getTemplateEntries(
 			groupId, start, end, orderByComparator);
+	}
+
+	public static List<TemplateEntry> getTemplateEntries(
+		long groupId, String infoItemClassName, String infoItemFormVariationKey,
+		int start, int end,
+		OrderByComparator<TemplateEntry> orderByComparator) {
+
+		return getService().getTemplateEntries(
+			groupId, infoItemClassName, infoItemFormVariationKey, start, end,
+			orderByComparator);
+	}
+
+	public static List<TemplateEntry> getTemplateEntries(long[] groupIds) {
+		return getService().getTemplateEntries(groupIds);
 	}
 
 	/**

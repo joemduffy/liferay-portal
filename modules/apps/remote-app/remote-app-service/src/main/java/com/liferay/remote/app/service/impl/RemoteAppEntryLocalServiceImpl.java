@@ -21,6 +21,7 @@ import com.liferay.portal.kernel.cluster.Clusterable;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.model.ResourceConstants;
+import com.liferay.portal.kernel.model.SystemEventConstants;
 import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.search.Document;
 import com.liferay.portal.kernel.search.Field;
@@ -35,6 +36,7 @@ import com.liferay.portal.kernel.search.SearchException;
 import com.liferay.portal.kernel.search.Sort;
 import com.liferay.portal.kernel.service.ResourceLocalService;
 import com.liferay.portal.kernel.service.UserLocalService;
+import com.liferay.portal.kernel.systemevent.SystemEvent;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.HashMapBuilder;
 import com.liferay.portal.kernel.util.SetUtil;
@@ -79,7 +81,8 @@ public class RemoteAppEntryLocalServiceImpl
 	public RemoteAppEntry addCustomElementRemoteAppEntry(
 			long userId, String customElementCSSURLs,
 			String customElementHTMLElementName, String customElementURLs,
-			Map<Locale, String> nameMap, String portletCategoryName)
+			boolean instanceable, Map<Locale, String> nameMap,
+			String portletCategoryName, String properties)
 		throws PortalException {
 
 		customElementCSSURLs = StringUtil.trim(customElementCSSURLs);
@@ -104,8 +107,10 @@ public class RemoteAppEntryLocalServiceImpl
 		remoteAppEntry.setCustomElementHTMLElementName(
 			customElementHTMLElementName);
 		remoteAppEntry.setCustomElementURLs(customElementURLs);
+		remoteAppEntry.setInstanceable(instanceable);
 		remoteAppEntry.setNameMap(nameMap);
 		remoteAppEntry.setPortletCategoryName(portletCategoryName);
+		remoteAppEntry.setProperties(properties);
 		remoteAppEntry.setType(RemoteAppConstants.TYPE_CUSTOM_ELEMENT);
 
 		remoteAppEntry = remoteAppEntryPersistence.update(remoteAppEntry);
@@ -120,8 +125,9 @@ public class RemoteAppEntryLocalServiceImpl
 	@Indexable(type = IndexableType.REINDEX)
 	@Override
 	public RemoteAppEntry addIFrameRemoteAppEntry(
-			long userId, String iFrameURL, Map<Locale, String> nameMap,
-			String portletCategoryName)
+			long userId, String iFrameURL, boolean instanceable,
+			Map<Locale, String> nameMap, String portletCategoryName,
+			String properties)
 		throws PortalException {
 
 		iFrameURL = StringUtil.trim(iFrameURL);
@@ -138,8 +144,10 @@ public class RemoteAppEntryLocalServiceImpl
 		remoteAppEntry.setUserName(user.getFullName());
 
 		remoteAppEntry.setIFrameURL(iFrameURL);
+		remoteAppEntry.setInstanceable(instanceable);
 		remoteAppEntry.setNameMap(nameMap);
 		remoteAppEntry.setPortletCategoryName(portletCategoryName);
+		remoteAppEntry.setProperties(properties);
 		remoteAppEntry.setType(RemoteAppConstants.TYPE_IFRAME);
 
 		remoteAppEntry = remoteAppEntryPersistence.update(remoteAppEntry);
@@ -162,6 +170,7 @@ public class RemoteAppEntryLocalServiceImpl
 	}
 
 	@Override
+	@SystemEvent(type = SystemEventConstants.TYPE_DELETE)
 	public RemoteAppEntry deleteRemoteAppEntry(RemoteAppEntry remoteAppEntry)
 		throws PortalException {
 
@@ -258,7 +267,8 @@ public class RemoteAppEntryLocalServiceImpl
 	public RemoteAppEntry updateCustomElementRemoteAppEntry(
 			long remoteAppEntryId, String customElementCSSURLs,
 			String customElementHTMLElementName, String customElementURLs,
-			Map<Locale, String> nameMap, String portletCategoryName)
+			Map<Locale, String> nameMap, String portletCategoryName,
+			String properties)
 		throws PortalException {
 
 		customElementCSSURLs = StringUtil.trim(customElementCSSURLs);
@@ -279,6 +289,7 @@ public class RemoteAppEntryLocalServiceImpl
 		remoteAppEntry.setCustomElementURLs(customElementURLs);
 		remoteAppEntry.setNameMap(nameMap);
 		remoteAppEntry.setPortletCategoryName(portletCategoryName);
+		remoteAppEntry.setProperties(properties);
 
 		remoteAppEntry = remoteAppEntryPersistence.update(remoteAppEntry);
 
@@ -291,7 +302,8 @@ public class RemoteAppEntryLocalServiceImpl
 	@Override
 	public RemoteAppEntry updateIFrameRemoteAppEntry(
 			long remoteAppEntryId, String iFrameURL,
-			Map<Locale, String> nameMap, String portletCategoryName)
+			Map<Locale, String> nameMap, String portletCategoryName,
+			String properties)
 		throws PortalException {
 
 		iFrameURL = StringUtil.trim(iFrameURL);
@@ -304,6 +316,7 @@ public class RemoteAppEntryLocalServiceImpl
 		remoteAppEntry.setIFrameURL(iFrameURL);
 		remoteAppEntry.setNameMap(nameMap);
 		remoteAppEntry.setPortletCategoryName(portletCategoryName);
+		remoteAppEntry.setProperties(properties);
 
 		remoteAppEntry = remoteAppEntryPersistence.update(remoteAppEntry);
 
@@ -398,8 +411,10 @@ public class RemoteAppEntryLocalServiceImpl
 			for (String customElementCSSURL :
 					customElementCSSURLs.split(StringPool.NEW_LINE)) {
 
-				if (!Validator.isUrl(customElementCSSURL)) {
-					throw new RemoteAppEntryCustomElementCSSURLsException();
+				if (!Validator.isUrl(customElementCSSURL, true)) {
+					throw new RemoteAppEntryCustomElementCSSURLsException(
+						"Invalid custom element CSS URL " +
+							customElementCSSURL);
 				}
 			}
 		}
@@ -453,14 +468,16 @@ public class RemoteAppEntryLocalServiceImpl
 		}
 
 		if (Validator.isNull(customElementURLs)) {
-			throw new RemoteAppEntryCustomElementURLsException();
+			throw new RemoteAppEntryCustomElementURLsException(
+				"Invalid custom element URLs " + customElementURLs);
 		}
 
 		for (String customElementURL :
 				customElementURLs.split(StringPool.NEW_LINE)) {
 
-			if (!Validator.isUrl(customElementURL)) {
-				throw new RemoteAppEntryCustomElementURLsException();
+			if (!Validator.isUrl(customElementURL, true)) {
+				throw new RemoteAppEntryCustomElementURLsException(
+					"Invalid custom element URL " + customElementURL);
 			}
 		}
 	}
@@ -479,11 +496,9 @@ public class RemoteAppEntryLocalServiceImpl
 
 	private final Set<String> _reservedCustomElementHTMLElementNames =
 		SetUtil.fromArray(
-			new String[] {
-				"annotation-xml", "color-profile", "font-face",
-				"font-face-format", "font-face-name", "font-face-src",
-				"font-face-uri", "missing-glyph"
-			});
+			"annotation-xml", "color-profile", "font-face", "font-face-format",
+			"font-face-name", "font-face-src", "font-face-uri",
+			"missing-glyph");
 
 	@Reference
 	private ResourceLocalService _resourceLocalService;

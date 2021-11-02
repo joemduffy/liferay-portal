@@ -17,7 +17,7 @@ import {fetch} from 'frontend-js-web';
 import createOdataFilter from './odata';
 
 export const fetchHeaders = new Headers({
-	Accept: 'application/json',
+	'Accept': 'application/json',
 	'Accept-Language': Liferay.ThemeDisplay.getBCP47LanguageId(),
 	'Content-Type': 'application/json',
 });
@@ -53,6 +53,30 @@ export function liferayNavigate(url) {
 	else {
 		window.location.href = url;
 	}
+}
+
+export function getObjectFromPath(path, value) {
+	return path.reduceRight((item, key) => {
+		const formattedKey =
+			key === 'LANG' ? Liferay.ThemeDisplay.getLanguageId() : key;
+
+		return {
+			[formattedKey]: item,
+		};
+	}, value);
+}
+
+export function formatAutocompleteItem(id, idKey, label, labelKey) {
+	const idObj = getObjectFromPath(Array.isArray(idKey) ? idKey : [idKey], id);
+	const labelObj = getObjectFromPath(
+		Array.isArray(labelKey) ? labelKey : [labelKey],
+		label
+	);
+
+	return {
+		...idObj,
+		...labelObj,
+	};
 }
 
 export function getValueFromItem(item, fieldName) {

@@ -17,15 +17,13 @@ definition {
 
 		ACUtils.addSiteAndPage();
 
-		var propertyName = ACDXPSettings.connectDXPtoAnalyticsCloud(siteName = "Site Name");
-
 		JSONUser.addUser(
 			userEmailAddress = "ac@liferay.com",
 			userFirstName = "ac",
 			userLastName = "ac",
 			userScreenName = "ac");
 
-		ACDXPSettings.syncNewContactData();
+		var propertyName = ACDXPSettings.connectDXPtoAnalyticsCloud(siteName = "Site Name");
 	}
 
 	tearDown {
@@ -40,18 +38,24 @@ definition {
 			JSONGroup.deleteGroupByName(groupName = "Site Name");
 		}
 
+		JSONUser.tearDownNonAdminUsers();
+
 		ACUtils.tearDownAC();
 	}
 
 	@description = "Feature ID: Legacy | Automation ID: LRAC-8942 | Test Summary: Assert that a User can't create a Custom Range past 365 days max for Individuals"
 	@priority = "2"
 	test AssertIndividualsTimeFIlterInvalidCustom {
+		task ("Get site assigned property name") {
+			var propertyName = ACDXPSettings.getAssignedPropertyName(siteName = "Site Name");
+		}
+
 		task ("Sign in as new user to view the site page") {
 			User.logoutAndLoginPG(
 				userLoginEmailAddress = "ac@liferay.com",
 				userLoginFullName = "ac ac");
 
-			Navigator.gotoSitePage(
+			ACUtils.navigateToSitePage(
 				pageName = "AC Page",
 				siteName = "Site Name");
 		}
@@ -95,12 +99,16 @@ definition {
 	@description = "Feature ID: Legacy | Automation ID: LLRAC-8940 | Test Summary: Assert Chart ticks for Individuals Metrics standardized"
 	@priority = "3"
 	test AssertIndividualTicksDateFormat {
+		task ("Get site assigned property name") {
+			var propertyName = ACDXPSettings.getAssignedPropertyName(siteName = "Site Name");
+		}
+
 		task ("Sign in as new user to view the site page") {
 			User.logoutAndLoginPG(
 				userLoginEmailAddress = "ac@liferay.com",
 				userLoginFullName = "ac ac");
 
-			Navigator.gotoSitePage(
+			ACUtils.navigateToSitePage(
 				pageName = "AC Page",
 				siteName = "Site Name");
 		}
@@ -125,20 +133,20 @@ definition {
 
 		task ("View the time period is Last 30 days in individuals metrics chart") {
 			ACTimeFilter.assertCurrentTimeFilterRange(
-				cardName = "Individual Activities",
+				cardName = "Individual Events",
 				timeFilterRange = "Last 30 days");
 		}
 
 		task ("View the interval is D in individuals metrics chart") {
 			ACCards.viewSelectedInterval(
-				cardName = "Individual Activities",
+				cardName = "Individual Events",
 				interval = "D");
 		}
 
 		task ("View the format of recharts xAxis ticks is MMM d") {
 			var date = ACCards.getAxisTick(
 				axis = "xAxis",
-				cardName = "Individual Activities");
+				cardName = "Individual Events");
 
 			ACUtils.assertDatePattern(
 				date = "${date}",
@@ -147,30 +155,39 @@ definition {
 
 		task ("Select the W in interval selector") {
 			ACCards.selectInterval(
-				cardName = "Individual Activities",
+				cardName = "Individual Events",
 				interval = "W");
 		}
 
-		task ("View the format of recharts xAxis ticks is MMM d - d") {
+		task ("View the format of recharts xAxis ticks is MMM d - MMM d or MMM d - d") {
 			var date = ACCards.getAxisTick(
 				axis = "xAxis",
-				cardName = "Individual Activities");
+				cardName = "Individual Events");
 
-			ACUtils.assertDatePattern(
-				date = "${date}",
-				format = "MMM d - d");
+			var dateLength = StringUtil.length("${date}");
+
+			if ("${dateLength}" == "9" || "${dateLength}" == "10" || "${dateLength}" == "11") {
+				ACUtils.assertDatePattern(
+					date = "${date}",
+					format = "MMM d - d");
+			}
+			else {
+				ACUtils.assertDatePattern(
+					date = "${date}",
+					format = "MMM d - MMM d");
+			}
 		}
 
 		task ("Select the M in interval selector") {
 			ACCards.selectInterval(
-				cardName = "Individual Activities",
+				cardName = "Individual Events",
 				interval = "M");
 		}
 
 		task ("View the format of recharts xAxis ticks is MMM") {
 			var date = ACCards.getAxisTick(
 				axis = "xAxis",
-				cardName = "Individual Activities");
+				cardName = "Individual Events");
 
 			ACUtils.assertDatePattern(
 				date = "${date}",
@@ -178,7 +195,7 @@ definition {
 		}
 
 		task ("Select the Last 24 hours time period in individuals metrics chart") {
-			ACTimeFilter.clickTimeFilterButton(cardName = "Individual Activities");
+			ACTimeFilter.clickTimeFilterButton(cardName = "Individual Events");
 
 			ACTimeFilter.setLast24Hours();
 		}
@@ -195,12 +212,16 @@ definition {
 	@description = "Feature ID: Legacy | Automation ID: LRAC-8941 | Test Summary: Assert Known Individual Chart Popover follows format"
 	@priority = "3"
 	test AssertKnownIndividualChartPopover {
+		task ("Get site assigned property name") {
+			var propertyName = ACDXPSettings.getAssignedPropertyName(siteName = "Site Name");
+		}
+
 		task ("Sign in as new user to view the site page") {
 			User.logoutAndLoginPG(
 				userLoginEmailAddress = "ac@liferay.com",
 				userLoginFullName = "ac ac");
 
-			Navigator.gotoSitePage(
+			ACUtils.navigateToSitePage(
 				pageName = "AC Page",
 				siteName = "Site Name");
 		}
@@ -224,7 +245,7 @@ definition {
 		}
 
 		task ("Assert chart popover date formatted") {
-			var formattedDate = ACIndividualsDashboard.getChartPopoverDate();
+			var formattedDate = ACIndividualsDashboard.getChartPopoverDateWithoutBar();
 
 			ACUtils.assertDatePattern(
 				date = "${formattedDate}",
@@ -235,37 +256,57 @@ definition {
 	@description = "Feature ID: Legacy | Automation ID: LRAC-8124 | Test Summary: Individual activities graph shows activities from today when switched to 24 hour view"
 	@priority = "5"
 	test GraphShowsIndividualActivitiesFromTodayWhenSwitchedTo24HourView {
-		ACUtils.createDMAndAddToPage();
-
-		User.logoutAndLoginPG(
-			userLoginEmailAddress = "ac@liferay.com",
-			userLoginFullName = "ac ac");
-
-		for (var n : list "1,2,3,4") {
-			Navigator.gotoSitePage(
-				pageName = "AC Page",
-				siteName = "Site Name");
-
-			DMNavigator.gotoDocumentCP(dmDocumentTitle = "DM AC Title");
+		task ("Get site assigned property name") {
+			var propertyName = ACDXPSettings.getAssignedPropertyName(siteName = "Site Name");
 		}
 
-		ACUtils.closeAllSessionsAndWait();
+		task ("Create a Document And Media") {
+			ACUtils.createDMAndAddToPage();
+		}
 
-		ACUtils.launchAC();
+		task ("Sign in as AC user") {
+			User.logoutAndLoginPG(
+				userLoginEmailAddress = "ac@liferay.com",
+				userLoginFullName = "ac ac");
+		}
 
-		ACProperties.switchProperty(propertyName = "${propertyName}");
+		task ("Visit the document") {
+			ACUtils.navigateToSitePage(
+				actionType = "View DM",
+				documentTitleList = "DM AC Title,DM AC Title,DM AC Title,DM AC Title",
+				pageName = "AC Page",
+				siteName = "Site Name");
+		}
 
-		ACNavigation.goToIndividuals();
+		task ("Close sessions") {
+			ACUtils.closeAllSessionsAndWait();
+		}
 
-		ACIndividualsDashboard.goToKnownIndividualsTab();
+		task ("Switch to new property in AC") {
+			ACUtils.launchAC();
 
-		ACNavigation.openItem(itemName = "ac ac");
+			ACProperties.switchProperty(propertyName = "${propertyName}");
+		}
 
-		ACTimeFilter.clickTimeFilterButton();
+		task ("Go to the Individual and KnownIndividuals tab") {
+			ACNavigation.goToIndividuals();
 
-		ACTimeFilter.setLast24Hours();
+			ACIndividualsDashboard.goToKnownIndividualsTab();
+		}
 
-		ACIndividualsDashboard.viewRechartsBarOnIndividualsActivitiesChart();
+		task ("Open item") {
+			ACNavigation.openItem(itemName = "ac ac");
+		}
+
+		task ("Select the Last 24 hours time period in individuals metrics chart") {
+			ACTimeFilter.clickTimeFilterButton();
+
+			ACTimeFilter.setLast24Hours();
+		}
+
+		task ("View the charts bar with individuals activities") {
+			ACIndividualsDashboard.viewRechartsBarOnIndividualsActivitiesChart();
+		}
 	}
 
 }

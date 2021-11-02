@@ -12,8 +12,6 @@
  * details.
  */
 
-import {SettingsContext} from 'dynamic-data-mapping-form-builder';
-
 import * as FormSupport from '../../utils/FormSupport.es';
 import {
 	addFieldToPage,
@@ -23,6 +21,7 @@ import {
 	removeField,
 } from '../../utils/fieldSupport';
 import {formatRules} from '../../utils/rulesSupport';
+import {updateField, updateFieldReference} from '../../utils/settingsContext';
 import {PagesVisitor} from '../../utils/visitors.es';
 import {EVENT_TYPES} from '../actions/eventTypes.es';
 import {
@@ -86,14 +85,14 @@ const updateFieldProperty = ({
 		propertyValue !== '' &&
 		propertyValue !== focusedField.fieldName
 	) {
-		focusedField = SettingsContext.updateFieldReference(
+		focusedField = updateFieldReference(
 			focusedField,
 			findInvalidFieldReference(focusedField, pages, propertyValue),
 			false
 		);
 	}
 
-	return SettingsContext.updateField(
+	return updateField(
 		{
 			defaultLanguageId,
 			editingLanguageId,
@@ -113,11 +112,7 @@ const updateFieldProperty = ({
 export default (state, action, config) => {
 	switch (action.type) {
 		case EVENT_TYPES.FIELD.ADD: {
-			const {
-				data: {parentFieldName},
-				indexes,
-			} = action.payload;
-
+			const {data, fieldType, indexes} = action.payload;
 			const {
 				availableLanguageIds,
 				defaultLanguageId,
@@ -144,7 +139,7 @@ export default (state, action, config) => {
 						fieldNameGenerator,
 						portletNamespace,
 					},
-					action.payload
+					{fieldType}
 				);
 
 			const settingsVisitor = new PagesVisitor(
@@ -175,7 +170,7 @@ export default (state, action, config) => {
 				indexes,
 				newField,
 				pages,
-				parentFieldName,
+				parentFieldName: data?.parentFieldName,
 			});
 
 			return {
@@ -201,16 +196,12 @@ export default (state, action, config) => {
 			) {
 				const {defaultLanguageId, editingLanguageId} = state;
 
-				focusedField = SettingsContext.updateField(
+				focusedField = updateField(
 					{
 						defaultLanguageId,
 						editingLanguageId,
 					},
-					SettingsContext.updateFieldReference(
-						focusedField,
-						false,
-						true
-					),
+					updateFieldReference(focusedField, false, true),
 					propertyName,
 					focusedField.fieldName
 				);
@@ -401,7 +392,7 @@ export default (state, action, config) => {
 								? [...field.nestedFields, newField]
 								: [newField];
 
-							field = SettingsContext.updateField(
+							field = updateField(
 								{
 									availableLanguageIds,
 									defaultLanguageId,
@@ -434,7 +425,7 @@ export default (state, action, config) => {
 								newRow
 							);
 
-							return SettingsContext.updateField(
+							return updateField(
 								{
 									availableLanguageIds,
 									defaultLanguageId,

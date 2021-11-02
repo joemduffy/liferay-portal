@@ -140,6 +140,22 @@ public class ObjectRelationshipLocalServiceUtil {
 		return getService().deleteObjectRelationship(objectRelationship);
 	}
 
+	public static void deleteObjectRelationshipMappingTableValues(
+			long objectRelationshipId, long primaryKey1)
+		throws PortalException {
+
+		getService().deleteObjectRelationshipMappingTableValues(
+			objectRelationshipId, primaryKey1);
+	}
+
+	public static void deleteObjectRelationshipMappingTableValues(
+			long objectRelationshipId, long primaryKey1, long primaryKey2)
+		throws PortalException {
+
+		getService().deleteObjectRelationshipMappingTableValues(
+			objectRelationshipId, primaryKey1, primaryKey2);
+	}
+
 	/**
 	 * @throws PortalException
 	 */
@@ -262,6 +278,13 @@ public class ObjectRelationshipLocalServiceUtil {
 			uuid, companyId);
 	}
 
+	public static ObjectRelationship fetchReverseObjectRelationship(
+		ObjectRelationship objectRelationship, boolean reverse) {
+
+		return getService().fetchReverseObjectRelationship(
+			objectRelationship, reverse);
+	}
+
 	public static com.liferay.portal.kernel.dao.orm.ActionableDynamicQuery
 		getActionableDynamicQuery() {
 
@@ -362,6 +385,15 @@ public class ObjectRelationshipLocalServiceUtil {
 		throws PortalException {
 
 		return getService().getPersistedModel(primaryKeyObj);
+	}
+
+	public static ObjectRelationship updateObjectRelationship(
+			long objectRelationshipId, String deletionType,
+			Map<java.util.Locale, String> labelMap)
+		throws PortalException {
+
+		return getService().updateObjectRelationship(
+			objectRelationshipId, deletionType, labelMap);
 	}
 
 	/**

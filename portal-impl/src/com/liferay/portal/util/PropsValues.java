@@ -1046,6 +1046,10 @@ public class PropsValues {
 	public static final String EDITOR_WYSIWYG_DEFAULT = PropsUtil.get(
 		PropsKeys.EDITOR_WYSIWYG_DEFAULT);
 
+	public static final boolean ENTERPRISE_PRODUCT_NOTIFICATION_ENABLED =
+		GetterUtil.getBoolean(
+			PropsUtil.get(PropsKeys.ENTERPRISE_PRODUCT_NOTIFICATION_ENABLED));
+
 	public static final int ETAG_RESPONSE_SIZE_MAX = GetterUtil.getInteger(
 		PropsUtil.get(PropsKeys.ETAG_RESPONSE_SIZE_MAX));
 
@@ -2611,6 +2615,10 @@ public class PropsValues {
 			PropsUtil.get(PropsKeys.SEARCH_CONTAINER_SHOW_PAGINATION_TOP_DELTA),
 			10);
 
+	public static final boolean SEARCH_EXPERIENCES_POWER_TOOLS_ENABLED =
+		GetterUtil.getBoolean(
+			PropsUtil.get(PropsKeys.SEARCH_EXPERIENCES_POWER_TOOLS_ENABLED));
+
 	public static final String[] SERVLET_SERVICE_EVENTS_POST =
 		PropsUtil.getArray(PropsKeys.SERVLET_SERVICE_EVENTS_POST);
 
@@ -3124,6 +3132,10 @@ public class PropsValues {
 		GetterUtil.getBoolean(
 			PropsUtil.get(PropsKeys.VERIFY_PATCH_LEVELS_DISABLED));
 
+	/**
+	 * @deprecated As of Cavanaugh (7.4.x), with no direct replacement
+	 */
+	@Deprecated
 	public static final int VERIFY_PROCESS_CONCURRENCY_THRESHOLD =
 		GetterUtil.getInteger(
 			PropsUtil.get(PropsKeys.VERIFY_PROCESS_CONCURRENCY_THRESHOLD));

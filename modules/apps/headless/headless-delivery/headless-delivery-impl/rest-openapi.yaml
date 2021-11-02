@@ -286,10 +286,8 @@ components:
                 - classPK
             type: object
         ColumnViewport:
-            additionalProperties: false
             properties:
                 columnViewportDefinition:
-                    additionalProperties: false
                     properties:
                         size:
                             maximum: 12
@@ -1075,6 +1073,11 @@ components:
                                 The content type's class name.
                             type: string
                     type: object
+                defaultTemplate:
+                    # @review
+                    description:
+                        Specifies if the page template should be the default for the given content type/subtype.
+                    type: boolean
                 key:
                     # @review
                     description:
@@ -1825,6 +1828,11 @@ components:
                     description:
                         The fragment's height.
                     type: string
+                hidden:
+                    # @review
+                    description:
+                        Specifies if the fragment is hidden to the user.
+                    type: boolean
                 marginBottom:
                     # @review
                     description:
@@ -1917,17 +1925,20 @@ components:
                     type: string
             type: object
         FragmentViewport:
-            additionalProperties: false
             # @review
             description:
                 Represents a fragment viewport.
             properties:
                 fragmentViewportStyle:
-                    additionalProperties: false
                     # @review
                     description:
                         The fragment's viewport style.
                     properties:
+                        hidden:
+                            # @review
+                            description:
+                                Specifies if the fragment's viewport is hidden to the user.
+                            type: boolean
                         marginBottom:
                             # @review
                             description:
@@ -3825,7 +3836,6 @@ components:
                     type: string
             type: object
         RowViewport:
-            additionalProperties: false
             # @review
             description:
                 Represents a row viewport.
@@ -3836,7 +3846,6 @@ components:
                         The row vieport's ID.
                     type: string
                 rowViewportDefinition:
-                    additionalProperties: false
                     # @review
                     description:
                         The definition of the row vieport.
@@ -4774,7 +4783,7 @@ components:
 info:
     description:
         "A Java client JAR is available for use with the group ID 'com.liferay', artifact ID
-        'com.liferay.headless.delivery.client', and version '4.0.10'."
+        'com.liferay.headless.delivery.client', and version '4.0.12'."
     license:
         name: "Apache 2.0"
         url: "http://www.apache.org/licenses/LICENSE-2.0.html"

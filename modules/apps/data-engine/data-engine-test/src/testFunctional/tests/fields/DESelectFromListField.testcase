@@ -376,7 +376,7 @@ definition {
 			configurationName = "Administration",
 			configurationScope = "System Scope");
 
-		FormFields.disableCheckbox(fieldName = "Structure Fields Indexable Enable");
+		FormFields.disableCheckbox(fieldName = "Structure Field Indexable Enable");
 
 		SystemSettings.saveConfiguration();
 
@@ -410,7 +410,7 @@ definition {
 			configurationName = "Administration",
 			configurationScope = "System Scope");
 
-		FormFields.enableCheckbox(fieldName = "Structure Fields Indexable Enable");
+		FormFields.enableCheckbox(fieldName = "Structure Field Indexable Enable");
 
 		SystemSettings.saveConfiguration();
 
@@ -473,7 +473,7 @@ definition {
 
 		DataEngine.assertFieldNotPresent(fieldFieldLabel = "Select from List");
 
-		DataEngine.toggleShowLabel();
+		DataEngine.toggleShowLabel(hiddenFieldLabel = "Select from List");
 
 		WebContentStructures.saveCP();
 

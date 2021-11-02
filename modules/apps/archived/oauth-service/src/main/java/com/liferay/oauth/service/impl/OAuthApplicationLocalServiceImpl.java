@@ -24,8 +24,11 @@ import com.liferay.portal.aop.AopService;
 import com.liferay.portal.dao.orm.custom.sql.CustomSQL;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.model.ResourceConstants;
+import com.liferay.portal.kernel.model.SystemEventConstants;
 import com.liferay.portal.kernel.model.User;
+import com.liferay.portal.kernel.service.ImageLocalService;
 import com.liferay.portal.kernel.service.ServiceContext;
+import com.liferay.portal.kernel.systemevent.SystemEvent;
 import com.liferay.portal.kernel.util.Digester;
 import com.liferay.portal.kernel.util.DigesterUtil;
 import com.liferay.portal.kernel.util.OrderByComparator;
@@ -143,7 +146,7 @@ public class OAuthApplicationLocalServiceImpl
 
 			oAuthApplicationPersistence.update(oAuthApplication);
 
-			imageLocalService.deleteImage(logoId);
+			_imageLocalService.deleteImage(logoId);
 		}
 	}
 
@@ -158,6 +161,7 @@ public class OAuthApplicationLocalServiceImpl
 	}
 
 	@Override
+	@SystemEvent(type = SystemEventConstants.TYPE_DELETE)
 	public OAuthApplication deleteOAuthApplication(
 			OAuthApplication oAuthApplication)
 		throws PortalException {
@@ -183,7 +187,7 @@ public class OAuthApplicationLocalServiceImpl
 
 		// Image
 
-		imageLocalService.deleteImage(oAuthApplication.getLogoId());
+		_imageLocalService.deleteImage(oAuthApplication.getLogoId());
 
 		return oAuthApplication;
 	}
@@ -287,7 +291,7 @@ public class OAuthApplicationLocalServiceImpl
 				oAuthApplication);
 		}
 
-		imageLocalService.updateImage(
+		_imageLocalService.updateImage(
 			oAuthApplication.getCompanyId(), logoId, inputStream);
 
 		return oAuthApplication;
@@ -333,5 +337,8 @@ public class OAuthApplicationLocalServiceImpl
 
 	@Reference
 	private CustomSQL _customSQL;
+
+	@Reference
+	private ImageLocalService _imageLocalService;
 
 }

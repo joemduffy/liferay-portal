@@ -27,10 +27,10 @@ definition {
 
 	@description = "This is a use case for LPS-95157. Verify control menu on an admin page is styled correctly after refreshing page"
 	@priority = "5"
-	@refactorneeded
+	@refactordone
 	test AdminPageCanDisplayStyleCorrectlyAfterPageRefresh {
-		property app.server.types = "jboss,tcserver,tomcat,weblogic,websphere,wildfly";
-		property database.types = "db2,hypersonic,mariadb,mysql,oracle,postgresql,sqlserver,sybase";
+		property app.server.types = "tomcat";
+		property database.types = "mysql";
 		property environment.acceptance = "true";
 		property portal.acceptance = "true";
 
@@ -53,12 +53,41 @@ definition {
 		takeScreenshot();
 	}
 
+	@description = "This is a use case for LPS-70390."
+	@priority = "4"
+	@refactordone
+	test CanViewNonASCIICharactersWithSPADisabled {
+		property custom.properties = "javascript.single.page.application.enabled=false";
+
+		ApplicationsMenu.gotoPortlet(
+			category = "Users",
+			panel = "Control Panel",
+			portlet = "Users and Organizations");
+
+		User.addCP(
+			userEmailAddress = "skandi@liferay.com",
+			userFirstName = "Skändi",
+			userLastName = "Ääkkönen",
+			userScreenName = "uskandi");
+
+		ApplicationsMenu.gotoPortlet(
+			category = "Users",
+			panel = "Control Panel",
+			portlet = "Users and Organizations");
+
+		User.viewCP(
+			userEmailAddress = "skandi@liferay.com",
+			userFirstName = "Skändi",
+			userLastName = "Ääkkönen",
+			userScreenName = "uskandi");
+	}
+
 	@description = "Verify portlets have defined boundaries in 3 column page layout."
 	@priority = "5"
-	@refactorneeded
+	@refactordone
 	test PortletBoundariesAreContained {
-		property app.server.types = "jboss,tcserver,tomcat,weblogic,websphere,wildfly";
-		property database.types = "db2,hypersonic,mariadb,mysql,oracle,postgresql,sqlserver,sybase";
+		property app.server.types = "tomcat";
+		property database.types = "mysql";
 		property environment.acceptance = "true";
 		property osgi.modules.includes = "frontend-taglib-clay-sample-web";
 		property portal.acceptance = "true";
@@ -66,12 +95,6 @@ definition {
 		JSONLayout.addPublicLayout(
 			groupName = "Guest",
 			layoutName = "Test Page");
-
-		SitePages.configurePage(
-			columnName = "3 Columns",
-			pageName = "Test Page",
-			privacy = "Public Pages",
-			sitePageType = "Widget Page");
 
 		JSONLayout.updateLayoutTemplateOfPublicLayout(
 			groupName = "Guest",
@@ -134,7 +157,7 @@ definition {
 
 	@description = "Smoke test to verify portlet can be dragged and dropped, configuration is available, look and feel is available, and can be removed"
 	@priority = "5"
-	@refactorneeded
+	@refactordone
 	test PortletUISmoke {
 		property app.server.types = "jboss,tcserver,tomcat,weblogic,websphere,wildfly";
 		property database.types = "db2,hypersonic,mariadb,mysql,oracle,postgresql,sqlserver,sybase";
@@ -213,10 +236,10 @@ definition {
 
 	@description = "This is a use case for LPS-95157. Verify control menu on home page is styled correctly after refreshing page."
 	@priority = "5"
-	@refactorneeded
+	@refactordone
 	test SitePageCanDisplayStyleCorrectlyAfterPageRefresh {
-		property app.server.types = "jboss,tcserver,tomcat,weblogic,websphere,wildfly";
-		property database.types = "db2,hypersonic,mariadb,mysql,oracle,postgresql,sqlserver,sybase";
+		property app.server.types = "tomcat";
+		property database.types = "mysql";
 		property environment.acceptance = "true";
 		property portal.acceptance = "true";
 
@@ -253,35 +276,6 @@ definition {
 			value1 = "outside none none");
 
 		takeScreenshot();
-	}
-
-	@description = "This is a use case for LPS-70390."
-	@priority = "4"
-	@refactorneeded
-	test ViewNonASCIICharactersWithSPADisabled {
-		property custom.properties = "javascript.single.page.application.enabled=false";
-
-		ApplicationsMenu.gotoPortlet(
-			category = "Users",
-			panel = "Control Panel",
-			portlet = "Users and Organizations");
-
-		User.addCP(
-			userEmailAddress = "skandi@liferay.com",
-			userFirstName = "Skändi",
-			userLastName = "Ääkkönen",
-			userScreenName = "uskandi");
-
-		ApplicationsMenu.gotoPortlet(
-			category = "Users",
-			panel = "Control Panel",
-			portlet = "Users and Organizations");
-
-		User.viewCP(
-			userEmailAddress = "skandi@liferay.com",
-			userFirstName = "Skändi",
-			userLastName = "Ääkkönen",
-			userScreenName = "uskandi");
 	}
 
 }

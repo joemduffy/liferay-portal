@@ -14,15 +14,21 @@
 
 package com.liferay.object.dynamic.data.mapping.internal.form.field.type;
 
+import com.liferay.dynamic.data.mapping.constants.DDMPortletKeys;
 import com.liferay.dynamic.data.mapping.form.field.type.DDMFormFieldTemplateContextContributor;
 import com.liferay.dynamic.data.mapping.model.DDMFormField;
+import com.liferay.dynamic.data.mapping.model.LocalizedValue;
 import com.liferay.dynamic.data.mapping.render.DDMFormFieldRenderingContext;
 import com.liferay.object.model.ObjectDefinition;
+import com.liferay.object.model.ObjectEntry;
+import com.liferay.object.model.ObjectField;
 import com.liferay.object.rest.context.path.RESTContextPathResolver;
 import com.liferay.object.rest.context.path.RESTContextPathResolverRegistry;
 import com.liferay.object.scope.ObjectScopeProvider;
 import com.liferay.object.scope.ObjectScopeProviderRegistry;
 import com.liferay.object.service.ObjectDefinitionLocalService;
+import com.liferay.object.service.ObjectEntryLocalService;
+import com.liferay.object.service.ObjectFieldLocalService;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONException;
@@ -32,9 +38,9 @@ import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.HashMapBuilder;
 import com.liferay.portal.kernel.util.Portal;
+import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 
-import java.util.Collections;
 import java.util.Map;
 
 import org.osgi.service.component.annotations.Component;
@@ -58,28 +64,36 @@ public class ObjectRelationshipDDMFormFieldTemplateContextContributor
 		DDMFormField ddmFormField,
 		DDMFormFieldRenderingContext ddmFormFieldRenderingContext) {
 
-		try {
-			return HashMapBuilder.<String, Object>put(
-				"apiURL", _getAPIURL(ddmFormField, ddmFormFieldRenderingContext)
-			).put(
-				"initialLabel", ddmFormFieldRenderingContext.getValue()
-			).put(
-				"initialValue", ddmFormFieldRenderingContext.getValue()
-			).put(
-				"inputName", ddmFormField.getName()
-			).put(
-				"itemsKey", "id"
-			).put(
-				"itemsLabel", "id"
-			).put(
-				"value", ddmFormFieldRenderingContext.getValue()
-			).build();
-		}
-		catch (PortalException portalException) {
-			_log.error(portalException, portalException);
-		}
+		return HashMapBuilder.<String, Object>put(
+			"apiURL", _getAPIURL(ddmFormField, ddmFormFieldRenderingContext)
+		).put(
+			"initialLabel", _getInitialLabel(ddmFormFieldRenderingContext)
+		).put(
+			"inputName", ddmFormField.getName()
+		).put(
+			"labelKey", _getLabelKey(ddmFormField)
+		).put(
+			"objectDefinitionId",
+			GetterUtil.getLong(ddmFormField.getProperty("objectDefinitionId"))
+		).put(
+			"placeholder",
+			() -> {
+				LocalizedValue localizedValue =
+					(LocalizedValue)ddmFormField.getProperty("placeholder");
 
-		return Collections.<String, Object>emptyMap();
+				if (localizedValue == null) {
+					return null;
+				}
+
+				return GetterUtil.getString(
+					localizedValue.getString(
+						ddmFormFieldRenderingContext.getLocale()));
+			}
+		).put(
+			"value", ddmFormFieldRenderingContext.getValue()
+		).put(
+			"valueKey", "id"
+		).build();
 	}
 
 	protected String getValue(String valueString) {
@@ -98,42 +112,117 @@ public class ObjectRelationshipDDMFormFieldTemplateContextContributor
 	}
 
 	private String _getAPIURL(
-			DDMFormField ddmFormField,
-			DDMFormFieldRenderingContext ddmFormFieldRenderingContext)
-		throws PortalException {
+		DDMFormField ddmFormField,
+		DDMFormFieldRenderingContext ddmFormFieldRenderingContext) {
 
-		String apiUrl = GetterUtil.getString(
-			ddmFormField.getProperty("apiUrl"));
+		String apiURL = GetterUtil.getString(
+			ddmFormField.getProperty("apiURL"));
 
-		if (Validator.isNotNull(apiUrl)) {
-			return apiUrl;
+		if (Validator.isNotNull(apiURL)) {
+			return apiURL;
 		}
 
-		String apiURL = _portal.getPortalURL(
+		apiURL = _portal.getPortalURL(
 			ddmFormFieldRenderingContext.getHttpServletRequest());
 
-		long objectDefinitionId = GetterUtil.getLong(
-			getValue(
-				GetterUtil.getString(
-					ddmFormField.getProperty("objectDefinitionId"))));
+		ObjectDefinition objectDefinition = _getObjectDefinition(ddmFormField);
 
-		ObjectDefinition objectDefinition =
-			_objectDefinitionLocalService.getObjectDefinition(
-				objectDefinitionId);
+		if (objectDefinition == null) {
+			return apiURL;
+		}
 
 		RESTContextPathResolver restContextPathResolver =
 			_restContextPathResolverRegistry.getRESTContextPathResolver(
 				objectDefinition.getClassName());
 
-		ObjectScopeProvider objectScopeProvider =
-			_objectScopeProviderRegistry.getObjectScopeProvider(
-				objectDefinition.getScope());
-
 		String restContextPath = restContextPathResolver.getRESTContextPath(
-			objectScopeProvider.getGroupId(
-				ddmFormFieldRenderingContext.getHttpServletRequest()));
+			_getGroupId(ddmFormFieldRenderingContext, objectDefinition));
 
 		return apiURL + restContextPath;
+	}
+
+	private long _getGroupId(
+		DDMFormFieldRenderingContext ddmFormFieldRenderingContext,
+		ObjectDefinition objectDefinition) {
+
+		if (StringUtil.startsWith(
+				ddmFormFieldRenderingContext.getPortletNamespace(),
+				_portal.getPortletNamespace(
+					DDMPortletKeys.DYNAMIC_DATA_MAPPING_FORM))) {
+
+			return GetterUtil.getLong(
+				ddmFormFieldRenderingContext.getProperty("groupId"));
+		}
+
+		try {
+			ObjectScopeProvider objectScopeProvider =
+				_objectScopeProviderRegistry.getObjectScopeProvider(
+					objectDefinition.getScope());
+
+			return objectScopeProvider.getGroupId(
+				ddmFormFieldRenderingContext.getHttpServletRequest());
+		}
+		catch (PortalException portalException) {
+			if (_log.isDebugEnabled()) {
+				_log.debug(portalException, portalException);
+			}
+
+			return 0L;
+		}
+	}
+
+	private String _getInitialLabel(
+		DDMFormFieldRenderingContext ddmFormFieldRenderingContext) {
+
+		if (!Validator.isBlank(ddmFormFieldRenderingContext.getValue())) {
+			ObjectEntry objectEntry = _objectEntryLocalService.fetchObjectEntry(
+				GetterUtil.getLong(ddmFormFieldRenderingContext.getValue()));
+
+			if (objectEntry != null) {
+				try {
+					return objectEntry.getTitleValue();
+				}
+				catch (PortalException portalException) {
+					if (_log.isDebugEnabled()) {
+						_log.debug(portalException, portalException);
+					}
+				}
+			}
+		}
+
+		return ddmFormFieldRenderingContext.getValue();
+	}
+
+	private String _getLabelKey(DDMFormField ddmFormField) {
+		String labelKey = GetterUtil.getString(
+			ddmFormField.getProperty("labelKey"));
+
+		if (Validator.isNotNull(labelKey)) {
+			return labelKey;
+		}
+
+		ObjectDefinition objectDefinition = _getObjectDefinition(ddmFormField);
+
+		if ((objectDefinition != null) &&
+			(objectDefinition.getTitleObjectFieldId() > 0)) {
+
+			ObjectField objectField = _objectFieldLocalService.fetchObjectField(
+				objectDefinition.getTitleObjectFieldId());
+
+			if (objectField != null) {
+				return objectField.getName();
+			}
+		}
+
+		return "id";
+	}
+
+	private ObjectDefinition _getObjectDefinition(DDMFormField ddmFormField) {
+		return _objectDefinitionLocalService.fetchObjectDefinition(
+			GetterUtil.getLong(
+				getValue(
+					GetterUtil.getString(
+						ddmFormField.getProperty("objectDefinitionId")))));
 	}
 
 	private static final Log _log = LogFactoryUtil.getLog(
@@ -141,6 +230,12 @@ public class ObjectRelationshipDDMFormFieldTemplateContextContributor
 
 	@Reference
 	private ObjectDefinitionLocalService _objectDefinitionLocalService;
+
+	@Reference
+	private ObjectEntryLocalService _objectEntryLocalService;
+
+	@Reference
+	private ObjectFieldLocalService _objectFieldLocalService;
 
 	@Reference
 	private ObjectScopeProviderRegistry _objectScopeProviderRegistry;

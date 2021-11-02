@@ -102,7 +102,7 @@
 			</library>
 			<library>
 				<file-name>lib/development/catalina.jar</file-name>
-				<version>9.0.43</version>
+				<version>9.0.53</version>
 				<project-name>Tomcat</project-name>
 				<project-url>http://tomcat.apache.org</project-url>
 				<licenses>
@@ -114,7 +114,7 @@
 			</library>
 			<library>
 				<file-name>lib/development/com.liferay.jenkins.results.parser.jar</file-name>
-				<version>1.0.899</version>
+				<version>1.0.908</version>
 				<project-name>Liferay Jenkins Results Parser</project-name>
 				<licenses>
 					<license>
@@ -125,7 +125,7 @@
 			</library>
 			<library>
 				<file-name>lib/development/com.liferay.poshi.core.jar</file-name>
-				<version>1.0.29</version>
+				<version>1.0.32</version>
 				<project-name>Liferay Poshi Core</project-name>
 				<licenses>
 					<license>
@@ -331,7 +331,7 @@
 			</library>
 			<library>
 				<file-name>lib/development/jasper.jar</file-name>
-				<version>9.0.43</version>
+				<version>9.0.53</version>
 				<project-name>Tomcat</project-name>
 				<project-url>http://tomcat.apache.org</project-url>
 				<licenses>
@@ -367,18 +367,6 @@
 					<license>
 						<license-name>BSD Style License</license-name>
 						<license-url>http://en.wikipedia.org/wiki/BSD_licenses</license-url>
-					</license>
-				</licenses>
-			</library>
-			<library>
-				<file-name>lib/development/jarjar.jar</file-name>
-				<version>1.3</version>
-				<project-name>Jar Jar Links</project-name>
-				<project-url>http://code.google.com/p/jarjar</project-url>
-				<licenses>
-					<license>
-						<license-name>Apache License 2.0</license-name>
-						<license-url>http://www.apache.org/licenses/LICENSE-2.0</license-url>
 					</license>
 				</licenses>
 			</library>
@@ -910,7 +898,7 @@
 			</library>
 			<library>
 				<file-name>lib/development/tomcat-api.jar</file-name>
-				<version>9.0.43</version>
+				<version>9.0.53</version>
 				<project-name>Tomcat</project-name>
 				<project-url>http://tomcat.apache.org</project-url>
 				<licenses>
@@ -922,7 +910,7 @@
 			</library>
 			<library>
 				<file-name>lib/development/tomcat-coyote.jar</file-name>
-				<version>9.0.43</version>
+				<version>9.0.53</version>
 				<project-name>Tomcat</project-name>
 				<project-url>http://tomcat.apache.org</project-url>
 				<licenses>
@@ -934,7 +922,7 @@
 			</library>
 			<library>
 				<file-name>lib/development/tomcat-util.jar</file-name>
-				<version>9.0.43</version>
+				<version>9.0.53</version>
 				<project-name>Tomcat</project-name>
 				<project-url>http://tomcat.apache.org</project-url>
 				<licenses>
@@ -946,7 +934,7 @@
 			</library>
 			<library>
 				<file-name>lib/development/tomcat-util-scan.jar</file-name>
-				<version>9.0.43</version>
+				<version>9.0.53</version>
 				<project-name>Tomcat</project-name>
 				<project-url>http://tomcat.apache.org</project-url>
 				<licenses>
@@ -2094,21 +2082,8 @@
 				</licenses>
 			</library>
 			<library>
-				<file-name>lib/portal/jdom.jar</file-name>
-				<version>1.1.3</version>
-				<project-name>JDOM</project-name>
-				<project-url>http://www.jdom.org</project-url>
-				<licenses>
-					<license>
-						<license-name>BSD Style License</license-name>
-						<license-url>http://en.wikipedia.org/wiki/BSD_licenses</license-url>
-						<copyright-notice>Copyright (c) 2000-2004 Jason Hunter &amp; Brett McLaughlin. All rights reserved.</copyright-notice>
-					</license>
-				</licenses>
-			</library>
-			<library>
 				<file-name>lib/portal/jdom2.jar</file-name>
-				<version>2.0.6</version>
+				<version>2.0.6.LIFERAY-PATCHED-1</version>
 				<project-name>JDOM</project-name>
 				<project-url>http://www.jdom.org</project-url>
 				<licenses>
@@ -2529,7 +2504,7 @@
 			</library>
 			<library>
 				<file-name>lib/portal/netty-all.jar</file-name>
-				<version>4.1.65.Final</version>
+				<version>4.1.68.Final</version>
 				<project-name>Netty</project-name>
 				<project-url>http://netty.io</project-url>
 				<licenses>
@@ -2701,24 +2676,8 @@
 				</licenses>
 			</library>
 			<library>
-				<file-name>lib/portal/rome.jar</file-name>
-				<version>1.0.LIFERAY-PATCHED-1</version>
-				<project-name>ROME</project-name>
-				<project-url>http://java.net/projects/rome</project-url>
-				<licenses>
-					<license>
-						<license-name>Apache License 2.0</license-name>
-						<license-url>http://www.apache.org/licenses/LICENSE-2.0</license-url>
-						<copyright-notice>Copyright (c) 2004 Sun Microsystems, Inc.</copyright-notice>
-					</license>
-				</licenses>
-				<comments>
-					See LPS-25084.
-				</comments>
-			</library>
-			<library>
 				<file-name>lib/portal/rometools-utils.jar</file-name>
-				<version>1.12.2</version>
+				<version>1.16.0</version>
 				<project-name>Rome Tools</project-name>
 				<project-url>http://rometools.github.io/rome/</project-url>
 				<licenses>
@@ -2731,7 +2690,7 @@
 			</library>
 			<library>
 				<file-name>lib/portal/rometools.jar</file-name>
-				<version>1.12.2</version>
+				<version>1.16.0</version>
 				<project-name>Rome Tools</project-name>
 				<project-url>http://rometools.github.io/rome/</project-url>
 				<licenses>
@@ -3158,7 +3117,7 @@
 			</library>
 			<library>
 				<file-name>lib/portal/tomcat-jdbc.jar</file-name>
-				<version>9.0.43</version>
+				<version>9.0.53</version>
 				<project-name>Tomcat</project-name>
 				<project-url>http://tomcat.apache.org</project-url>
 				<licenses>
@@ -3170,7 +3129,7 @@
 			</library>
 			<library>
 				<file-name>lib/portal/tomcat-juli.jar</file-name>
-				<version>9.0.43</version>
+				<version>9.0.53</version>
 				<project-name>Tomcat</project-name>
 				<project-url>http://tomcat.apache.org</project-url>
 				<licenses>
@@ -3440,18 +3399,6 @@
 					<license>
 						<license-name>Public Domain</license-name>
 						<license-url>http://en.wikipedia.org/wiki/Public_domain</license-url>
-					</license>
-				</licenses>
-			</library>
-			<library>
-				<file-name>lib/portal/yui-compressor.jar</file-name>
-				<version>2.4.8</version>
-				<project-name>Yui Compressor</project-name>
-				<project-url>http://developer.yahoo.com/yui/compressor/</project-url>
-				<licenses>
-					<license>
-						<license-name>BSD Style License</license-name>
-						<license-url>http://developer.yahoo.com/yui/license.html</license-url>
 					</license>
 				</licenses>
 			</library>

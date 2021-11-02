@@ -20,11 +20,15 @@
 			<hint-collection name="CLOB" />
 		</field>
 		<field name="iFrameURL" type="String">
-			<hint name="max-length">1024</hint>
+			<hint-collection name="URL" />
 			<hint name="method-name">IFrameURL</hint>
 		</field>
+		<field name="instanceable" type="boolean" />
 		<field localized="true" name="name" type="String" />
 		<field name="portletCategoryName" type="String" />
+		<field name="properties" type="String">
+			<hint-collection name="CLOB" />
+		</field>
 		<field name="type" type="String" />
 	</model>
 </model-hints>

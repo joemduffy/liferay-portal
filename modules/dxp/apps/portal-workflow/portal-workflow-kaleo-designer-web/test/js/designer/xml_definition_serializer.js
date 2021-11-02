@@ -15,7 +15,7 @@ const METADATA = {
 };
 
 const XML_NAMESPACE = {
-	xmlns: 'urn:liferay.com:liferay-workflow_7.4.0',
+	'xmlns': 'urn:liferay.com:liferay-workflow_7.4.0',
 	'xmlns:xsi': 'http://www.w3.org/2001/XMLSchema-instance',
 	'xsi:schemaLocation':
 		'urn:liferay.com:liferay-workflow_7.4.0 http://www.liferay.com/dtd/liferay-workflow-definition_7_4_0.xsd',
@@ -25,9 +25,9 @@ describe('liferay-kaleo-designer-xml-definition-serializer', () => {
 	let serializeDefinition;
 
 	beforeEach((done) => {
-		require('../../../src/main/resources/META-INF/resources/designer/js/xml_definition_serializer');
-		require('../../../src/main/resources/META-INF/resources/designer/js/utils');
-		require('../../../src/main/resources/META-INF/resources/designer/js/xml_util');
+		require('../../../src/main/resources/META-INF/resources/designer/js/legacy/xml_definition_serializer');
+		require('../../../src/main/resources/META-INF/resources/designer/js/legacy/utils');
+		require('../../../src/main/resources/META-INF/resources/designer/js/legacy/xml_util');
 		require('../../../../../../../apps/frontend-js/frontend-js-aui-web/src/main/resources/META-INF/resources/liferay/xml_formatter');
 
 		AUI().use(

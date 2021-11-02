@@ -77,8 +77,6 @@
 				response.footerJavaScriptPaths || []
 			);
 
-			var body = A.getBody();
-
 			var head = A.one(STR_HEAD);
 
 			if (headerCssPaths.length) {
@@ -87,7 +85,7 @@
 				});
 			}
 
-			var lastChild = body.get('lastChild').getDOM();
+			var lastChild = document.body.lastChild;
 
 			if (footerCssPaths.length) {
 				A.Get.css(footerCssPaths, {
@@ -523,7 +521,7 @@
 					var handle = portlet.on(events, () => {
 						Util.portletTitleEdit({
 							doAsUserId: themeDisplay.getDoAsUserIdEncoded(),
-							// eslint-disable-next-line @liferay/liferay/no-abbreviations
+							// eslint-disable-next-line @liferay/no-abbreviations
 							obj: portlet,
 							plid: themeDisplay.getPlid(),
 							portletId,
@@ -560,7 +558,10 @@
 
 			if (portlet) {
 				if (mergeWithRefreshURLData) {
-					data = A.merge(portlet.refreshURLData || {}, data || {});
+					data = Object.assign(
+						portlet.refreshURLData || {},
+						data || {}
+					);
 				}
 				else {
 					data = data || portlet.refreshURLData || {};

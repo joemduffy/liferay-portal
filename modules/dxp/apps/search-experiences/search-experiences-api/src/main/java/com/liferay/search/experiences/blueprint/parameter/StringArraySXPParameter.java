@@ -14,7 +14,8 @@
 
 package com.liferay.search.experiences.blueprint.parameter;
 
-import com.liferay.search.experiences.blueprint.parameter.exception.SXPParameterException;
+import com.liferay.portal.kernel.util.ArrayUtil;
+import com.liferay.portal.kernel.util.GetterUtil;
 
 import java.util.Arrays;
 import java.util.Map;
@@ -33,28 +34,30 @@ public class StringArraySXPParameter extends BaseSXPParameter {
 	}
 
 	@Override
-	public boolean accept(EvaluationVisitor evaluationVisitor)
-		throws SXPParameterException {
+	public boolean evaluateContains(Object value, Object[] values) {
+		if (values != null) {
+			for (Object object : values) {
+				if (ArrayUtil.contains(
+						_value, GetterUtil.getString(object), true)) {
 
-		return evaluationVisitor.visit(this);
+					return true;
+				}
+			}
+
+			return false;
+		}
+
+		return ArrayUtil.contains(_value, GetterUtil.getString(value), true);
 	}
 
 	@Override
-	public String accept(
-			ToStringVisitor toStringVisitor, Map<String, String> options)
-		throws Exception {
-
-		return toStringVisitor.visit(this, options);
+	public String evaluateToString(Map<String, String> options) {
+		return Arrays.toString(_value);
 	}
 
 	@Override
 	public String[] getValue() {
 		return _value;
-	}
-
-	@Override
-	public String toString() {
-		return toString(Arrays.toString(_value));
 	}
 
 	private final String[] _value;

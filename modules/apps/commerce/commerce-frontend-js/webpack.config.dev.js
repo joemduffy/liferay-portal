@@ -22,10 +22,15 @@ const {defineServerResponses} = require('./dev/fakeServerUtilities');
 const outputPath = path.resolve(__dirname, './dev/public');
 
 function getComponentPath(entry) {
-	return path.join(__dirname, 'test', 'dev', 'components', entry);
+	return path.join(__dirname, 'dev', 'components', entry);
 }
 
-// eslint-disable-next-line no-undef
+const entry = [...components, {entry: 'Menu'}].reduce((comp, current) => {
+	comp[current.entry] = getComponentPath(current.entry);
+
+	return comp;
+}, {});
+
 module.exports = {
 	devServer: {
 		before(app) {
@@ -35,7 +40,7 @@ module.exports = {
 		contentBase: './dev/public',
 		open: true,
 		openPage: 'index.html',
-		port: 9000,
+		port: 8888,
 		proxy: {
 			'/image': {
 				target: 'http://localhost:8080/',
@@ -47,11 +52,7 @@ module.exports = {
 		publicPath: '/',
 	},
 	devtool: 'inline-source-map',
-	entry: [...components, {entry: 'Menu'}].reduce((comp, current) => {
-		comp[current.entry] = getComponentPath(current.entry);
-
-		return comp;
-	}, {}),
+	entry,
 	mode: 'development',
 	module: {
 		rules: [
@@ -117,6 +118,18 @@ module.exports = {
 			'frontend-js-web': path.resolve(
 				__dirname,
 				'../../../node_modules/frontend-js-web/src/main/resources/META-INF/resources/index.es.js'
+			),
+			'frontend-taglib-clay/data_set_display/data_renderers/DateRenderer': path.resolve(
+				__dirname,
+				'../../../node_modules/frontend-taglib-clay/src/main/resources/META-INF/resources/data_set_display/data_renderers/DateRenderer.js'
+			),
+			'frontend-taglib-clay/data_set_display/data_renderers/StatusRenderer': path.resolve(
+				__dirname,
+				'../../../node_modules/frontend-taglib-clay/src/main/resources/META-INF/resources/data_set_display/data_renderers/StatusRenderer.js'
+			),
+			'frontend-taglib-clay/data_set_display/data_renderers/index': path.resolve(
+				__dirname,
+				'../../../node_modules/frontend-taglib-clay/src/main/resources/META-INF/resources/data_set_display/data_renderers/index.js'
 			),
 		},
 		extensions: ['.js', '.jsx', '.ts', '.tsx'],

@@ -35,8 +35,6 @@ import com.liferay.headless.commerce.delivery.catalog.dto.v1_0.Price;
 import com.liferay.headless.commerce.delivery.catalog.dto.v1_0.Product;
 import com.liferay.headless.commerce.delivery.catalog.dto.v1_0.Sku;
 import com.liferay.portal.kernel.json.JSONArray;
-import com.liferay.portal.kernel.language.LanguageUtil;
-import com.liferay.portal.language.LanguageResources;
 import com.liferay.portal.vulcan.dto.converter.DTOConverter;
 import com.liferay.portal.vulcan.dto.converter.DTOConverterContext;
 
@@ -47,7 +45,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.ResourceBundle;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -56,7 +53,7 @@ import org.osgi.service.component.annotations.Reference;
  * @author Andrea Sbarra
  */
 @Component(
-	enabled = false, property = "model.class.name=CPSku",
+	enabled = false, property = "dto.class.name=CPSku",
 	service = {DTOConverter.class, SkuDTOConverter.class}
 )
 public class SkuDTOConverter implements DTOConverter<CPInstance, Sku> {
@@ -82,8 +79,7 @@ public class SkuDTOConverter implements DTOConverter<CPInstance, Sku> {
 				availability = _getAvailability(
 					cpSkuDTOConverterConvertContext.getCompanyId(),
 					commerceContext.getCommerceChannelGroupId(),
-					cpInstance.getSku(), cpInstance,
-					cpSkuDTOConverterConvertContext.getLocale());
+					cpInstance.getSku(), cpInstance);
 				depth = cpInstance.getDepth();
 				displayDate = cpInstance.getDisplayDate();
 				expirationDate = cpInstance.getExpirationDate();
@@ -107,7 +103,7 @@ public class SkuDTOConverter implements DTOConverter<CPInstance, Sku> {
 
 	private Availability _getAvailability(
 			long companyId, long commerceChannelGroupId, String sku,
-			CPInstance cpInstance, Locale locale)
+			CPInstance cpInstance)
 		throws Exception {
 
 		Availability availability = new Availability();
@@ -116,12 +112,10 @@ public class SkuDTOConverter implements DTOConverter<CPInstance, Sku> {
 
 		if (_cpDefinitionInventoryEngine.isDisplayAvailability(cpInstance)) {
 			if (stockQuantity > 0) {
-				availability.setLabel(
-					_getLocalizedMessage(locale, "available"));
+				availability.setLabel("available");
 			}
 			else {
-				availability.setLabel(
-					_getLocalizedMessage(locale, "unavailable"));
+				availability.setLabel("unavailable");
 			}
 		}
 
@@ -144,13 +138,6 @@ public class SkuDTOConverter implements DTOConverter<CPInstance, Sku> {
 		}
 
 		return formattedDiscountPercentages.toArray(new String[0]);
-	}
-
-	private String _getLocalizedMessage(Locale locale, String key) {
-		ResourceBundle resourceBundle = LanguageResources.getResourceBundle(
-			locale);
-
-		return LanguageUtil.get(resourceBundle, key);
 	}
 
 	private Map<String, String> _getOptions(CPInstance cpInstance)

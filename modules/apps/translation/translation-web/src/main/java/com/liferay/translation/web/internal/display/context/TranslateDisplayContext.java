@@ -23,6 +23,7 @@ import com.liferay.info.field.type.TextInfoFieldType;
 import com.liferay.info.form.InfoForm;
 import com.liferay.info.item.InfoItemFieldValues;
 import com.liferay.info.localized.InfoLocalizedValue;
+import com.liferay.petra.function.UnsafeSupplier;
 import com.liferay.petra.portlet.url.builder.PortletURLBuilder;
 import com.liferay.petra.string.CharPool;
 import com.liferay.portal.kernel.bean.BeanParamUtil;
@@ -65,7 +66,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.function.BooleanSupplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -81,19 +81,20 @@ public class TranslateDisplayContext {
 	public TranslateDisplayContext(
 		List<String> availableSourceLanguageIds,
 		List<String> availableTargetLanguageIds,
-		BooleanSupplier booleanSupplier, String className, long classPK,
+		UnsafeSupplier<Boolean, PortalException> booleanUnsafeSupplier,
+		String className, long classPK,
 		FFLayoutExperienceSelectorConfiguration
 			ffLayoutExperienceSelectorConfiguration,
 		InfoForm infoForm, LiferayPortletRequest liferayPortletRequest,
 		LiferayPortletResponse liferayPortletResponse, Object object,
-		String segmentsExperienceId,
+		long segmentsExperienceId,
 		InfoItemFieldValues sourceInfoItemFieldValues, String sourceLanguageId,
 		InfoItemFieldValues targetInfoItemFieldValues, String targetLanguageId,
 		TranslationInfoFieldChecker translationInfoFieldChecker) {
 
 		_availableSourceLanguageIds = availableSourceLanguageIds;
 		_availableTargetLanguageIds = availableTargetLanguageIds;
-		_booleanSupplier = booleanSupplier;
+		_booleanUnsafeSupplier = booleanUnsafeSupplier;
 		_className = className;
 		_classPK = classPK;
 		_ffLayoutExperienceSelectorConfiguration =
@@ -427,6 +428,8 @@ public class TranslateDisplayContext {
 			"classPK", _classPK
 		).setParameter(
 			"groupId", _getGroupId()
+		).setParameter(
+			"segmentsExperienceId", _segmentsExperienceId
 		).buildPortletURL();
 	}
 
@@ -438,8 +441,8 @@ public class TranslateDisplayContext {
 		return true;
 	}
 
-	public boolean isAutoTranslateEnabled() {
-		if (_booleanSupplier.getAsBoolean() && hasTranslationPermission()) {
+	public boolean isAutoTranslateEnabled() throws PortalException {
+		if (_booleanUnsafeSupplier.get() && hasTranslationPermission()) {
 			return true;
 		}
 
@@ -487,18 +490,17 @@ public class TranslateDisplayContext {
 
 		List<SegmentsExperience> segmentsExperiences =
 			SegmentsExperienceServiceUtil.getSegmentsExperiences(
-				_groupId, PortalUtil.getClassNameId(Layout.class.getName()),
-				_classPK, true);
+				_groupId, PortalUtil.getClassNameId(_className), _classPK,
+				true);
 
 		boolean addedDefault = false;
 
-		HashMap<String, String> defaultExperience = HashMapBuilder.put(
+		Map<String, String> defaultExperience = HashMapBuilder.put(
 			"label",
 			SegmentsExperienceConstants.getDefaultSegmentsExperienceName(
 				_themeDisplay.getLocale())
 		).put(
-			"value",
-			String.valueOf((Object)SegmentsExperienceConstants.ID_DEFAULT)
+			"value", String.valueOf(SegmentsExperienceConstants.ID_DEFAULT)
 		).build();
 
 		List<Map<String, String>> options = new ArrayList<>();
@@ -593,7 +595,8 @@ public class TranslateDisplayContext {
 
 	private final List<String> _availableSourceLanguageIds;
 	private final List<String> _availableTargetLanguageIds;
-	private final BooleanSupplier _booleanSupplier;
+	private final UnsafeSupplier<Boolean, PortalException>
+		_booleanUnsafeSupplier;
 	private final String _className;
 	private final long _classPK;
 	private final FFLayoutExperienceSelectorConfiguration
@@ -603,7 +606,7 @@ public class TranslateDisplayContext {
 	private final InfoForm _infoForm;
 	private final LiferayPortletResponse _liferayPortletResponse;
 	private final Object _object;
-	private final String _segmentsExperienceId;
+	private final long _segmentsExperienceId;
 	private final InfoItemFieldValues _sourceInfoItemFieldValues;
 	private final String _sourceLanguageId;
 	private final Locale _sourceLocale;

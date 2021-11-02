@@ -26,14 +26,14 @@ ObjectDefinitionsLayoutsDisplayContext objectDefinitionsLayoutsDisplayContext = 
 portletDisplay.setShowBackIcon(true);
 portletDisplay.setURLBack(backURL);
 
-renderResponse.setTitle(objectDefinition.getShortName());
+renderResponse.setTitle(objectDefinition.getLabel(locale, true));
 %>
 
 <clay:headless-data-set-display
 	apiURL="<%= objectDefinitionsLayoutsDisplayContext.getAPIURL() %>"
 	clayDataSetActionDropdownItems="<%= objectDefinitionsLayoutsDisplayContext.getClayDataSetActionDropdownItems() %>"
 	creationMenu="<%= objectDefinitionsLayoutsDisplayContext.getCreationMenu() %>"
-	formId="fm"
+	formName="fm"
 	id="<%= ObjectDefinitionsClayDataSetDisplayNames.OBJECT_LAYOUTS %>"
 	itemsPerPage="<%= 20 %>"
 	namespace="<%= liferayPortletResponse.getNamespace() %>"

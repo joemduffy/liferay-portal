@@ -15,6 +15,7 @@
 package com.liferay.template.service.persistence;
 
 import com.liferay.portal.kernel.service.persistence.BasePersistence;
+import com.liferay.portal.kernel.service.persistence.change.tracking.CTPersistence;
 import com.liferay.template.exception.NoSuchTemplateEntryException;
 import com.liferay.template.model.TemplateEntry;
 
@@ -33,7 +34,7 @@ import org.osgi.annotation.versioning.ProviderType;
  */
 @ProviderType
 public interface TemplateEntryPersistence
-	extends BasePersistence<TemplateEntry> {
+	extends BasePersistence<TemplateEntry>, CTPersistence<TemplateEntry> {
 
 	/*
 	 * NOTE FOR DEVELOPERS:
@@ -518,6 +519,71 @@ public interface TemplateEntryPersistence
 		throws NoSuchTemplateEntryException;
 
 	/**
+	 * Returns all the template entries where groupId = any &#63;.
+	 *
+	 * <p>
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>TemplateEntryModelImpl</code>.
+	 * </p>
+	 *
+	 * @param groupIds the group IDs
+	 * @return the matching template entries
+	 */
+	public java.util.List<TemplateEntry> findByGroupId(long[] groupIds);
+
+	/**
+	 * Returns a range of all the template entries where groupId = any &#63;.
+	 *
+	 * <p>
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>TemplateEntryModelImpl</code>.
+	 * </p>
+	 *
+	 * @param groupIds the group IDs
+	 * @param start the lower bound of the range of template entries
+	 * @param end the upper bound of the range of template entries (not inclusive)
+	 * @return the range of matching template entries
+	 */
+	public java.util.List<TemplateEntry> findByGroupId(
+		long[] groupIds, int start, int end);
+
+	/**
+	 * Returns an ordered range of all the template entries where groupId = any &#63;.
+	 *
+	 * <p>
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>TemplateEntryModelImpl</code>.
+	 * </p>
+	 *
+	 * @param groupIds the group IDs
+	 * @param start the lower bound of the range of template entries
+	 * @param end the upper bound of the range of template entries (not inclusive)
+	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
+	 * @return the ordered range of matching template entries
+	 */
+	public java.util.List<TemplateEntry> findByGroupId(
+		long[] groupIds, int start, int end,
+		com.liferay.portal.kernel.util.OrderByComparator<TemplateEntry>
+			orderByComparator);
+
+	/**
+	 * Returns an ordered range of all the template entries where groupId = &#63;, optionally using the finder cache.
+	 *
+	 * <p>
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>TemplateEntryModelImpl</code>.
+	 * </p>
+	 *
+	 * @param groupId the group ID
+	 * @param start the lower bound of the range of template entries
+	 * @param end the upper bound of the range of template entries (not inclusive)
+	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
+	 * @param useFinderCache whether to use the finder cache
+	 * @return the ordered range of matching template entries
+	 */
+	public java.util.List<TemplateEntry> findByGroupId(
+		long[] groupIds, int start, int end,
+		com.liferay.portal.kernel.util.OrderByComparator<TemplateEntry>
+			orderByComparator,
+		boolean useFinderCache);
+
+	/**
 	 * Removes all the template entries where groupId = &#63; from the database.
 	 *
 	 * @param groupId the group ID
@@ -531,6 +597,14 @@ public interface TemplateEntryPersistence
 	 * @return the number of matching template entries
 	 */
 	public int countByGroupId(long groupId);
+
+	/**
+	 * Returns the number of template entries where groupId = any &#63;.
+	 *
+	 * @param groupIds the group IDs
+	 * @return the number of matching template entries
+	 */
+	public int countByGroupId(long[] groupIds);
 
 	/**
 	 * Returns the template entry where ddmTemplateId = &#63; or throws a <code>NoSuchTemplateEntryException</code> if it could not be found.
@@ -731,6 +805,183 @@ public interface TemplateEntryPersistence
 	 * @return the number of matching template entries
 	 */
 	public int countByG_IICN(long groupId, String infoItemClassName);
+
+	/**
+	 * Returns all the template entries where groupId = &#63; and infoItemClassName = &#63; and infoItemFormVariationKey = &#63;.
+	 *
+	 * @param groupId the group ID
+	 * @param infoItemClassName the info item class name
+	 * @param infoItemFormVariationKey the info item form variation key
+	 * @return the matching template entries
+	 */
+	public java.util.List<TemplateEntry> findByG_IICN_IIFVK(
+		long groupId, String infoItemClassName,
+		String infoItemFormVariationKey);
+
+	/**
+	 * Returns a range of all the template entries where groupId = &#63; and infoItemClassName = &#63; and infoItemFormVariationKey = &#63;.
+	 *
+	 * <p>
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>TemplateEntryModelImpl</code>.
+	 * </p>
+	 *
+	 * @param groupId the group ID
+	 * @param infoItemClassName the info item class name
+	 * @param infoItemFormVariationKey the info item form variation key
+	 * @param start the lower bound of the range of template entries
+	 * @param end the upper bound of the range of template entries (not inclusive)
+	 * @return the range of matching template entries
+	 */
+	public java.util.List<TemplateEntry> findByG_IICN_IIFVK(
+		long groupId, String infoItemClassName, String infoItemFormVariationKey,
+		int start, int end);
+
+	/**
+	 * Returns an ordered range of all the template entries where groupId = &#63; and infoItemClassName = &#63; and infoItemFormVariationKey = &#63;.
+	 *
+	 * <p>
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>TemplateEntryModelImpl</code>.
+	 * </p>
+	 *
+	 * @param groupId the group ID
+	 * @param infoItemClassName the info item class name
+	 * @param infoItemFormVariationKey the info item form variation key
+	 * @param start the lower bound of the range of template entries
+	 * @param end the upper bound of the range of template entries (not inclusive)
+	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
+	 * @return the ordered range of matching template entries
+	 */
+	public java.util.List<TemplateEntry> findByG_IICN_IIFVK(
+		long groupId, String infoItemClassName, String infoItemFormVariationKey,
+		int start, int end,
+		com.liferay.portal.kernel.util.OrderByComparator<TemplateEntry>
+			orderByComparator);
+
+	/**
+	 * Returns an ordered range of all the template entries where groupId = &#63; and infoItemClassName = &#63; and infoItemFormVariationKey = &#63;.
+	 *
+	 * <p>
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>TemplateEntryModelImpl</code>.
+	 * </p>
+	 *
+	 * @param groupId the group ID
+	 * @param infoItemClassName the info item class name
+	 * @param infoItemFormVariationKey the info item form variation key
+	 * @param start the lower bound of the range of template entries
+	 * @param end the upper bound of the range of template entries (not inclusive)
+	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
+	 * @param useFinderCache whether to use the finder cache
+	 * @return the ordered range of matching template entries
+	 */
+	public java.util.List<TemplateEntry> findByG_IICN_IIFVK(
+		long groupId, String infoItemClassName, String infoItemFormVariationKey,
+		int start, int end,
+		com.liferay.portal.kernel.util.OrderByComparator<TemplateEntry>
+			orderByComparator,
+		boolean useFinderCache);
+
+	/**
+	 * Returns the first template entry in the ordered set where groupId = &#63; and infoItemClassName = &#63; and infoItemFormVariationKey = &#63;.
+	 *
+	 * @param groupId the group ID
+	 * @param infoItemClassName the info item class name
+	 * @param infoItemFormVariationKey the info item form variation key
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the first matching template entry
+	 * @throws NoSuchTemplateEntryException if a matching template entry could not be found
+	 */
+	public TemplateEntry findByG_IICN_IIFVK_First(
+			long groupId, String infoItemClassName,
+			String infoItemFormVariationKey,
+			com.liferay.portal.kernel.util.OrderByComparator<TemplateEntry>
+				orderByComparator)
+		throws NoSuchTemplateEntryException;
+
+	/**
+	 * Returns the first template entry in the ordered set where groupId = &#63; and infoItemClassName = &#63; and infoItemFormVariationKey = &#63;.
+	 *
+	 * @param groupId the group ID
+	 * @param infoItemClassName the info item class name
+	 * @param infoItemFormVariationKey the info item form variation key
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the first matching template entry, or <code>null</code> if a matching template entry could not be found
+	 */
+	public TemplateEntry fetchByG_IICN_IIFVK_First(
+		long groupId, String infoItemClassName, String infoItemFormVariationKey,
+		com.liferay.portal.kernel.util.OrderByComparator<TemplateEntry>
+			orderByComparator);
+
+	/**
+	 * Returns the last template entry in the ordered set where groupId = &#63; and infoItemClassName = &#63; and infoItemFormVariationKey = &#63;.
+	 *
+	 * @param groupId the group ID
+	 * @param infoItemClassName the info item class name
+	 * @param infoItemFormVariationKey the info item form variation key
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the last matching template entry
+	 * @throws NoSuchTemplateEntryException if a matching template entry could not be found
+	 */
+	public TemplateEntry findByG_IICN_IIFVK_Last(
+			long groupId, String infoItemClassName,
+			String infoItemFormVariationKey,
+			com.liferay.portal.kernel.util.OrderByComparator<TemplateEntry>
+				orderByComparator)
+		throws NoSuchTemplateEntryException;
+
+	/**
+	 * Returns the last template entry in the ordered set where groupId = &#63; and infoItemClassName = &#63; and infoItemFormVariationKey = &#63;.
+	 *
+	 * @param groupId the group ID
+	 * @param infoItemClassName the info item class name
+	 * @param infoItemFormVariationKey the info item form variation key
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the last matching template entry, or <code>null</code> if a matching template entry could not be found
+	 */
+	public TemplateEntry fetchByG_IICN_IIFVK_Last(
+		long groupId, String infoItemClassName, String infoItemFormVariationKey,
+		com.liferay.portal.kernel.util.OrderByComparator<TemplateEntry>
+			orderByComparator);
+
+	/**
+	 * Returns the template entries before and after the current template entry in the ordered set where groupId = &#63; and infoItemClassName = &#63; and infoItemFormVariationKey = &#63;.
+	 *
+	 * @param templateEntryId the primary key of the current template entry
+	 * @param groupId the group ID
+	 * @param infoItemClassName the info item class name
+	 * @param infoItemFormVariationKey the info item form variation key
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the previous, current, and next template entry
+	 * @throws NoSuchTemplateEntryException if a template entry with the primary key could not be found
+	 */
+	public TemplateEntry[] findByG_IICN_IIFVK_PrevAndNext(
+			long templateEntryId, long groupId, String infoItemClassName,
+			String infoItemFormVariationKey,
+			com.liferay.portal.kernel.util.OrderByComparator<TemplateEntry>
+				orderByComparator)
+		throws NoSuchTemplateEntryException;
+
+	/**
+	 * Removes all the template entries where groupId = &#63; and infoItemClassName = &#63; and infoItemFormVariationKey = &#63; from the database.
+	 *
+	 * @param groupId the group ID
+	 * @param infoItemClassName the info item class name
+	 * @param infoItemFormVariationKey the info item form variation key
+	 */
+	public void removeByG_IICN_IIFVK(
+		long groupId, String infoItemClassName,
+		String infoItemFormVariationKey);
+
+	/**
+	 * Returns the number of template entries where groupId = &#63; and infoItemClassName = &#63; and infoItemFormVariationKey = &#63;.
+	 *
+	 * @param groupId the group ID
+	 * @param infoItemClassName the info item class name
+	 * @param infoItemFormVariationKey the info item form variation key
+	 * @return the number of matching template entries
+	 */
+	public int countByG_IICN_IIFVK(
+		long groupId, String infoItemClassName,
+		String infoItemFormVariationKey);
 
 	/**
 	 * Caches the template entry in the entity cache if it is enabled.

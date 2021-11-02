@@ -50,6 +50,7 @@ import com.liferay.translation.service.TranslationEntryLocalService;
 import com.liferay.translation.translator.Translator;
 import com.liferay.translation.web.internal.configuration.FFLayoutExperienceSelectorConfiguration;
 import com.liferay.translation.web.internal.display.context.TranslateDisplayContext;
+import com.liferay.translation.web.internal.util.TranslationRequestUtil;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -93,17 +94,20 @@ public class TranslateMVCRenderCommand implements MVCRenderCommand {
 		throws PortletException {
 
 		try {
-			long classNameId = ParamUtil.getLong(renderRequest, "classNameId");
+			long segmentsExperienceId = ParamUtil.getLong(
+				renderRequest, "segmentsExperienceId",
+				SegmentsExperienceConstants.ID_DEFAULT);
 
-			String className = _portal.getClassName(classNameId);
+			String className = TranslationRequestUtil.getClassName(
+				renderRequest, segmentsExperienceId);
 
-			long classPK = ParamUtil.getLong(renderRequest, "classPK");
+			long classPK = TranslationRequestUtil.getClassPK(
+				renderRequest, segmentsExperienceId);
 
 			Object object = _getInfoItem(className, classPK);
 
 			if (object == null) {
-				return _getErrorJSP(
-					renderRequest, renderResponse, className, classPK);
+				return _getErrorJSP(renderRequest, renderResponse);
 			}
 
 			InfoItemLanguagesProvider<Object> infoItemLanguagesProvider =
@@ -111,8 +115,7 @@ public class TranslateMVCRenderCommand implements MVCRenderCommand {
 					InfoItemLanguagesProvider.class, className);
 
 			if (infoItemLanguagesProvider == null) {
-				return _getErrorJSP(
-					renderRequest, renderResponse, className, classPK);
+				return _getErrorJSP(renderRequest, renderResponse);
 			}
 
 			List<String> availableSourceLanguageIds = Arrays.asList(
@@ -134,8 +137,7 @@ public class TranslateMVCRenderCommand implements MVCRenderCommand {
 					InfoItemFormProvider.class, className);
 
 			if (infoItemFormProvider == null) {
-				return _getErrorJSP(
-					renderRequest, renderResponse, className, classPK);
+				return _getErrorJSP(renderRequest, renderResponse);
 			}
 
 			InfoForm infoForm = infoItemFormProvider.getInfoForm(object);
@@ -144,13 +146,8 @@ public class TranslateMVCRenderCommand implements MVCRenderCommand {
 				_getSourceInfoItemFieldValues(className, object);
 
 			if (sourceInfoItemFieldValues == null) {
-				return _getErrorJSP(
-					renderRequest, renderResponse, className, classPK);
+				return _getErrorJSP(renderRequest, renderResponse);
 			}
-
-			String segmentsExperienceId = ParamUtil.getString(
-				renderRequest, "segmentsExperienceId",
-				String.valueOf(SegmentsExperienceConstants.ID_DEFAULT));
 
 			String targetLanguageId = ParamUtil.getString(
 				renderRequest, "targetLanguageId",
@@ -165,8 +162,11 @@ public class TranslateMVCRenderCommand implements MVCRenderCommand {
 				TranslateDisplayContext.class.getName(),
 				new TranslateDisplayContext(
 					availableSourceLanguageIds, availableTargetLanguageIds,
-					() -> (_translator != null) && _translator.isEnabled(),
-					className, classPK,
+					() ->
+						(_translator != null) &&
+						_translator.isEnabled(themeDisplay.getCompanyId()),
+					TranslationRequestUtil.getModelClassName(renderRequest),
+					TranslationRequestUtil.getModelClassPK(renderRequest),
 					_ffLayoutExperienceSelectorConfiguration, infoForm,
 					_portal.getLiferayPortletRequest(renderRequest),
 					_portal.getLiferayPortletResponse(renderResponse), object,
@@ -233,18 +233,25 @@ public class TranslateMVCRenderCommand implements MVCRenderCommand {
 	}
 
 	private String _getErrorJSP(
-		RenderRequest renderRequest, RenderResponse renderResponse,
-		String className, long classPK) {
+		RenderRequest renderRequest, RenderResponse renderResponse) {
+
+		ThemeDisplay themeDisplay = (ThemeDisplay)renderRequest.getAttribute(
+			WebKeys.THEME_DISPLAY);
 
 		renderRequest.setAttribute(
 			TranslateDisplayContext.class.getName(),
 			new TranslateDisplayContext(
 				Collections.emptyList(), Collections.emptyList(),
-				() -> (_translator != null) && _translator.isEnabled(),
-				className, classPK, _ffLayoutExperienceSelectorConfiguration,
-				null, _portal.getLiferayPortletRequest(renderRequest),
-				_portal.getLiferayPortletResponse(renderResponse), null, null,
-				null, null, null, null, _translationInfoFieldChecker));
+				() ->
+					(_translator != null) &&
+					_translator.isEnabled(themeDisplay.getCompanyId()),
+				TranslationRequestUtil.getModelClassName(renderRequest),
+				TranslationRequestUtil.getModelClassPK(renderRequest),
+				_ffLayoutExperienceSelectorConfiguration, null,
+				_portal.getLiferayPortletRequest(renderRequest),
+				_portal.getLiferayPortletResponse(renderResponse), null,
+				SegmentsExperienceConstants.ID_DEFAULT, null, null, null, null,
+				_translationInfoFieldChecker));
 
 		return "/translate.jsp";
 	}

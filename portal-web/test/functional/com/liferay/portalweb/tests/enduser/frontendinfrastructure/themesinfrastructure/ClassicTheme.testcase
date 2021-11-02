@@ -23,17 +23,21 @@ definition {
 		}
 	}
 
+	@description = "Verify custom look and feel Settings can be applied to page"
 	@priority = "5"
-	@refactorneeded
-	test ConfigureLookAndFeelSettingsSinglePage {
+	@refactordone
+	test CanConfigureLookAndFeelSettingsOnSinglePage {
 		property osgi.modules.includes = "frontend-taglib-clay-sample-web";
 		property portal.acceptance = "true";
 
-		ProductMenu.gotoPortlet(
-			category = "Site Builder",
-			portlet = "Pages");
+		JSONLayout.addPublicLayout(
+			groupName = "Guest",
+			layoutName = "Classic Theme Page");
 
-		SitePages.addPublicPage(pageName = "Classic Theme Page");
+		JSONLayout.addWidgetToPublicLayout(
+			groupName = "Guest",
+			layoutName = "Classic Theme Page",
+			widgetName = "Clay Sample");
 
 		ProductMenu.gotoPortlet(
 			category = "Site Builder",
@@ -55,16 +59,6 @@ definition {
 
 		PortletEntry.save();
 
-		ProductMenu.gotoPortlet(
-			category = "Site Builder",
-			portlet = "Pages");
-
-		SitePages.gotoPageMenuItem(
-			menuItem = "Configure",
-			pageName = "Classic Theme Page");
-
-		Navigator.gotoNavTab(navTab = "Look and Feel");
-
 		Navigator.gotoPage(pageName = "Classic Theme Page");
 
 		var htmlSourceText = '''body, #wrapper{background-color: #42f4c5;}''';
@@ -74,8 +68,6 @@ definition {
 		takeScreenshot();
 
 		AssertElementNotPresent(locator1 = "Search#EMBEDDED_SEARCH_BAR");
-
-		Portlet.addPG(portletName = "Clay Sample");
 
 		Portlet.gotoPortletOptions(portletName = "Clay Sample");
 

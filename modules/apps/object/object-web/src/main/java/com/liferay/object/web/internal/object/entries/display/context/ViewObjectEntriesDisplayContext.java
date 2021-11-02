@@ -16,13 +16,20 @@ package com.liferay.object.web.internal.object.entries.display.context;
 
 import com.liferay.frontend.taglib.clay.data.set.servlet.taglib.util.ClayDataSetActionDropdownItem;
 import com.liferay.frontend.taglib.clay.servlet.taglib.util.CreationMenu;
+import com.liferay.object.constants.ObjectActionKeys;
 import com.liferay.object.model.ObjectDefinition;
+import com.liferay.object.scope.ObjectScopeProvider;
 import com.liferay.object.web.internal.constants.ObjectWebKeys;
 import com.liferay.object.web.internal.display.context.util.ObjectRequestHelper;
 import com.liferay.petra.portlet.url.builder.PortletURLBuilder;
+import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.language.LanguageUtil;
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.portlet.LiferayWindowState;
 import com.liferay.portal.kernel.portlet.PortletURLUtil;
+import com.liferay.portal.kernel.security.permission.resource.PortletResourcePermission;
 import com.liferay.portal.kernel.util.PortalUtil;
 
 import java.util.Arrays;
@@ -40,14 +47,38 @@ import javax.servlet.http.HttpServletRequest;
 public class ViewObjectEntriesDisplayContext {
 
 	public ViewObjectEntriesDisplayContext(
-		HttpServletRequest httpServletRequest, String restContextPath) {
+		HttpServletRequest httpServletRequest,
+		ObjectScopeProvider objectScopeProvider,
+		PortletResourcePermission portletResourcePermission,
+		String restContextPath) {
+
+		_httpServletRequest = httpServletRequest;
+		_objectScopeProvider = objectScopeProvider;
+		_portletResourcePermission = portletResourcePermission;
 
 		_apiURL = "/o" + restContextPath;
 		_objectRequestHelper = new ObjectRequestHelper(httpServletRequest);
 	}
 
 	public String getAPIURL() {
-		return _apiURL;
+		try {
+			long groupId = _objectScopeProvider.getGroupId(_httpServletRequest);
+
+			if (!_objectScopeProvider.isGroupAware() ||
+				!_objectScopeProvider.isValidGroupId(groupId)) {
+
+				return _apiURL;
+			}
+
+			return StringBundler.concat(_apiURL, "/scopes/", groupId);
+		}
+		catch (PortalException portalException) {
+			if (_log.isDebugEnabled()) {
+				_log.debug(portalException, portalException);
+			}
+
+			return _apiURL;
+		}
 	}
 
 	public List<ClayDataSetActionDropdownItem>
@@ -67,6 +98,9 @@ public class ViewObjectEntriesDisplayContext {
 				LanguageUtil.get(_objectRequestHelper.getRequest(), "view"),
 				"get", null, null),
 			new ClayDataSetActionDropdownItem(
+				LanguageUtil.get(
+					_objectRequestHelper.getRequest(),
+					"are-you-sure-you-want-to-delete-this-entry"),
 				_apiURL + "/{id}", "trash", "delete",
 				LanguageUtil.get(_objectRequestHelper.getRequest(), "delete"),
 				"delete", "delete", "async"),
@@ -84,7 +118,14 @@ public class ViewObjectEntriesDisplayContext {
 	public CreationMenu getCreationMenu() throws Exception {
 		CreationMenu creationMenu = new CreationMenu();
 
-		// TODO Check permissions
+		if (!_portletResourcePermission.contains(
+				_objectRequestHelper.getPermissionChecker(),
+				_objectScopeProvider.getGroupId(
+					_objectRequestHelper.getRequest()),
+				ObjectActionKeys.ADD_OBJECT_ENTRY)) {
+
+			return creationMenu;
+		}
 
 		ObjectDefinition objectDefinition = getObjectDefinition();
 
@@ -147,7 +188,13 @@ public class ViewObjectEntriesDisplayContext {
 		).buildString();
 	}
 
+	private static final Log _log = LogFactoryUtil.getLog(
+		ViewObjectEntriesDisplayContext.class);
+
 	private final String _apiURL;
+	private final HttpServletRequest _httpServletRequest;
 	private final ObjectRequestHelper _objectRequestHelper;
+	private final ObjectScopeProvider _objectScopeProvider;
+	private final PortletResourcePermission _portletResourcePermission;
 
 }

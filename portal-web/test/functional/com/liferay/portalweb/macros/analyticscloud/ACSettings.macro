@@ -1,6 +1,8 @@
 definition {
 
 	macro addCSVDataSource {
+		var n = "1";
+
 		ACSettings.goToDataSources();
 
 		Button.click(button = "Add Data Source");
@@ -9,20 +11,29 @@ definition {
 			key_sourceType = "CSV File",
 			locator1 = "ACSettings#DXP_DATA_SOURCE_CHOOSE_OPTION");
 
+		UploadFileWithCustomPath.uploadFile(
+			fileName = "${sourceFileName}",
+			filePath = "enduser/analyticscloud");
+
+		WaitForVisible(locator1 = "ACSettings#FILE_UPLOAD_SUCCESS_ICON");
+
 		Type(
 			key_text = "Name Data Source",
 			locator1 = "TextInput#ANY",
 			value1 = "${dataSourceName}");
 
-		UploadCommonFile.uploadCommonFileHiddenNoMouseOver(
-			locator1 = "TextInput#FILE",
-			value1 = "${sourceFileName}");
+		while (IsElementPresent(key_text = "Next", locator1 = "Button#ANY_DISABLED")) {
+			Type(
+				key_text = "Name Data Source",
+				locator1 = "TextInput#ANY",
+				value1 = "${dataSourceName} ${n}");
 
-		WaitForVisible(locator1 = "ACSettings#FILE_UPLOAD_SUCCESS_ICON");
+			var n = ${n} + 1;
+		}
 
-		WaitForElementNotPresent(
+		WaitForElementPresent(
 			key_text = "Next",
-			locator1 = "Button#ANY_DISABLED");
+			locator1 = "Button#ANY_ENABLED");
 
 		Button.clickNext();
 
@@ -50,6 +61,8 @@ definition {
 			else {
 				if (isSet(fieldNameList)) {
 					for (var item : list "${fieldNameList}") {
+						ACUtils.searchBar(searchItem = "${item}");
+
 						MenuItem.click(menuItem = "${item}");
 
 						if (IsElementPresent(key_text = "Select Analytics Cloud Field",
@@ -146,7 +159,7 @@ definition {
 		for (var keyword : list "${userInvite}") {
 			Type(
 				locator1 = "ACSettings#KEYWORD_TEXTFIELD",
-				value1 = "${userInvite}");
+				value1 = "${keyword}");
 
 			KeyPress(
 				locator1 = "ACSettings#KEYWORD_TEXTFIELD",
@@ -192,9 +205,7 @@ definition {
 			key_sourceType = "Salesforce",
 			locator1 = "ACSettings#DXP_DATA_SOURCE_CHOOSE_OPTION");
 
-		AssertElementPresent(
-			itemName = "Configure Salesforce",
-			locator1 = "ACSettings#ITEM_ON_LIST");
+		ACUtils.assertItemsName(itemList = "Configure Salesforce");
 
 		Click(
 			key_breadcrumbName = "Add Data Source",
@@ -334,24 +345,13 @@ definition {
 	}
 
 	macro assertRequestLog {
-		for (var emailAdress : list "${emailAdresses}",) {
-			if ("${jobType}" == "Delete") {
-				AssertElementPresent(
-					key_emailAdress = "${emailAdress}",
-					key_requestType = "${jobType}",
-					locator1 = "ACDataControlAndPrivacy#REQUEST_LOG_TABLE");
+		if ("${jobType}" == "Delete") {
+			AssertElementPresent(locator1 = "ACDataControlAndPrivacy#REQUEST_LOG_TABLE");
 
-				AssertElementPresent(
-					key_emailAdress = "${emailAdress}",
-					key_requestType = "Suppress",
-					locator1 = "ACDataControlAndPrivacy#REQUEST_LOG_TABLE");
-			}
-			else {
-				AssertElementPresent(
-					key_emailAdress = "${emailAdress}",
-					key_requestType = "${jobType}",
-					locator1 = "ACDataControlAndPrivacy#REQUEST_LOG_TABLE");
-			}
+			AssertElementPresent(locator1 = "ACDataControlAndPrivacy#REQUEST_LOG_TABLE");
+		}
+		else {
+			AssertElementPresent(locator1 = "ACDataControlAndPrivacy#REQUEST_LOG_TABLE");
 		}
 	}
 
@@ -475,11 +475,7 @@ definition {
 
 		Click(locator1 = "ACDataControlAndPrivacy#CREATE_REQUEST");
 
-		for (var jobType : list "${jobTypes}") {
-			Click(
-				key_jobType = "${jobType}",
-				locator1 = "ACDataControlAndPrivacy#JOB_TYPE");
-		}
+		Click(locator1 = "ACDataControlAndPrivacy#JOB_TYPE");
 
 		Click(
 			key_fieldType = "Find by Email",
@@ -487,18 +483,15 @@ definition {
 
 		Click(locator1 = "ACDataControlAndPrivacy#FIND_BY_EMAIL_FIELD");
 
-		for (var emailAdress : list "${emailAdresses}") {
-			Type(
-				locator1 = "ACDataControlAndPrivacy#FIND_BY_EMAIL_FIELD",
-				value1 = "${emailAdress}");
-			Click(
-				key_emailAdress = "${emailAdress}",
-				locator1 = "ACDataControlAndPrivacy#FIND_EMAIL_FIELD");
-		}
+		Click(locator1 = "ACDataControlAndPrivacy#SELECT_USER");
+
+		var email = selenium.getText(locator1 = "ACDataControlAndPrivacy#SELECTED_USER");
 
 		Button.clickSave();
 
 		Alert.viewSuccessMessage();
+
+		return "${email}";
 	}
 
 	@summary = "Deletes all data source"
@@ -659,6 +652,36 @@ definition {
 		ACUtils.searchBar(searchItem = "${propertyName}");
 
 		ACNavigation.openItem(itemName = "${propertyName}");
+
+		Click(locator1 = "ACSettings#GENERIC_DELETE_BUTTON");
+
+		AssertTextEquals(
+			locator1 = "Modal#HEADER",
+			value1 = "Delete ${propertyName}?");
+
+		AssertTextPresent(
+			locator1 = "Modal#BODY",
+			value1 = "To delete ${propertyName}, copy the sentence below to confirm your intention to delete property.");
+
+		AssertTextPresent(
+			locator1 = "Modal#BODY",
+			value1 = "This will result in the complete removal of this property's historical events. You will not be able to undo this operation.");
+
+		Copy(locator1 = "ACSettings#DELETE_CONFIRMATION_MESSAGE");
+
+		Click(locator1 = "ACSettings#DELETE_CONFIRMATION_INPUT");
+
+		Paste(locator1 = "ACSettings#DELETE_CONFIRMATION_INPUT");
+
+		Click(locator1 = "ACSettings#DELETE_CONFIRMATION_BUTTON");
+
+		Alert.viewSuccessMessage();
+	}
+
+	macro deletePropertyByCheckbox {
+		Click.clickAtNotVisible(
+			key_propertyName = "${propertyName}",
+			locator1 = "ACSettings#PROPERTY_CHECKBOX");
 
 		Click(locator1 = "ACSettings#GENERIC_DELETE_BUTTON");
 

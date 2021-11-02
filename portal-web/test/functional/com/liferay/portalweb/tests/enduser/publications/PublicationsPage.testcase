@@ -20,11 +20,6 @@ definition {
 			PortalInstances.tearDownCP();
 		}
 		else {
-			ApplicationsMenu.gotoPortlet(
-				category = "Publications",
-				panel = "Applications",
-				portlet = "Settings");
-
 			Publications.disablePublications();
 		}
 	}
@@ -49,7 +44,7 @@ definition {
 
 		PortletEntry.save();
 
-		Publications.gotoReviewChanges();
+		PublicationsNavigator.gotoReviewChanges();
 
 		PublicationsChanges.viewChangesViaChangesStyle(
 			changeCategory = "Tag",
@@ -58,19 +53,15 @@ definition {
 			changeType = "Added",
 			changeUser = "Test Test");
 
-		Navigator.openURL();
-
-		ProductMenu.gotoPortlet(
-			category = "Site Builder",
-			portlet = "Pages");
+		SitePages.openPagesAdmin(siteURLKey = "guest");
 
 		SitePages.deletePage(pageName = "Test Page");
 
-		Navigator.openURL();
+		SitePages.openPagesAdmin(siteURLKey = "guest");
 
 		Page.viewNoPG(pageName = "Test Page");
 
-		Publications.gotoReviewChanges();
+		PublicationsNavigator.gotoReviewChanges();
 
 		PublicationsChanges.viewChangesViaChangesStyle(
 			changeCategory = "Page",
@@ -88,7 +79,7 @@ definition {
 
 		Publications.viewPublicationPublished(publicationName = "Publication Name");
 
-		Navigator.openURL();
+		Navigator.openSiteURL(siteName = "Guest");
 
 		Page.viewNoPG(pageName = "Test Page");
 	}
@@ -126,11 +117,7 @@ definition {
 			groupName = "Guest",
 			title = "WC WebContent Title");
 
-		Navigator.openURL();
-
-		ProductMenu.gotoPortlet(
-			category = "Site Builder",
-			portlet = "Pages");
+		SitePages.openPagesAdmin(siteURLKey = "guest");
 
 		ContentPages.addPrivatePage(pageName = "Test Page");
 
@@ -229,21 +216,19 @@ definition {
 
 		JSONPublications.publishPublication(publicationName = "Publication Name 2");
 
-		Navigator.openURL();
-
 		Publications.viewPublicationPublished(publicationName = "Publication Name 2");
 
-		Publications.gotoPublish(
-			gotoManagePublications = "true",
+		PublicationsNavigator.gotoPublish(
+			gotoPublicationsAdmin = "true",
 			publicationName = "Publication Name 1");
 
-		Publications.discardChanges(
+		PublicationsChanges.discardChanges(
 			changeCategory = "com.liferay.layout.page.template.model.LayoutPageTemplateStructure",
 			changeTitle = "com.liferay.layout.page.template.model.LayoutPageTemplateStructure",
 			conflictingChanges = "true",
 			entryTitle = "com.liferay.layout.page.template.model.LayoutPageTemplateStructure");
 
-		Publications.discardChanges(
+		PublicationsChanges.discardChanges(
 			changeCategory = "com.liferay.portal.kernel.model.PortletPreferenceValue",
 			changeTitle = "com.liferay.portal.kernel.model.PortletPreferenceValue",
 			conflictingChanges = "true",
@@ -297,12 +282,7 @@ definition {
 			key_friendlyURL = "/test-page-edited",
 			locator1 = "SitePages#FRIENDLY_URL");
 
-		ApplicationsMenu.gotoPortlet(
-			category = "Publications",
-			panel = "Applications",
-			portlet = "Publications");
-
-		Navigator.gotoNavTab(navTab = "History");
+		PublicationsNavigator.openPublicationsHistory();
 
 		Publications.revertPublication(publicationName = "Publication Name");
 

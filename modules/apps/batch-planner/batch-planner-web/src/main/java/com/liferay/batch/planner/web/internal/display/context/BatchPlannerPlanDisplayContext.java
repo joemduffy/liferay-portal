@@ -17,7 +17,6 @@ package com.liferay.batch.planner.web.internal.display.context;
 import com.liferay.batch.planner.model.BatchPlannerPlan;
 import com.liferay.batch.planner.service.BatchPlannerPlanServiceUtil;
 import com.liferay.petra.portlet.url.builder.PortletURLBuilder;
-import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.dao.search.EmptyOnClickRowChecker;
 import com.liferay.portal.kernel.dao.search.SearchContainer;
 import com.liferay.portal.kernel.util.OrderByComparatorFactoryUtil;
@@ -31,20 +30,25 @@ import javax.portlet.RenderResponse;
 /**
  * @author Matija Petanjek
  */
-public class BatchPlannerPlanDisplayContext {
+public class BatchPlannerPlanDisplayContext extends BaseDisplayContext {
 
 	public BatchPlannerPlanDisplayContext(
 		RenderRequest renderRequest, RenderResponse renderResponse) {
 
-		_renderRequest = renderRequest;
-		_renderResponse = renderResponse;
+		super(renderRequest, renderResponse);
 	}
 
 	public PortletURL getPortletURL() {
 		return PortletURLBuilder.createRenderURL(
-			_renderResponse
+			renderResponse
+		).setMVCRenderCommandName(
+			"/batch_planner/view_batch_planner_plans"
+		).setNavigation(
+			ParamUtil.getString(renderRequest, "navigation", "all")
+		).setTabs1(
+			"batch-planner-plans"
 		).setParameter(
-			"delta", () -> ParamUtil.getString(_renderRequest, "delta")
+			"delta", () -> ParamUtil.getString(renderRequest, "delta")
 		).buildPortletURL();
 	}
 
@@ -54,73 +58,59 @@ public class BatchPlannerPlanDisplayContext {
 		}
 
 		_searchContainer = new SearchContainer<>(
-			_renderRequest, getPortletURL(), null, "no-items-were-found");
+			renderRequest, getPortletURL(), null, "no-items-were-found");
+
+		_searchContainer.setId("batchPlannerPlanSearchContainer");
 
 		String orderByCol = ParamUtil.getString(
-			_renderRequest, SearchContainer.DEFAULT_ORDER_BY_COL_PARAM,
+			renderRequest, SearchContainer.DEFAULT_ORDER_BY_COL_PARAM,
 			"modifiedDate");
 
 		_searchContainer.setOrderByCol(orderByCol);
 
 		String orderByType = ParamUtil.getString(
-			_renderRequest, SearchContainer.DEFAULT_ORDER_BY_TYPE_PARAM,
-			"desc");
+			renderRequest, SearchContainer.DEFAULT_ORDER_BY_TYPE_PARAM, "desc");
 
 		_searchContainer.setOrderByType(orderByType);
 
 		_searchContainer.setRowChecker(
-			new EmptyOnClickRowChecker(_renderResponse));
+			new EmptyOnClickRowChecker(renderResponse));
 
-		long companyId = PortalUtil.getCompanyId(_renderRequest);
+		long companyId = PortalUtil.getCompanyId(renderRequest);
 
 		String navigation = ParamUtil.getString(
-			_renderRequest, "navigation", "all");
+			renderRequest, "navigation", "all");
 
 		if (navigation.equals("all")) {
 			_searchContainer.setResults(
 				BatchPlannerPlanServiceUtil.getBatchPlannerPlans(
-					companyId, _searchContainer.getStart(),
+					companyId, true, _searchContainer.getStart(),
 					_searchContainer.getEnd(),
 					OrderByComparatorFactoryUtil.create(
 						"BatchPlannerPlan", orderByCol,
 						orderByType.equals("asc"))));
 			_searchContainer.setTotal(
 				BatchPlannerPlanServiceUtil.getBatchPlannerPlansCount(
-					companyId));
+					companyId, true));
 		}
 		else {
-			boolean export = _isExport(navigation);
+			boolean export = isExport(navigation);
 
 			_searchContainer.setResults(
 				BatchPlannerPlanServiceUtil.getBatchPlannerPlans(
-					companyId, export, _searchContainer.getStart(),
+					companyId, export, true, _searchContainer.getStart(),
 					_searchContainer.getEnd(),
 					OrderByComparatorFactoryUtil.create(
 						"BatchPlannerPlan", orderByCol,
 						orderByType.equals("asc"))));
 			_searchContainer.setTotal(
 				BatchPlannerPlanServiceUtil.getBatchPlannerPlansCount(
-					companyId, export));
+					companyId, export, true));
 		}
 
 		return _searchContainer;
 	}
 
-	public String getSimpleInternalClassName(
-		BatchPlannerPlan batchPlannerPlan) {
-
-		String internalClassName = batchPlannerPlan.getInternalClassName();
-
-		return internalClassName.substring(
-			internalClassName.lastIndexOf(StringPool.PERIOD) + 1);
-	}
-
-	private boolean _isExport(String navigation) {
-		return navigation.equals("export");
-	}
-
-	private final RenderRequest _renderRequest;
-	private final RenderResponse _renderResponse;
 	private SearchContainer<BatchPlannerPlan> _searchContainer;
 
 }

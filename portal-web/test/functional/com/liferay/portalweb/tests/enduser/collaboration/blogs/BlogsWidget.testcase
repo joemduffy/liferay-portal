@@ -53,23 +53,71 @@ definition {
 	}
 
 	@description = "This is a test for LPS-136766. It checks that comments can be disabled from the widget."
-	@ignore = "true"
 	@priority = "3"
 	test CanDisableComments {
-		property portal.acceptance = "false";
+		JSONBlog.addEntry(
+			entryContent = "Blogs Entry Content",
+			entryTitle = "Blogs Entry Title");
 
-		// TODO LPS-136766 CanDisableComments pending implementation
+		Navigator.gotoPage(pageName = "Blogs Page");
 
+		Portlet.gotoPortletOptions(portletOption = "Configuration");
+
+		BlogsConfiguration.selectConfigurationIFrame();
+
+		BlogsConfiguration.uncheckComments();
+
+		IFrame.saveConfiguration();
+
+		Navigator.gotoPage(pageName = "Blogs Page");
+
+		AssertElementNotPresent(
+			key_text = "comments",
+			locator1 = "Icon#ANY");
+
+		BlogsNavigator.openToBlogEntry(
+			entryTitle = "Blogs Entry Title",
+			layoutName = "Blogs Page",
+			siteURLKey = "guest");
+
+		AssertElementNotPresent(locator1 = "CKEditor#BODY_FIELD_IFRAME");
 	}
 
 	@description = "This is a test for LPS-136767. It checks that related assets can be disabled from the widget."
-	@ignore = "true"
 	@priority = "3"
 	test CanDisableRelatedAssets {
-		property portal.acceptance = "false";
+		JSONBlog.addEntry(
+			entryContent = "Blogs Entry1 Content",
+			entryTitle = "Blogs Entry1 Title");
 
-		// TODO LPS-136767 CanDisableRelatedAssets pending implementation
+		BlogsNavigator.gotoAddEntry();
 
+		BlogsEntry.addEntryContent(
+			entryContent = "Blogs Entry2 Content",
+			entryTitle = "Blogs Entry2 Title");
+
+		RelatedAssets.selectAsset(
+			assetTitle = "Blogs Entry1 Title",
+			assetType = "Blogs Entry");
+
+		PortletEntry.publish();
+
+		Navigator.gotoPage(pageName = "Blogs Page");
+
+		Portlet.gotoPortletOptions(portletOption = "Configuration");
+
+		BlogsConfiguration.selectConfigurationIFrame();
+
+		BlogsConfiguration.uncheckRelatedAssets();
+
+		IFrame.saveConfiguration();
+
+		BlogsNavigator.openToBlogEntry(
+			entryTitle = "Blogs Entry2 Title",
+			layoutName = "Blogs Page",
+			siteURLKey = "guest");
+
+		AssertElementNotPresent(locator1 = "AssetRelatedAssets#HEADER");
 	}
 
 	@description = "This checks that an entry can be edited in card view"
@@ -453,23 +501,73 @@ definition {
 	}
 
 	@description = "This is a test for LPS-136810. It checks that a blog can be viewed with Quote Display in the Aggregator widget."
-	@ignore = "true"
 	@priority = "3"
 	test CanViewEntryInQuoteDisplayStyleViaAggregator {
-		property portal.acceptance = "false";
+		JSONLayout.addPublicLayout(
+			groupName = "Guest",
+			layoutName = "Blogs Aggregator Page");
 
-		// TODO LPS-136810 CanViewEntryInQuoteDisplayStyleViaAggregator pending implementation
+		JSONLayout.addWidgetToPublicLayout(
+			column = "1",
+			groupName = "Guest",
+			layoutName = "Blogs Aggregator Page",
+			widgetName = "Blogs Aggregator");
 
+		JSONBlog.addEntry(
+			entryContent = "Blogs Entry Content",
+			entryTitle = "Blogs Entry Title");
+
+		Navigator.gotoPage(pageName = "Blogs Aggregator Page");
+
+		BlogsAggregatorPortlet.viewBlogsEntryViaBAPortletPG(
+			entryContent = "Blogs Entry Content",
+			entryTitle = "Blogs Entry Title");
+
+		BlogsAggregatorPortlet.selectDisplayStyle(displayStyle = "Quote");
+
+		Navigator.gotoPage(pageName = "Blogs Aggregator Page");
+
+		BlogsAggregatorPortlet.viewBlogsEntryViaBAPortletPG(
+			entryQuoteContent = "Blogs Entry Content...",
+			entryTitle = "Blogs Entry Title");
 	}
 
 	@description = "This is a test for LPS-136811. It checks that a blog can be viewed through the Navigations Portlet."
-	@ignore = "true"
 	@priority = "3"
 	test CanViewEntryViaNavigationsPortlet {
-		property portal.acceptance = "false";
+		JSONCategory.addVocabulary(
+			groupName = "Guest",
+			title = "Vocabulary Name");
 
-		// TODO LPS-136811 CanViewEntryViaNavigationsPortlet pending implementation
+		var categoryId = JSONCategory.addCategory(
+			groupName = "Guest",
+			title = "Category Name",
+			vocabularyName = "Vocabulary Name");
 
+		JSONLayout.addWidgetToPublicLayout(
+			column = "2",
+			groupName = "Guest",
+			layoutName = "Blogs Page",
+			widgetName = "Categories Navigation");
+
+		JSONBlog.addEntry(
+			entryContent = "Blogs Entry Content 1",
+			entryTitle = "Blogs Entry Title 1");
+
+		JSONBlog.addEntry(
+			assetCategoryIds = "${categoryId}",
+			entryContent = "Blogs Entry Content 2",
+			entryTitle = "Blogs Entry Title 2");
+
+		Navigator.gotoPage(pageName = "Blogs Page");
+
+		CategoriesNavigationPortlet.selectCategoryPG(categoryName = "Category Name");
+
+		BlogsEntry.viewNoPG(entryTitle = "Blogs Entry Title 1");
+
+		BlogsEntry.viewPG(
+			entryContent = "Blogs Entry Content 2",
+			entryTitle = "Blogs Entry Title 2");
 	}
 
 	@description = "This is a test for LPS-136812. It checks that a blog can be viewed through the Recent Bloggers Portlet."
@@ -480,6 +578,54 @@ definition {
 
 		// TODO LPS-136812 CanViewEntryViaRecentBloggers pending implementation
 
+	}
+
+	@description = "This is a test for LPS-141740. It checks that a user can view the details of latest blogs entry via recent bloggers."
+	@priority = "4"
+	test CanViewLatestEntryViaRecentBloggers {
+		JSONLayout.addPublicLayout(
+			groupName = "Guest",
+			layoutName = "Recent Bloggers Page");
+
+		JSONLayout.addWidgetToPublicLayout(
+			column = "1",
+			groupName = "Guest",
+			layoutName = "Recent Bloggers Page",
+			widgetName = "Blogs");
+
+		JSONLayout.addWidgetToPublicLayout(
+			column = "2",
+			groupName = "Guest",
+			layoutName = "Recent Bloggers Page",
+			widgetName = "Recent Bloggers");
+
+		JSONBlog.addEntry(
+			entryContent = "Blogs Entry Content",
+			entryTitle = "Blogs Entry Title");
+
+		JSONBlog.addEntry(
+			entryContent = "Blogs Entry Content Latest",
+			entryTitle = "Blogs Entry Title Latest");
+
+		Navigator.gotoPage(pageName = "Recent Bloggers Page");
+
+		BlogsRecentBloggersPortlet.gotoEntryDetails(userName = "Test Test");
+
+		BlogsEntry.viewEntryPG(
+			entryContent = "Blogs Entry Content Latest",
+			entryTitle = "Blogs Entry Title Latest");
+
+		JSONBlog.moveEntryToTrash(
+			entryTitle = "Blogs Entry Title Latest",
+			groupName = "Guest");
+
+		Navigator.gotoPage(pageName = "Recent Bloggers Page");
+
+		BlogsRecentBloggersPortlet.gotoEntryDetails(userName = "Test Test");
+
+		BlogsEntry.viewEntryPG(
+			entryContent = "Blogs Entry Content",
+			entryTitle = "Blogs Entry Title");
 	}
 
 	@description = "This checks that Blogs widgets are independently configured."

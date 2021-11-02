@@ -37,11 +37,39 @@ definition {
 	}
 
 	macro addLocalization {
+		var locale = StringUtil.replace("${locale}", "-", "_");
+
+		Click(locator1 = "Button#LOCALIZATION_GENERIC");
+
+		if (IsElementNotPresent(key_locale = "${locale}", locator1 = "Translation#LOCALIZATION_NAME")) {
+			WebContentStructures.addTranslations(
+				localeList = "${locale}",
+				localizedDone = "${localizedDone}",
+				localizedManageTranslations = "${localizedManageTranslations}");
+		}
+
+		else {
+			Click(locator1 = "Button#LOCALIZATION_GENERIC");
+		}
+
 		PortletEntry.changeLocale(locale = "${locale}");
 
 		WebContentStructures.addName(structureName = "${localization1Name}");
 
 		if (isSet(locale2)) {
+			Click(locator1 = "Button#LOCALIZATION_GENERIC");
+
+			if (IsElementNotPresent(key_locale = "${locale2}", locator1 = "Translation#LOCALIZATION_NAME")) {
+				WebContentStructures.addTranslations(
+					localeList = "${locale2}",
+					localizedDone = "${localizedDone}",
+					localizedManageTranslations = "${localizedManageTranslations}");
+			}
+
+			else {
+				Click(locator1 = "Button#LOCALIZATION_GENERIC");
+			}
+
 			PortletEntry.changeLocale(locale = "${locale2}");
 
 			WebContentStructures.addName(structureName = "${localization2Name}");
@@ -64,6 +92,50 @@ definition {
 		AssertElementPresent(locator1 = "TextInput#REQUIRED_ALERT");
 
 		SelectFrame(value1 = "relative=top");
+	}
+
+	macro addTranslations {
+		if (isSet(localizedManageTranslations)) {
+			var manageTranslations = "${localizedManageTranslations}";
+		}
+
+		else {
+			var manageTranslations = "Manage Translations";
+		}
+
+		if (IsElementNotPresent(key_menuItem = "${manageTranslations}", locator1 = "MenuItem#ANY_MENU_ITEM")) {
+			Click(locator1 = "Button#LOCALIZATION_GENERIC");
+		}
+
+		MenuItem.click(menuItem = "${manageTranslations}");
+
+		WaitForElementPresent(locator1 = "Modal#BODY");
+
+		Click(locator1 = "Icon#PLUS");
+
+		for (var locale : list "${localeList}") {
+			var locale = StringUtil.replace("${locale}", "_", "-");
+
+			MenuItem.click(menuItem = "${locale}");
+
+			AssertElementPresent(
+				key_tableEntry = "${locale}",
+				locator1 = "LexiconTable#TABLE_ENTRY");
+		}
+
+		Click(locator1 = "Icon#PLUS");
+
+		if (isSet(localizedDone)) {
+			Click(
+				key_text = "${localizedDone}",
+				locator1 = "Modal#MODAL_FOOTER_BUTTON");
+		}
+
+		else {
+			Click(
+				key_text = "Done",
+				locator1 = "Modal#MODAL_FOOTER_BUTTON");
+		}
 	}
 
 	macro copyCP {

@@ -15,7 +15,6 @@
 package com.liferay.search.experiences.rest.client.serdes.v1_0;
 
 import com.liferay.search.experiences.rest.client.dto.v1_0.Configuration;
-import com.liferay.search.experiences.rest.client.dto.v1_0.Query;
 import com.liferay.search.experiences.rest.client.json.BaseJSONParser;
 
 import java.util.Iterator;
@@ -23,7 +22,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.TreeMap;
-import java.util.stream.Stream;
 
 import javax.annotation.Generated;
 
@@ -67,14 +65,15 @@ public class ConfigurationSerDes {
 			sb.append(String.valueOf(configuration.getAdvanced()));
 		}
 
-		if (configuration.getAggregations() != null) {
+		if (configuration.getAggregationConfiguration() != null) {
 			if (sb.length() > 1) {
 				sb.append(", ");
 			}
 
-			sb.append("\"aggregations\": ");
+			sb.append("\"aggregationConfiguration\": ");
 
-			sb.append(_toJSON(configuration.getAggregations()));
+			sb.append(
+				String.valueOf(configuration.getAggregationConfiguration()));
 		}
 
 		if (configuration.getFacet() != null) {
@@ -107,24 +106,34 @@ public class ConfigurationSerDes {
 			sb.append(String.valueOf(configuration.getHighlight()));
 		}
 
-		if (configuration.getQueries() != null) {
+		if (configuration.getParameters() != null) {
 			if (sb.length() > 1) {
 				sb.append(", ");
 			}
 
-			sb.append("\"queries\": ");
+			sb.append("\"parameters\": ");
 
-			sb.append("[");
+			sb.append(_toJSON(configuration.getParameters()));
+		}
 
-			for (int i = 0; i < configuration.getQueries().length; i++) {
-				sb.append(String.valueOf(configuration.getQueries()[i]));
-
-				if ((i + 1) < configuration.getQueries().length) {
-					sb.append(", ");
-				}
+		if (configuration.getQueryConfiguration() != null) {
+			if (sb.length() > 1) {
+				sb.append(", ");
 			}
 
-			sb.append("]");
+			sb.append("\"queryConfiguration\": ");
+
+			sb.append(String.valueOf(configuration.getQueryConfiguration()));
+		}
+
+		if (configuration.getSortConfiguration() != null) {
+			if (sb.length() > 1) {
+				sb.append(", ");
+			}
+
+			sb.append("\"sortConfiguration\": ");
+
+			sb.append(String.valueOf(configuration.getSortConfiguration()));
 		}
 
 		sb.append("}");
@@ -153,13 +162,13 @@ public class ConfigurationSerDes {
 			map.put("advanced", String.valueOf(configuration.getAdvanced()));
 		}
 
-		if (configuration.getAggregations() == null) {
-			map.put("aggregations", null);
+		if (configuration.getAggregationConfiguration() == null) {
+			map.put("aggregationConfiguration", null);
 		}
 		else {
 			map.put(
-				"aggregations",
-				String.valueOf(configuration.getAggregations()));
+				"aggregationConfiguration",
+				String.valueOf(configuration.getAggregationConfiguration()));
 		}
 
 		if (configuration.getFacet() == null) {
@@ -183,11 +192,30 @@ public class ConfigurationSerDes {
 			map.put("highlight", String.valueOf(configuration.getHighlight()));
 		}
 
-		if (configuration.getQueries() == null) {
-			map.put("queries", null);
+		if (configuration.getParameters() == null) {
+			map.put("parameters", null);
 		}
 		else {
-			map.put("queries", String.valueOf(configuration.getQueries()));
+			map.put(
+				"parameters", String.valueOf(configuration.getParameters()));
+		}
+
+		if (configuration.getQueryConfiguration() == null) {
+			map.put("queryConfiguration", null);
+		}
+		else {
+			map.put(
+				"queryConfiguration",
+				String.valueOf(configuration.getQueryConfiguration()));
+		}
+
+		if (configuration.getSortConfiguration() == null) {
+			map.put("sortConfiguration", null);
+		}
+		else {
+			map.put(
+				"sortConfiguration",
+				String.valueOf(configuration.getSortConfiguration()));
 		}
 
 		return map;
@@ -217,10 +245,12 @@ public class ConfigurationSerDes {
 						AdvancedSerDes.toDTO((String)jsonParserFieldValue));
 				}
 			}
-			else if (Objects.equals(jsonParserFieldName, "aggregations")) {
+			else if (Objects.equals(
+						jsonParserFieldName, "aggregationConfiguration")) {
+
 				if (jsonParserFieldValue != null) {
-					configuration.setAggregations(
-						(Map)ConfigurationSerDes.toMap(
+					configuration.setAggregationConfiguration(
+						AggregationConfigurationSerDes.toDTO(
 							(String)jsonParserFieldValue));
 				}
 			}
@@ -242,16 +272,27 @@ public class ConfigurationSerDes {
 						HighlightSerDes.toDTO((String)jsonParserFieldValue));
 				}
 			}
-			else if (Objects.equals(jsonParserFieldName, "queries")) {
+			else if (Objects.equals(jsonParserFieldName, "parameters")) {
 				if (jsonParserFieldValue != null) {
-					configuration.setQueries(
-						Stream.of(
-							toStrings((Object[])jsonParserFieldValue)
-						).map(
-							object -> QuerySerDes.toDTO((String)object)
-						).toArray(
-							size -> new Query[size]
-						));
+					configuration.setParameters(
+						(Map)ConfigurationSerDes.toMap(
+							(String)jsonParserFieldValue));
+				}
+			}
+			else if (Objects.equals(
+						jsonParserFieldName, "queryConfiguration")) {
+
+				if (jsonParserFieldValue != null) {
+					configuration.setQueryConfiguration(
+						QueryConfigurationSerDes.toDTO(
+							(String)jsonParserFieldValue));
+				}
+			}
+			else if (Objects.equals(jsonParserFieldName, "sortConfiguration")) {
+				if (jsonParserFieldValue != null) {
+					configuration.setSortConfiguration(
+						SortConfigurationSerDes.toDTO(
+							(String)jsonParserFieldValue));
 				}
 			}
 		}

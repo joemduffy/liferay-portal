@@ -67,6 +67,16 @@ public class SXPElementSerDes {
 			sb.append("\"");
 		}
 
+		if (sxpElement.getElementDefinition() != null) {
+			if (sb.length() > 1) {
+				sb.append(", ");
+			}
+
+			sb.append("\"elementDefinition\": ");
+
+			sb.append(String.valueOf(sxpElement.getElementDefinition()));
+		}
+
 		if (sxpElement.getId() != null) {
 			if (sb.length() > 1) {
 				sb.append(", ");
@@ -116,6 +126,15 @@ public class SXPElementSerDes {
 			map.put("description", String.valueOf(sxpElement.getDescription()));
 		}
 
+		if (sxpElement.getElementDefinition() == null) {
+			map.put("elementDefinition", null);
+		}
+		else {
+			map.put(
+				"elementDefinition",
+				String.valueOf(sxpElement.getElementDefinition()));
+		}
+
 		if (sxpElement.getId() == null) {
 			map.put("id", null);
 		}
@@ -154,6 +173,13 @@ public class SXPElementSerDes {
 			if (Objects.equals(jsonParserFieldName, "description")) {
 				if (jsonParserFieldValue != null) {
 					sxpElement.setDescription((String)jsonParserFieldValue);
+				}
+			}
+			else if (Objects.equals(jsonParserFieldName, "elementDefinition")) {
+				if (jsonParserFieldValue != null) {
+					sxpElement.setElementDefinition(
+						ElementDefinitionSerDes.toDTO(
+							(String)jsonParserFieldValue));
 				}
 			}
 			else if (Objects.equals(jsonParserFieldName, "id")) {

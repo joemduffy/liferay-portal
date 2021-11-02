@@ -56,26 +56,30 @@ public class Configuration implements Cloneable, Serializable {
 
 	protected Advanced advanced;
 
-	public Map<String, ?> getAggregations() {
-		return aggregations;
+	public AggregationConfiguration getAggregationConfiguration() {
+		return aggregationConfiguration;
 	}
 
-	public void setAggregations(Map<String, ?> aggregations) {
-		this.aggregations = aggregations;
+	public void setAggregationConfiguration(
+		AggregationConfiguration aggregationConfiguration) {
+
+		this.aggregationConfiguration = aggregationConfiguration;
 	}
 
-	public void setAggregations(
-		UnsafeSupplier<Map<String, ?>, Exception> aggregationsUnsafeSupplier) {
+	public void setAggregationConfiguration(
+		UnsafeSupplier<AggregationConfiguration, Exception>
+			aggregationConfigurationUnsafeSupplier) {
 
 		try {
-			aggregations = aggregationsUnsafeSupplier.get();
+			aggregationConfiguration =
+				aggregationConfigurationUnsafeSupplier.get();
 		}
 		catch (Exception e) {
 			throw new RuntimeException(e);
 		}
 	}
 
-	protected Map<String, ?> aggregations;
+	protected AggregationConfiguration aggregationConfiguration;
 
 	public Facet getFacet() {
 		return facet;
@@ -138,26 +142,71 @@ public class Configuration implements Cloneable, Serializable {
 
 	protected Highlight highlight;
 
-	public Query[] getQueries() {
-		return queries;
+	public Map<String, Parameter> getParameters() {
+		return parameters;
 	}
 
-	public void setQueries(Query[] queries) {
-		this.queries = queries;
+	public void setParameters(Map<String, Parameter> parameters) {
+		this.parameters = parameters;
 	}
 
-	public void setQueries(
-		UnsafeSupplier<Query[], Exception> queriesUnsafeSupplier) {
+	public void setParameters(
+		UnsafeSupplier<Map<String, Parameter>, Exception>
+			parametersUnsafeSupplier) {
 
 		try {
-			queries = queriesUnsafeSupplier.get();
+			parameters = parametersUnsafeSupplier.get();
 		}
 		catch (Exception e) {
 			throw new RuntimeException(e);
 		}
 	}
 
-	protected Query[] queries;
+	protected Map<String, Parameter> parameters;
+
+	public QueryConfiguration getQueryConfiguration() {
+		return queryConfiguration;
+	}
+
+	public void setQueryConfiguration(QueryConfiguration queryConfiguration) {
+		this.queryConfiguration = queryConfiguration;
+	}
+
+	public void setQueryConfiguration(
+		UnsafeSupplier<QueryConfiguration, Exception>
+			queryConfigurationUnsafeSupplier) {
+
+		try {
+			queryConfiguration = queryConfigurationUnsafeSupplier.get();
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	protected QueryConfiguration queryConfiguration;
+
+	public SortConfiguration getSortConfiguration() {
+		return sortConfiguration;
+	}
+
+	public void setSortConfiguration(SortConfiguration sortConfiguration) {
+		this.sortConfiguration = sortConfiguration;
+	}
+
+	public void setSortConfiguration(
+		UnsafeSupplier<SortConfiguration, Exception>
+			sortConfigurationUnsafeSupplier) {
+
+		try {
+			sortConfiguration = sortConfigurationUnsafeSupplier.get();
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	protected SortConfiguration sortConfiguration;
 
 	@Override
 	public Configuration clone() throws CloneNotSupportedException {

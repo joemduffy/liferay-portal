@@ -26,6 +26,11 @@ AUI.add(
 
 		var Lang = A.Lang;
 
+		var booleanOptions = {
+			false: Liferay.Language.get('no'),
+			true: Liferay.Language.get('yes'),
+		};
+
 		var booleanParse = A.DataType.Boolean.parse;
 		var camelize = Lang.String.camelize;
 
@@ -352,13 +357,13 @@ AUI.add(
 						'0_json': JSON.stringify(criterionJSON),
 						'1_json': JSON.stringify(criterionJSON),
 						'2_json': JSON.stringify(uploadCriterionJSON),
-						criteria:
+						'criteria':
 							'com.liferay.item.selector.criteria.file.criterion.FileItemSelectorCriterion',
-						itemSelectedEventName:
+						'itemSelectedEventName':
 							portletNamespace + 'selectDocumentLibrary',
-						p_p_id: Liferay.PortletKeys.ITEM_SELECTOR,
-						p_p_mode: 'view',
-						p_p_state: 'pop_up',
+						'p_p_id': Liferay.PortletKeys.ITEM_SELECTOR,
+						'p_p_mode': 'view',
+						'p_p_state': 'pop_up',
 					};
 
 					var documentLibrarySelectorURL = Liferay.Util.PortletURL.createPortletURL(
@@ -371,11 +376,11 @@ AUI.add(
 
 				_getUploadURL() {
 					var uploadParameters = {
-						cmd: 'add_temp',
+						'cmd': 'add_temp',
 						'javax.portlet.action':
 							'/document_library/upload_file_entry',
-						p_auth: Liferay.authToken,
-						p_p_id: Liferay.PortletKeys.DOCUMENT_LIBRARY,
+						'p_auth': Liferay.authToken,
+						'p_p_id': Liferay.PortletKeys.DOCUMENT_LIBRARY,
 					};
 
 					var uploadURL = Liferay.Util.PortletURL.createActionURL(
@@ -1042,33 +1047,30 @@ AUI.add(
 
 			var type = instance.get('type');
 
-			var booleanOptions = {
-				false: Liferay.Language.get('no'),
-				true: Liferay.Language.get('yes'),
-			};
-
 			var indexTypeOptions = {
 				'': Liferay.Language.get('no'),
-				keyword: Liferay.Language.get('yes'),
+				'keyword': Liferay.Language.get('yes'),
 			};
 
 			if (type == 'ddm-image' || type == 'text') {
 				indexTypeOptions = {
 					'': Liferay.Language.get('not-indexable'),
-					keyword: Liferay.Language.get('indexable-keyword'),
-					text: Liferay.Language.get('indexable-text'),
+					'keyword': Liferay.Language.get('indexable-keyword'),
+					'text': Liferay.Language.get('indexable-text'),
 				};
 			}
 
 			if (type == 'ddm-text-html' || type == 'textarea') {
 				indexTypeOptions = {
 					'': Liferay.Language.get('not-indexable'),
-					text: Liferay.Language.get('indexable-text'),
+					'text': Liferay.Language.get('indexable-text'),
 				};
 			}
 
+			const newModel = [];
+
 			model.forEach((item) => {
-				if (item.attributeName == 'name') {
+				if (item.attributeName === 'name') {
 					item.editor = new A.TextCellEditor({
 						validator: {
 							rules: {
@@ -1086,9 +1088,21 @@ AUI.add(
 				if (item.editor) {
 					item.editor.set('strings', editorLocalizedStrings);
 				}
+
+				newModel.push(item);
+
+				if (item.attributeName === 'required') {
+					item.id = 'required';
+
+					if (type === 'ddm-image') {
+						newModel.push(
+							instance.getRequiredDescriptionPropertyModel()
+						);
+					}
+				}
 			});
 
-			return model.concat([
+			return newModel.concat([
 				{
 					attributeName: 'indexType',
 					editor: new A.RadioCellEditor({
@@ -1440,6 +1454,11 @@ AUI.add(
 						return structureFieldIndexEnable() ? 'text' : '';
 					},
 				},
+
+				requiredDescription: {
+					setter: booleanParse,
+					value: true,
+				},
 			},
 
 			EXTENDS: A.FormBuilderField,
@@ -1449,6 +1468,21 @@ AUI.add(
 			prototype: {
 				getHTML() {
 					return TPL_WCM_IMAGE;
+				},
+
+				getRequiredDescriptionPropertyModel() {
+					return {
+						attributeName: 'requiredDescription',
+						editor: new A.RadioCellEditor({
+							options: booleanOptions,
+							strings: editorLocalizedStrings,
+						}),
+						formatter(val) {
+							return booleanOptions[val.data.value];
+						},
+						id: 'requiredDescription',
+						name: Liferay.Language.get('required-description'),
+					};
 				},
 			},
 		});

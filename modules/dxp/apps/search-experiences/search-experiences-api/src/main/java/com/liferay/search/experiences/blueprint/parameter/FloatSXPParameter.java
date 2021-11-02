@@ -14,9 +14,8 @@
 
 package com.liferay.search.experiences.blueprint.parameter;
 
-import com.liferay.search.experiences.blueprint.parameter.exception.SXPParameterException;
-
-import java.util.Map;
+import com.liferay.portal.kernel.util.ArrayUtil;
+import com.liferay.portal.kernel.util.GetterUtil;
 
 /**
  * @author Petteri Karttunen
@@ -32,26 +31,39 @@ public class FloatSXPParameter extends BaseSXPParameter {
 	}
 
 	@Override
-	public boolean accept(EvaluationVisitor evaluationVisitor)
-		throws SXPParameterException {
-
-		return evaluationVisitor.visit(this);
-	}
-
-	@Override
-	public String accept(
-			ToStringVisitor toStringVisitor, Map<String, String> options)
-		throws Exception {
-
-		return toStringVisitor.visit(this, options);
-	}
-
-	public boolean equalsTo(Float value) {
-		if (_value.floatValue() == value.floatValue()) {
+	public boolean evaluateEquals(Object object) {
+		if (_value.floatValue() == GetterUtil.getFloat(object)) {
 			return true;
 		}
 
 		return false;
+	}
+
+	@Override
+	public boolean evaluateIn(Object[] values) {
+		return ArrayUtil.contains(
+			GetterUtil.getFloatValues(ArrayUtil.toStringArray(values)), _value);
+	}
+
+	@Override
+	public boolean evaluateRange(Object gt, Object gte, Object lt, Object lte) {
+		if ((gt != null) && (_value <= GetterUtil.getFloat(gt))) {
+			return false;
+		}
+
+		if ((gte != null) && (_value < GetterUtil.getFloat(gte))) {
+			return false;
+		}
+
+		if ((lt != null) && (_value >= GetterUtil.getFloat(lt))) {
+			return false;
+		}
+
+		if ((lte != null) && (_value > GetterUtil.getFloat(lte))) {
+			return false;
+		}
+
+		return true;
 	}
 
 	@Override

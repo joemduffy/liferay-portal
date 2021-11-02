@@ -928,8 +928,12 @@ public class ProductResourceImpl
 
 			if (diagram != null) {
 				DiagramUtil.addOrUpdateCSDiagramSetting(
+					contextCompany.getCompanyId(),
+					_cpAttachmentFileEntryService,
 					cpDefinition.getCPDefinitionId(), _csDiagramSettingService,
-					diagram);
+					diagram, cpDefinition.getGroupId(),
+					contextAcceptLanguage.getPreferredLocale(),
+					_serviceContextHelper, _uniqueFileNameProvider);
 			}
 
 			MappedProduct[] mappedProducts = product.getMappedProducts();
@@ -943,7 +947,9 @@ public class ProductResourceImpl
 						contextCompany.getCompanyId(),
 						cpDefinition.getCPDefinitionId(), _cpDefinitionService,
 						_cpInstanceService, _csDiagramEntryService,
-						mappedProduct);
+						cpDefinition.getGroupId(),
+						contextAcceptLanguage.getPreferredLocale(),
+						mappedProduct, _serviceContextHelper);
 				}
 			}
 

@@ -30,6 +30,7 @@ import com.liferay.object.admin.rest.client.resource.v1_0.ObjectRelationshipReso
 import com.liferay.object.admin.rest.client.serdes.v1_0.ObjectRelationshipSerDes;
 import com.liferay.petra.reflect.ReflectionUtil;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.json.JSONUtil;
@@ -49,7 +50,6 @@ import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.portal.vulcan.resource.EntityModelResource;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 
 import java.text.DateFormat;
@@ -182,6 +182,7 @@ public abstract class BaseObjectRelationshipResourceTestCase {
 		ObjectRelationship objectRelationship = randomObjectRelationship();
 
 		objectRelationship.setName(regex);
+		objectRelationship.setObjectDefinitionName2(regex);
 
 		String json = ObjectRelationshipSerDes.toJSON(objectRelationship);
 
@@ -190,6 +191,8 @@ public abstract class BaseObjectRelationshipResourceTestCase {
 		objectRelationship = ObjectRelationshipSerDes.toDTO(json);
 
 		Assert.assertEquals(regex, objectRelationship.getName());
+		Assert.assertEquals(
+			regex, objectRelationship.getObjectDefinitionName2());
 	}
 
 	@Test
@@ -246,6 +249,12 @@ public abstract class BaseObjectRelationshipResourceTestCase {
 			Arrays.asList(objectRelationship1, objectRelationship2),
 			(List<ObjectRelationship>)page.getItems());
 		assertValid(page);
+
+		objectRelationshipResource.deleteObjectRelationship(
+			objectRelationship1.getId());
+
+		objectRelationshipResource.deleteObjectRelationship(
+			objectRelationship2.getId());
 	}
 
 	@Test
@@ -349,6 +358,169 @@ public abstract class BaseObjectRelationshipResourceTestCase {
 			postObjectDefinitionObjectRelationship(
 				testGetObjectDefinitionObjectRelationshipsPage_getObjectDefinitionId(),
 				objectRelationship);
+	}
+
+	@Test
+	public void testDeleteObjectRelationship() throws Exception {
+		@SuppressWarnings("PMD.UnusedLocalVariable")
+		ObjectRelationship objectRelationship =
+			testDeleteObjectRelationship_addObjectRelationship();
+
+		assertHttpResponseStatusCode(
+			204,
+			objectRelationshipResource.deleteObjectRelationshipHttpResponse(
+				objectRelationship.getId()));
+
+		assertHttpResponseStatusCode(
+			404,
+			objectRelationshipResource.getObjectRelationshipHttpResponse(
+				objectRelationship.getId()));
+
+		assertHttpResponseStatusCode(
+			404,
+			objectRelationshipResource.getObjectRelationshipHttpResponse(0L));
+	}
+
+	protected ObjectRelationship
+			testDeleteObjectRelationship_addObjectRelationship()
+		throws Exception {
+
+		throw new UnsupportedOperationException(
+			"This method needs to be implemented");
+	}
+
+	@Test
+	public void testGraphQLDeleteObjectRelationship() throws Exception {
+		ObjectRelationship objectRelationship =
+			testGraphQLObjectRelationship_addObjectRelationship();
+
+		Assert.assertTrue(
+			JSONUtil.getValueAsBoolean(
+				invokeGraphQLMutation(
+					new GraphQLField(
+						"deleteObjectRelationship",
+						new HashMap<String, Object>() {
+							{
+								put(
+									"objectRelationshipId",
+									objectRelationship.getId());
+							}
+						})),
+				"JSONObject/data", "Object/deleteObjectRelationship"));
+
+		JSONArray errorsJSONArray = JSONUtil.getValueAsJSONArray(
+			invokeGraphQLQuery(
+				new GraphQLField(
+					"objectRelationship",
+					new HashMap<String, Object>() {
+						{
+							put(
+								"objectRelationshipId",
+								objectRelationship.getId());
+						}
+					},
+					new GraphQLField("id"))),
+			"JSONArray/errors");
+
+		Assert.assertTrue(errorsJSONArray.length() > 0);
+	}
+
+	@Test
+	public void testGetObjectRelationship() throws Exception {
+		ObjectRelationship postObjectRelationship =
+			testGetObjectRelationship_addObjectRelationship();
+
+		ObjectRelationship getObjectRelationship =
+			objectRelationshipResource.getObjectRelationship(
+				postObjectRelationship.getId());
+
+		assertEquals(postObjectRelationship, getObjectRelationship);
+		assertValid(getObjectRelationship);
+	}
+
+	protected ObjectRelationship
+			testGetObjectRelationship_addObjectRelationship()
+		throws Exception {
+
+		throw new UnsupportedOperationException(
+			"This method needs to be implemented");
+	}
+
+	@Test
+	public void testGraphQLGetObjectRelationship() throws Exception {
+		ObjectRelationship objectRelationship =
+			testGraphQLObjectRelationship_addObjectRelationship();
+
+		Assert.assertTrue(
+			equals(
+				objectRelationship,
+				ObjectRelationshipSerDes.toDTO(
+					JSONUtil.getValueAsString(
+						invokeGraphQLQuery(
+							new GraphQLField(
+								"objectRelationship",
+								new HashMap<String, Object>() {
+									{
+										put(
+											"objectRelationshipId",
+											objectRelationship.getId());
+									}
+								},
+								getGraphQLFields())),
+						"JSONObject/data", "Object/objectRelationship"))));
+	}
+
+	@Test
+	public void testGraphQLGetObjectRelationshipNotFound() throws Exception {
+		Long irrelevantObjectRelationshipId = RandomTestUtil.randomLong();
+
+		Assert.assertEquals(
+			"Not Found",
+			JSONUtil.getValueAsString(
+				invokeGraphQLQuery(
+					new GraphQLField(
+						"objectRelationship",
+						new HashMap<String, Object>() {
+							{
+								put(
+									"objectRelationshipId",
+									irrelevantObjectRelationshipId);
+							}
+						},
+						getGraphQLFields())),
+				"JSONArray/errors", "Object/0", "JSONObject/extensions",
+				"Object/code"));
+	}
+
+	@Test
+	public void testPutObjectRelationship() throws Exception {
+		ObjectRelationship postObjectRelationship =
+			testPutObjectRelationship_addObjectRelationship();
+
+		ObjectRelationship randomObjectRelationship =
+			randomObjectRelationship();
+
+		ObjectRelationship putObjectRelationship =
+			objectRelationshipResource.putObjectRelationship(
+				postObjectRelationship.getId(), randomObjectRelationship);
+
+		assertEquals(randomObjectRelationship, putObjectRelationship);
+		assertValid(putObjectRelationship);
+
+		ObjectRelationship getObjectRelationship =
+			objectRelationshipResource.getObjectRelationship(
+				putObjectRelationship.getId());
+
+		assertEquals(randomObjectRelationship, getObjectRelationship);
+		assertValid(getObjectRelationship);
+	}
+
+	protected ObjectRelationship
+			testPutObjectRelationship_addObjectRelationship()
+		throws Exception {
+
+		throw new UnsupportedOperationException(
+			"This method needs to be implemented");
 	}
 
 	protected ObjectRelationship
@@ -459,6 +631,14 @@ public abstract class BaseObjectRelationshipResourceTestCase {
 				continue;
 			}
 
+			if (Objects.equals("deletionType", additionalAssertFieldName)) {
+				if (objectRelationship.getDeletionType() == null) {
+					valid = false;
+				}
+
+				continue;
+			}
+
 			if (Objects.equals("label", additionalAssertFieldName)) {
 				if (objectRelationship.getLabel() == null) {
 					valid = false;
@@ -489,6 +669,16 @@ public abstract class BaseObjectRelationshipResourceTestCase {
 					"objectDefinitionId2", additionalAssertFieldName)) {
 
 				if (objectRelationship.getObjectDefinitionId2() == null) {
+					valid = false;
+				}
+
+				continue;
+			}
+
+			if (Objects.equals(
+					"objectDefinitionName2", additionalAssertFieldName)) {
+
+				if (objectRelationship.getObjectDefinitionName2() == null) {
 					valid = false;
 				}
 
@@ -536,7 +726,7 @@ public abstract class BaseObjectRelationshipResourceTestCase {
 	protected List<GraphQLField> getGraphQLFields() throws Exception {
 		List<GraphQLField> graphQLFields = new ArrayList<>();
 
-		for (Field field :
+		for (java.lang.reflect.Field field :
 				getDeclaredFields(
 					com.liferay.object.admin.rest.dto.v1_0.ObjectRelationship.
 						class)) {
@@ -553,12 +743,13 @@ public abstract class BaseObjectRelationshipResourceTestCase {
 		return graphQLFields;
 	}
 
-	protected List<GraphQLField> getGraphQLFields(Field... fields)
+	protected List<GraphQLField> getGraphQLFields(
+			java.lang.reflect.Field... fields)
 		throws Exception {
 
 		List<GraphQLField> graphQLFields = new ArrayList<>();
 
-		for (Field field : fields) {
+		for (java.lang.reflect.Field field : fields) {
 			com.liferay.portal.vulcan.graphql.annotation.GraphQLField
 				vulcanGraphQLField = field.getAnnotation(
 					com.liferay.portal.vulcan.graphql.annotation.GraphQLField.
@@ -601,6 +792,17 @@ public abstract class BaseObjectRelationshipResourceTestCase {
 				if (!equals(
 						(Map)objectRelationship1.getActions(),
 						(Map)objectRelationship2.getActions())) {
+
+					return false;
+				}
+
+				continue;
+			}
+
+			if (Objects.equals("deletionType", additionalAssertFieldName)) {
+				if (!Objects.deepEquals(
+						objectRelationship1.getDeletionType(),
+						objectRelationship2.getDeletionType())) {
 
 					return false;
 				}
@@ -667,6 +869,19 @@ public abstract class BaseObjectRelationshipResourceTestCase {
 				continue;
 			}
 
+			if (Objects.equals(
+					"objectDefinitionName2", additionalAssertFieldName)) {
+
+				if (!Objects.deepEquals(
+						objectRelationship1.getObjectDefinitionName2(),
+						objectRelationship2.getObjectDefinitionName2())) {
+
+					return false;
+				}
+
+				continue;
+			}
+
 			if (Objects.equals("type", additionalAssertFieldName)) {
 				if (!Objects.deepEquals(
 						objectRelationship1.getType(),
@@ -712,14 +927,16 @@ public abstract class BaseObjectRelationshipResourceTestCase {
 		return false;
 	}
 
-	protected Field[] getDeclaredFields(Class clazz) throws Exception {
-		Stream<Field> stream = Stream.of(
+	protected java.lang.reflect.Field[] getDeclaredFields(Class clazz)
+		throws Exception {
+
+		Stream<java.lang.reflect.Field> stream = Stream.of(
 			ReflectionUtil.getDeclaredFields(clazz));
 
 		return stream.filter(
 			field -> !field.isSynthetic()
 		).toArray(
-			Field[]::new
+			java.lang.reflect.Field[]::new
 		);
 	}
 
@@ -779,6 +996,11 @@ public abstract class BaseObjectRelationshipResourceTestCase {
 				"Invalid entity field " + entityFieldName);
 		}
 
+		if (entityFieldName.equals("deletionType")) {
+			throw new IllegalArgumentException(
+				"Invalid entity field " + entityFieldName);
+		}
+
 		if (entityFieldName.equals("id")) {
 			throw new IllegalArgumentException(
 				"Invalid entity field " + entityFieldName);
@@ -805,6 +1027,15 @@ public abstract class BaseObjectRelationshipResourceTestCase {
 		if (entityFieldName.equals("objectDefinitionId2")) {
 			throw new IllegalArgumentException(
 				"Invalid entity field " + entityFieldName);
+		}
+
+		if (entityFieldName.equals("objectDefinitionName2")) {
+			sb.append("'");
+			sb.append(
+				String.valueOf(objectRelationship.getObjectDefinitionName2()));
+			sb.append("'");
+
+			return sb.toString();
 		}
 
 		if (entityFieldName.equals("type")) {
@@ -860,6 +1091,8 @@ public abstract class BaseObjectRelationshipResourceTestCase {
 				name = StringUtil.toLowerCase(RandomTestUtil.randomString());
 				objectDefinitionId1 = RandomTestUtil.randomLong();
 				objectDefinitionId2 = RandomTestUtil.randomLong();
+				objectDefinitionName2 = StringUtil.toLowerCase(
+					RandomTestUtil.randomString());
 			}
 		};
 	}

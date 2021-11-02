@@ -16,11 +16,15 @@
 
 <%@ include file="/admin/init.jsp" %>
 
+<%
+RemoteAppAdminDisplayContext remoteAppAdminDisplayContext = (RemoteAppAdminDisplayContext)renderRequest.getAttribute(RemoteAppAdminWebKeys.REMOTE_APP_ADMIN_DISPLAY_CONTEXT);
+%>
+
 <clay:data-set-display
 	actionParameterName="remoteAppEntryId"
 	creationMenu="<%= remoteAppAdminDisplayContext.getCreationMenu() %>"
 	dataProviderKey="<%= RemoteAppAdminConstants.REMOTE_APP_ENTRY_DATA_SET_DISPLAY %>"
-	formId='<%= liferayPortletResponse.getNamespace() + "fm" %>'
+	formName="fm"
 	id="<%= RemoteAppAdminConstants.REMOTE_APP_ENTRY_DATA_SET_DISPLAY %>"
 	itemsPerPage="<%= 10 %>"
 	namespace="<%= liferayPortletResponse.getNamespace() %>"

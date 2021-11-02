@@ -4,6 +4,37 @@
 <service-builder auto-import-default-references="false" auto-namespace-tables="false" dependency-injector="ds" mvcc-enabled="true" package-path="com.liferay.object" short-no-such-exception-enabled="false">
 	<author>Marco Leo</author>
 	<namespace>Object</namespace>
+	<entity local-service="true" name="ObjectAction" remote-service="true" uuid="true">
+
+		<!-- PK fields -->
+
+		<column name="objectActionId" primary="true" type="long" />
+
+		<!-- Audit fields -->
+
+		<column name="companyId" type="long" />
+		<column name="userId" type="long" />
+		<column name="userName" type="String" />
+		<column name="createDate" type="Date" />
+		<column name="modifiedDate" type="Date" />
+
+		<!-- Other fields -->
+
+		<column name="objectDefinitionId" type="long" />
+		<column name="active" type="boolean" />
+		<column name="name" type="String" />
+		<column name="objectActionExecutorKey" type="String" />
+		<column name="objectActionTriggerKey" type="String" />
+		<column name="parameters" type="String" />
+
+		<!-- Finder methods -->
+
+		<finder name="O_A_OATK" return-type="Collection">
+			<finder-column name="objectDefinitionId" />
+			<finder-column name="active" />
+			<finder-column name="objectActionTriggerKey" />
+		</finder>
+	</entity>
 	<entity local-service="true" name="ObjectDefinition" remote-service="true" uuid="true">
 
 		<!-- PK fields -->
@@ -20,6 +51,8 @@
 
 		<!-- Other fields -->
 
+		<column name="descriptionObjectFieldId" type="long" />
+		<column name="titleObjectFieldId" type="long" />
 		<column name="active" type="boolean" />
 		<column method-name="DBTableName" name="dbTableName" type="String" />
 		<column localized="true" name="label" type="String" />
@@ -49,6 +82,10 @@
 		<finder name="System" return-type="Collection">
 			<finder-column name="system" />
 		</finder>
+		<finder name="C_C" return-type="ObjectDefinition">
+			<finder-column name="companyId" />
+			<finder-column name="className" />
+		</finder>
 		<finder name="C_N" return-type="ObjectDefinition">
 			<finder-column name="companyId" />
 			<finder-column name="name" />
@@ -63,10 +100,6 @@
 			<finder-column name="system" />
 			<finder-column name="status" />
 		</finder>
-
-		<!-- References -->
-
-		<reference entity="Resource" package-path="com.liferay.portal" />
 	</entity>
 	<entity local-service="true" name="ObjectEntry" remote-service="true" uuid="true">
 
@@ -110,6 +143,10 @@
 		<finder name="G_ODI" return-type="Collection">
 			<finder-column name="groupId" />
 			<finder-column name="objectDefinitionId" />
+		</finder>
+		<finder name="ODI_NotS" return-type="Collection">
+			<finder-column name="objectDefinitionId" />
+			<finder-column comparator="!=" name="status" />
 		</finder>
 		<finder name="G_C_ERC" return-type="ObjectEntry">
 			<finder-column name="groupId" />
@@ -324,9 +361,11 @@
 		<column name="objectDefinitionId1" type="long" />
 		<column name="objectDefinitionId2" type="long" />
 		<column name="objectFieldId2" type="long" />
+		<column name="deletionType" type="String" />
 		<column method-name="DBTableName" name="dbTableName" type="String" />
 		<column localized="true" name="label" type="String" />
 		<column name="name" type="String" />
+		<column name="reverse" type="boolean" />
 		<column name="type" type="String" />
 
 		<!-- Finder methods -->
@@ -350,12 +389,23 @@
 			<finder-column name="name" />
 			<finder-column name="type" />
 		</finder>
+		<finder name="ODI1_ODI2_N_R_T" return-type="ObjectRelationship">
+			<finder-column name="objectDefinitionId1" />
+			<finder-column name="objectDefinitionId2" />
+			<finder-column name="name" />
+			<finder-column name="reverse" />
+			<finder-column name="type" />
+		</finder>
 	</entity>
 	<exceptions>
 		<exception>DefaultObjectLayout</exception>
 		<exception>DuplicateObjectDefinition</exception>
 		<exception>DuplicateObjectField</exception>
 		<exception>DuplicateObjectRelationship</exception>
+		<exception>ObjectActionExecutorKey</exception>
+		<exception>ObjectActionName</exception>
+		<exception>ObjectActionTriggerKey</exception>
+		<exception>ObjectDefinitionActive</exception>
 		<exception>ObjectDefinitionLabel</exception>
 		<exception>ObjectDefinitionName</exception>
 		<exception>ObjectDefinitionPluralLabel</exception>
@@ -365,12 +415,15 @@
 		<exception>ObjectEntryValues</exception>
 		<exception>ObjectFieldLabel</exception>
 		<exception>ObjectFieldName</exception>
+		<exception>ObjectFieldRelationshipType</exception>
 		<exception>ObjectFieldType</exception>
 		<exception>ObjectLayoutColumnSize</exception>
 		<exception>ObjectRelationshipName</exception>
+		<exception>ObjectRelationshipReverse</exception>
 		<exception>ObjectRelationshipType</exception>
 		<exception>RequiredObjectDefinition</exception>
 		<exception>RequiredObjectField</exception>
+		<exception>RequiredObjectRelationship</exception>
 		<exception>ReservedObjectField</exception>
 	</exceptions>
 </service-builder>

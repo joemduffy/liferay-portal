@@ -146,9 +146,13 @@ public class RemoteAppEntryPersistenceTest {
 
 		newRemoteAppEntry.setIFrameURL(RandomTestUtil.randomString());
 
+		newRemoteAppEntry.setInstanceable(RandomTestUtil.randomBoolean());
+
 		newRemoteAppEntry.setName(RandomTestUtil.randomString());
 
 		newRemoteAppEntry.setPortletCategoryName(RandomTestUtil.randomString());
+
+		newRemoteAppEntry.setProperties(RandomTestUtil.randomString());
 
 		newRemoteAppEntry.setType(RandomTestUtil.randomString());
 
@@ -192,10 +196,16 @@ public class RemoteAppEntryPersistenceTest {
 			existingRemoteAppEntry.getIFrameURL(),
 			newRemoteAppEntry.getIFrameURL());
 		Assert.assertEquals(
+			existingRemoteAppEntry.isInstanceable(),
+			newRemoteAppEntry.isInstanceable());
+		Assert.assertEquals(
 			existingRemoteAppEntry.getName(), newRemoteAppEntry.getName());
 		Assert.assertEquals(
 			existingRemoteAppEntry.getPortletCategoryName(),
 			newRemoteAppEntry.getPortletCategoryName());
+		Assert.assertEquals(
+			existingRemoteAppEntry.getProperties(),
+			newRemoteAppEntry.getProperties());
 		Assert.assertEquals(
 			existingRemoteAppEntry.getType(), newRemoteAppEntry.getType());
 	}
@@ -246,8 +256,9 @@ public class RemoteAppEntryPersistenceTest {
 			"RemoteAppEntry", "mvccVersion", true, "uuid", true,
 			"remoteAppEntryId", true, "companyId", true, "userId", true,
 			"userName", true, "createDate", true, "modifiedDate", true,
-			"customElementHTMLElementName", true, "iFrameURL", true, "name",
-			true, "portletCategoryName", true, "type", true);
+			"customElementHTMLElementName", true, "iFrameURL", true,
+			"instanceable", true, "name", true, "portletCategoryName", true,
+			"type", true);
 	}
 
 	@Test
@@ -492,9 +503,13 @@ public class RemoteAppEntryPersistenceTest {
 
 		remoteAppEntry.setIFrameURL(RandomTestUtil.randomString());
 
+		remoteAppEntry.setInstanceable(RandomTestUtil.randomBoolean());
+
 		remoteAppEntry.setName(RandomTestUtil.randomString());
 
 		remoteAppEntry.setPortletCategoryName(RandomTestUtil.randomString());
+
+		remoteAppEntry.setProperties(RandomTestUtil.randomString());
 
 		remoteAppEntry.setType(RandomTestUtil.randomString());
 

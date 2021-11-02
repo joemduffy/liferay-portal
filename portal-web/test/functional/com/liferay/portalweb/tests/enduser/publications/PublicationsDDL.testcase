@@ -20,11 +20,6 @@ definition {
 			PortalInstances.tearDownCP();
 		}
 		else {
-			ApplicationsMenu.gotoPortlet(
-				category = "Publications",
-				panel = "Applications",
-				portlet = "Settings");
-
 			Publications.disablePublications();
 		}
 	}
@@ -111,7 +106,7 @@ definition {
 
 		DDLDataDefinition.deleteCP(ddlDataDefinitionName = "Data Definition");
 
-		Publications.gotoReviewChanges(publicationName = "Publication Name");
+		PublicationsNavigator.gotoReviewChanges(publicationName = "Publication Name");
 
 		PublicationsChanges.viewChangesViaChangesStyle(
 			changeCategory = "Dynamic Data Mapping Structure",
@@ -250,7 +245,7 @@ definition {
 			locator1 = "//div[@class='portlet-body']",
 			value1 = "Text");
 
-		Publications.gotoReviewChanges();
+		PublicationsNavigator.gotoReviewChanges();
 
 		PublicationsChanges.viewChangesViaChangesStyle(
 			changeCategory = "Dynamic Data Mapping Template",
@@ -372,7 +367,7 @@ definition {
 			ddlListName = "List Name",
 			ddlListNameEdit = "List Name Edit");
 
-		Publications.gotoReviewChanges(publicationName = "Publication Name");
+		PublicationsNavigator.gotoReviewChanges(publicationName = "Publication Name");
 
 		PublicationsChanges.viewChangesViaChangesStyle(
 			changeCategory = "Dynamic Data Mapping Structure",
@@ -397,7 +392,7 @@ definition {
 			changeType = "Modified",
 			changeUser = "Test Test");
 
-		Publications.gotoViewChangeDiff(
+		PublicationsNavigator.gotoViewChangeDiff(
 			changeCategory = "Dynamic Data Lists Record",
 			changeTitle = "${changeTitle}");
 
@@ -530,7 +525,7 @@ definition {
 
 		DDLRecord.viewFieldFormTemplateSpecific(field = "Separator");
 
-		Publications.gotoReviewChanges();
+		PublicationsNavigator.gotoReviewChanges();
 
 		PublicationsChanges.viewChangesViaChangesStyle(
 			changeCategory = "Dynamic Data Mapping Template",
@@ -602,8 +597,8 @@ definition {
 
 		PortletEntry.publish();
 
-		Publications.gotoReviewChanges(
-			gotoManagePublications = "true",
+		PublicationsNavigator.gotoReviewChanges(
+			gotoPublicationsAdmin = "true",
 			publicationName = "Publication Name");
 
 		PublicationsChanges.viewChangesViaChangesStyle(
@@ -762,15 +757,15 @@ definition {
 
 		Publications.viewPublicationPublished(publicationName = "Publication Name 2");
 
-		Publications.gotoPublish(
-			gotoManagePublications = "true",
+		PublicationsNavigator.gotoPublish(
+			gotoPublicationsAdmin = "true",
 			publicationName = "Publication Name 1");
 
 		var changeTitle = JSONDDL.getRecordId(
 			ddlListName = "List Name",
 			groupName = "Guest");
 
-		Publications.discardChanges(
+		PublicationsChanges.discardChanges(
 			changeCategory = "Dynamic Data Lists Record",
 			changeTitle = "${changeTitle}",
 			conflictingChanges = "true",

@@ -14,9 +14,10 @@
 
 package com.liferay.search.experiences.blueprint.parameter;
 
-import com.liferay.search.experiences.blueprint.parameter.exception.SXPParameterException;
+import com.liferay.portal.kernel.util.ArrayUtil;
+import com.liferay.portal.kernel.util.GetterUtil;
 
-import java.util.Map;
+import java.util.Objects;
 
 /**
  * @author Petteri Karttunen
@@ -32,18 +33,15 @@ public class StringSXPParameter extends BaseSXPParameter {
 	}
 
 	@Override
-	public boolean accept(EvaluationVisitor evaluationVisitor)
-		throws SXPParameterException {
-
-		return evaluationVisitor.visit(this);
+	public boolean evaluateEquals(Object object) {
+		return Objects.equals(_value, GetterUtil.getString(object));
 	}
 
 	@Override
-	public String accept(
-			ToStringVisitor toStringVisitor, Map<String, String> options)
-		throws Exception {
-
-		return toStringVisitor.visit(this, options);
+	public boolean evaluateIn(Object[] values) {
+		return ArrayUtil.contains(
+			GetterUtil.getStringValues(ArrayUtil.toStringArray(values)),
+			_value);
 	}
 
 	@Override

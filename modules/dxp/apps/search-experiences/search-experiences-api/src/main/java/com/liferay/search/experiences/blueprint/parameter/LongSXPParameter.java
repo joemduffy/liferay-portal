@@ -14,9 +14,8 @@
 
 package com.liferay.search.experiences.blueprint.parameter;
 
-import com.liferay.search.experiences.blueprint.parameter.exception.SXPParameterException;
-
-import java.util.Map;
+import com.liferay.portal.kernel.util.ArrayUtil;
+import com.liferay.portal.kernel.util.GetterUtil;
 
 /**
  * @author Petteri Karttunen
@@ -30,26 +29,39 @@ public class LongSXPParameter extends BaseSXPParameter {
 	}
 
 	@Override
-	public boolean accept(EvaluationVisitor evaluationVisitor)
-		throws SXPParameterException {
-
-		return evaluationVisitor.visit(this);
-	}
-
-	@Override
-	public String accept(
-			ToStringVisitor toStringVisitor, Map<String, String> options)
-		throws Exception {
-
-		return toStringVisitor.visit(this, options);
-	}
-
-	public boolean equalsTo(Long value) {
-		if (_value.longValue() == value.longValue()) {
+	public boolean evaluateEquals(Object object) {
+		if (_value.longValue() == GetterUtil.getLong(object)) {
 			return true;
 		}
 
 		return false;
+	}
+
+	@Override
+	public boolean evaluateIn(Object[] values) {
+		return ArrayUtil.contains(
+			GetterUtil.getLongValues(ArrayUtil.toStringArray(values)), _value);
+	}
+
+	@Override
+	public boolean evaluateRange(Object gt, Object gte, Object lt, Object lte) {
+		if ((gt != null) && (_value <= GetterUtil.getLong(gt))) {
+			return false;
+		}
+
+		if ((gte != null) && (_value < GetterUtil.getLong(gte))) {
+			return false;
+		}
+
+		if ((lt != null) && (_value >= GetterUtil.getLong(lt))) {
+			return false;
+		}
+
+		if ((lte != null) && (_value > GetterUtil.getLong(lte))) {
+			return false;
+		}
+
+		return true;
 	}
 
 	@Override

@@ -14,9 +14,11 @@
 
 package com.liferay.headless.commerce.admin.catalog.dto.v1_0;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonFilter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonValue;
 
 import com.liferay.petra.function.UnsafeSupplier;
 import com.liferay.petra.string.StringBundler;
@@ -54,50 +56,56 @@ public class MappedProduct implements Serializable {
 		return ObjectMapperUtil.readValue(MappedProduct.class, json);
 	}
 
-	@Schema
-	public Boolean getDiagram() {
-		return diagram;
+	public static MappedProduct unsafeToDTO(String json) {
+		return ObjectMapperUtil.unsafeReadValue(MappedProduct.class, json);
 	}
-
-	public void setDiagram(Boolean diagram) {
-		this.diagram = diagram;
-	}
-
-	@JsonIgnore
-	public void setDiagram(
-		UnsafeSupplier<Boolean, Exception> diagramUnsafeSupplier) {
-
-		try {
-			diagram = diagramUnsafeSupplier.get();
-		}
-		catch (RuntimeException re) {
-			throw re;
-		}
-		catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-	}
-
-	@GraphQLField
-	@JsonProperty(access = JsonProperty.Access.READ_WRITE)
-	protected Boolean diagram;
 
 	@Schema
 	@Valid
-	public Map<String, ?> getExpando() {
-		return expando;
+	public Map<String, Map<String, String>> getActions() {
+		return actions;
 	}
 
-	public void setExpando(Map<String, ?> expando) {
-		this.expando = expando;
+	public void setActions(Map<String, Map<String, String>> actions) {
+		this.actions = actions;
 	}
 
 	@JsonIgnore
-	public void setExpando(
-		UnsafeSupplier<Map<String, ?>, Exception> expandoUnsafeSupplier) {
+	public void setActions(
+		UnsafeSupplier<Map<String, Map<String, String>>, Exception>
+			actionsUnsafeSupplier) {
 
 		try {
-			expando = expandoUnsafeSupplier.get();
+			actions = actionsUnsafeSupplier.get();
+		}
+		catch (RuntimeException re) {
+			throw re;
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	@GraphQLField
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
+	protected Map<String, Map<String, String>> actions;
+
+	@Schema
+	@Valid
+	public CustomField[] getCustomFields() {
+		return customFields;
+	}
+
+	public void setCustomFields(CustomField[] customFields) {
+		this.customFields = customFields;
+	}
+
+	@JsonIgnore
+	public void setCustomFields(
+		UnsafeSupplier<CustomField[], Exception> customFieldsUnsafeSupplier) {
+
+		try {
+			customFields = customFieldsUnsafeSupplier.get();
 		}
 		catch (RuntimeException re) {
 			throw re;
@@ -109,7 +117,7 @@ public class MappedProduct implements Serializable {
 
 	@GraphQLField
 	@JsonProperty(access = JsonProperty.Access.READ_WRITE)
-	protected Map<String, ?> expando;
+	protected CustomField[] customFields;
 
 	@DecimalMin("0")
 	@Schema
@@ -198,6 +206,36 @@ public class MappedProduct implements Serializable {
 	@GraphQLField
 	@JsonProperty(access = JsonProperty.Access.READ_WRITE)
 	protected Long productId;
+
+	@Schema
+	@Valid
+	public Map<String, String> getProductName() {
+		return productName;
+	}
+
+	public void setProductName(Map<String, String> productName) {
+		this.productName = productName;
+	}
+
+	@JsonIgnore
+	public void setProductName(
+		UnsafeSupplier<Map<String, String>, Exception>
+			productNameUnsafeSupplier) {
+
+		try {
+			productName = productNameUnsafeSupplier.get();
+		}
+		catch (RuntimeException re) {
+			throw re;
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	@GraphQLField
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
+	protected Map<String, String> productName;
 
 	@DecimalMin("0")
 	@Schema
@@ -339,6 +377,42 @@ public class MappedProduct implements Serializable {
 	@JsonProperty(access = JsonProperty.Access.READ_WRITE)
 	protected Long skuId;
 
+	@Schema
+	@Valid
+	public Type getType() {
+		return type;
+	}
+
+	@JsonIgnore
+	public String getTypeAsString() {
+		if (type == null) {
+			return null;
+		}
+
+		return type.toString();
+	}
+
+	public void setType(Type type) {
+		this.type = type;
+	}
+
+	@JsonIgnore
+	public void setType(UnsafeSupplier<Type, Exception> typeUnsafeSupplier) {
+		try {
+			type = typeUnsafeSupplier.get();
+		}
+		catch (RuntimeException re) {
+			throw re;
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	@GraphQLField
+	@JsonProperty(access = JsonProperty.Access.READ_WRITE)
+	protected Type type;
+
 	@Override
 	public boolean equals(Object object) {
 		if (this == object) {
@@ -366,24 +440,34 @@ public class MappedProduct implements Serializable {
 
 		sb.append("{");
 
-		if (diagram != null) {
+		if (actions != null) {
 			if (sb.length() > 1) {
 				sb.append(", ");
 			}
 
-			sb.append("\"diagram\": ");
+			sb.append("\"actions\": ");
 
-			sb.append(diagram);
+			sb.append(_toJSON(actions));
 		}
 
-		if (expando != null) {
+		if (customFields != null) {
 			if (sb.length() > 1) {
 				sb.append(", ");
 			}
 
-			sb.append("\"expando\": ");
+			sb.append("\"customFields\": ");
 
-			sb.append(_toJSON(expando));
+			sb.append("[");
+
+			for (int i = 0; i < customFields.length; i++) {
+				sb.append(String.valueOf(customFields[i]));
+
+				if ((i + 1) < customFields.length) {
+					sb.append(", ");
+				}
+			}
+
+			sb.append("]");
 		}
 
 		if (id != null) {
@@ -418,6 +502,16 @@ public class MappedProduct implements Serializable {
 			sb.append("\"productId\": ");
 
 			sb.append(productId);
+		}
+
+		if (productName != null) {
+			if (sb.length() > 1) {
+				sb.append(", ");
+			}
+
+			sb.append("\"productName\": ");
+
+			sb.append(_toJSON(productName));
 		}
 
 		if (quantity != null) {
@@ -482,6 +576,20 @@ public class MappedProduct implements Serializable {
 			sb.append(skuId);
 		}
 
+		if (type != null) {
+			if (sb.length() > 1) {
+				sb.append(", ");
+			}
+
+			sb.append("\"type\": ");
+
+			sb.append("\"");
+
+			sb.append(type);
+
+			sb.append("\"");
+		}
+
 		sb.append("}");
 
 		return sb.toString();
@@ -493,6 +601,44 @@ public class MappedProduct implements Serializable {
 		name = "x-class-name"
 	)
 	public String xClassName;
+
+	@GraphQLName("Type")
+	public static enum Type {
+
+		DIAGRAM("diagram"), EXTERNAL("external"), SKU("sku");
+
+		@JsonCreator
+		public static Type create(String value) {
+			if ((value == null) || value.equals("")) {
+				return null;
+			}
+
+			for (Type type : values()) {
+				if (Objects.equals(type.getValue(), value)) {
+					return type;
+				}
+			}
+
+			throw new IllegalArgumentException("Invalid enum value: " + value);
+		}
+
+		@JsonValue
+		public String getValue() {
+			return _value;
+		}
+
+		@Override
+		public String toString() {
+			return _value;
+		}
+
+		private Type(String value) {
+			_value = value;
+		}
+
+		private final String _value;
+
+	}
 
 	private static String _escape(Object object) {
 		String string = String.valueOf(object);

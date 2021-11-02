@@ -23,6 +23,7 @@ interface IProps {
 	append: string;
 	appendType: 'prefix' | 'suffix';
 	dataType: NumericDataType;
+	decimalPlaces: number;
 	defaultLanguageId: Locale;
 	id: string;
 	inputMask?: boolean;
@@ -30,11 +31,7 @@ interface IProps {
 	localizedValue?: LocalizedValue<string>;
 	name: string;
 	onBlur: FocusEventHandler<HTMLInputElement>;
-	onChange: (event: {
-		target: {
-			value: string;
-		};
-	}) => void;
+	onChange: FieldChangeEventHandler<String>;
 	onFocus: FocusEventHandler<HTMLInputElement>;
 	placeholder?: string;
 	predefinedValue?: string;

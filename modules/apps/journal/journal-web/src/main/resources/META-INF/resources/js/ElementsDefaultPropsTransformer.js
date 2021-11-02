@@ -92,16 +92,12 @@ const ACTIONS = {
 		});
 	},
 
-	expireArticles({itemData}) {
-		this.send(itemData.expireURL);
+	discardArticleDraft({itemData}) {
+		this.send(itemData.discardArticleDraftURL);
 	},
 
-	exportTranslation({itemData, portletNamespace}) {
-		Liferay.componentReady(
-			`${portletNamespace}ExportForTranslationComponent`
-		).then((exportTranslationComponent) => {
-			exportTranslationComponent.open([itemData.articleEntryId]);
-		});
+	expireArticles({itemData}) {
+		this.send(itemData.expireURL);
 	},
 
 	permissions({itemData}) {

@@ -25,10 +25,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.osgi.framework.Bundle;
-import org.osgi.framework.FrameworkUtil;
-import org.osgi.util.tracker.ServiceTracker;
-
 /**
  * The persistence utility for the object relationship service. This utility wraps <code>com.liferay.object.service.persistence.impl.ObjectRelationshipPersistenceImpl</code> and provides direct access to the database for CRUD operations. This utility should only be used by the service layer, as it must operate within a transaction. Never access this utility in a JSP, controller, model, or other front-end class.
  *
@@ -1191,6 +1187,101 @@ public class ObjectRelationshipUtil {
 	}
 
 	/**
+	 * Returns the object relationship where objectDefinitionId1 = &#63; and objectDefinitionId2 = &#63; and name = &#63; and reverse = &#63; and type = &#63; or throws a <code>NoSuchObjectRelationshipException</code> if it could not be found.
+	 *
+	 * @param objectDefinitionId1 the object definition id1
+	 * @param objectDefinitionId2 the object definition id2
+	 * @param name the name
+	 * @param reverse the reverse
+	 * @param type the type
+	 * @return the matching object relationship
+	 * @throws NoSuchObjectRelationshipException if a matching object relationship could not be found
+	 */
+	public static ObjectRelationship findByODI1_ODI2_N_R_T(
+			long objectDefinitionId1, long objectDefinitionId2, String name,
+			boolean reverse, String type)
+		throws com.liferay.object.exception.NoSuchObjectRelationshipException {
+
+		return getPersistence().findByODI1_ODI2_N_R_T(
+			objectDefinitionId1, objectDefinitionId2, name, reverse, type);
+	}
+
+	/**
+	 * Returns the object relationship where objectDefinitionId1 = &#63; and objectDefinitionId2 = &#63; and name = &#63; and reverse = &#63; and type = &#63; or returns <code>null</code> if it could not be found. Uses the finder cache.
+	 *
+	 * @param objectDefinitionId1 the object definition id1
+	 * @param objectDefinitionId2 the object definition id2
+	 * @param name the name
+	 * @param reverse the reverse
+	 * @param type the type
+	 * @return the matching object relationship, or <code>null</code> if a matching object relationship could not be found
+	 */
+	public static ObjectRelationship fetchByODI1_ODI2_N_R_T(
+		long objectDefinitionId1, long objectDefinitionId2, String name,
+		boolean reverse, String type) {
+
+		return getPersistence().fetchByODI1_ODI2_N_R_T(
+			objectDefinitionId1, objectDefinitionId2, name, reverse, type);
+	}
+
+	/**
+	 * Returns the object relationship where objectDefinitionId1 = &#63; and objectDefinitionId2 = &#63; and name = &#63; and reverse = &#63; and type = &#63; or returns <code>null</code> if it could not be found, optionally using the finder cache.
+	 *
+	 * @param objectDefinitionId1 the object definition id1
+	 * @param objectDefinitionId2 the object definition id2
+	 * @param name the name
+	 * @param reverse the reverse
+	 * @param type the type
+	 * @param useFinderCache whether to use the finder cache
+	 * @return the matching object relationship, or <code>null</code> if a matching object relationship could not be found
+	 */
+	public static ObjectRelationship fetchByODI1_ODI2_N_R_T(
+		long objectDefinitionId1, long objectDefinitionId2, String name,
+		boolean reverse, String type, boolean useFinderCache) {
+
+		return getPersistence().fetchByODI1_ODI2_N_R_T(
+			objectDefinitionId1, objectDefinitionId2, name, reverse, type,
+			useFinderCache);
+	}
+
+	/**
+	 * Removes the object relationship where objectDefinitionId1 = &#63; and objectDefinitionId2 = &#63; and name = &#63; and reverse = &#63; and type = &#63; from the database.
+	 *
+	 * @param objectDefinitionId1 the object definition id1
+	 * @param objectDefinitionId2 the object definition id2
+	 * @param name the name
+	 * @param reverse the reverse
+	 * @param type the type
+	 * @return the object relationship that was removed
+	 */
+	public static ObjectRelationship removeByODI1_ODI2_N_R_T(
+			long objectDefinitionId1, long objectDefinitionId2, String name,
+			boolean reverse, String type)
+		throws com.liferay.object.exception.NoSuchObjectRelationshipException {
+
+		return getPersistence().removeByODI1_ODI2_N_R_T(
+			objectDefinitionId1, objectDefinitionId2, name, reverse, type);
+	}
+
+	/**
+	 * Returns the number of object relationships where objectDefinitionId1 = &#63; and objectDefinitionId2 = &#63; and name = &#63; and reverse = &#63; and type = &#63;.
+	 *
+	 * @param objectDefinitionId1 the object definition id1
+	 * @param objectDefinitionId2 the object definition id2
+	 * @param name the name
+	 * @param reverse the reverse
+	 * @param type the type
+	 * @return the number of matching object relationships
+	 */
+	public static int countByODI1_ODI2_N_R_T(
+		long objectDefinitionId1, long objectDefinitionId2, String name,
+		boolean reverse, String type) {
+
+		return getPersistence().countByODI1_ODI2_N_R_T(
+			objectDefinitionId1, objectDefinitionId2, name, reverse, type);
+	}
+
+	/**
 	 * Caches the object relationship in the entity cache if it is enabled.
 	 *
 	 * @param objectRelationship the object relationship
@@ -1346,29 +1437,9 @@ public class ObjectRelationshipUtil {
 	}
 
 	public static ObjectRelationshipPersistence getPersistence() {
-		return _serviceTracker.getService();
+		return _persistence;
 	}
 
-	private static ServiceTracker
-		<ObjectRelationshipPersistence, ObjectRelationshipPersistence>
-			_serviceTracker;
-
-	static {
-		Bundle bundle = FrameworkUtil.getBundle(
-			ObjectRelationshipPersistence.class);
-
-		ServiceTracker
-			<ObjectRelationshipPersistence, ObjectRelationshipPersistence>
-				serviceTracker =
-					new ServiceTracker
-						<ObjectRelationshipPersistence,
-						 ObjectRelationshipPersistence>(
-							 bundle.getBundleContext(),
-							 ObjectRelationshipPersistence.class, null);
-
-		serviceTracker.open();
-
-		_serviceTracker = serviceTracker;
-	}
+	private static volatile ObjectRelationshipPersistence _persistence;
 
 }

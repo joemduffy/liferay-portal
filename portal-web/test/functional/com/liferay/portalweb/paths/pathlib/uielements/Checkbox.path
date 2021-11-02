@@ -57,17 +57,17 @@
 </tr>
 <tr>
 	<td>ANY_CHECKBOX</td>
-	<td>//label[contains(.,'${checkboxName}')]/input[@type='checkbox']</td>
+	<td>//label[contains(.,'${checkboxName}')]//input[@type='checkbox']</td>
 	<td></td>
 </tr>
 <tr>
 	<td>ANY_CHECKBOX_CHECKED</td>
-	<td>//label[contains(.,'${checkboxName}')]/input[@type='checkbox' and @checked]</td>
+	<td>//label[contains(.,'${checkboxName}')]//input[@type='checkbox' and @checked]</td>
 	<td></td>
 </tr>
 <tr>
 	<td>ANY_CHECKBOX_UNCHECKED</td>
-	<td>//label[contains(.,'${checkboxName}')]/input[@type='checkbox' and not(@checked)]</td>
+	<td>//label[contains(.,'${checkboxName}')]//input[@type='checkbox' and not(@checked)]</td>
 	<td></td>
 </tr>
 <tr>
@@ -178,11 +178,6 @@
 <tr>
 	<td>ENABLE_CONVERSION_TXT</td>
 	<td>//label[contains(.,'TXT')]/input[@type='checkbox']</td>
-	<td></td>
-</tr>
-<tr>
-	<td>ENABLE_DIRECTORY_INDEXING</td>
-	<td>//label[contains(.,'Enable Directory Indexing')]//input[@type='checkbox']</td>
 	<td></td>
 </tr>
 <tr>
@@ -458,6 +453,11 @@
 <tr>
 	<td>STATUS</td>
 	<td>//span[@class='icon-check' and contains(.,'${key_status}')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>SWITCH</td>
+	<td>//div[contains(@data-field-name,'${key_fieldName}')]//span[@class='toggle-switch-bar'] | //span[contains(text(),'${key_fieldName}')]/preceding-sibling::span[@class='toggle-switch-handle'] | //span[contains(text(),'${key_fieldName}')] | //label[contains(@class,'toggle-switch')]//input[contains(@type,'checkbox')]/following-sibling::span[contains(@class,'toggle-switch-bar')]//span[contains(text(),'${key_fieldName}')]/..//preceding-sibling::input[contains(@type,'checkbox')]</td>
 	<td></td>
 </tr>
 <tr>

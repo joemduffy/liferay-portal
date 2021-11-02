@@ -64,12 +64,17 @@ public class RemoteAppEntryTable extends BaseTable<RemoteAppEntryTable> {
 			"customElementURLs", Clob.class, Types.CLOB, Column.FLAG_DEFAULT);
 	public final Column<RemoteAppEntryTable, String> iFrameURL = createColumn(
 		"iFrameURL", String.class, Types.VARCHAR, Column.FLAG_DEFAULT);
+	public final Column<RemoteAppEntryTable, Boolean> instanceable =
+		createColumn(
+			"instanceable", Boolean.class, Types.BOOLEAN, Column.FLAG_DEFAULT);
 	public final Column<RemoteAppEntryTable, String> name = createColumn(
 		"name", String.class, Types.VARCHAR, Column.FLAG_DEFAULT);
 	public final Column<RemoteAppEntryTable, String> portletCategoryName =
 		createColumn(
 			"portletCategoryName", String.class, Types.VARCHAR,
 			Column.FLAG_DEFAULT);
+	public final Column<RemoteAppEntryTable, Clob> properties = createColumn(
+		"properties", Clob.class, Types.CLOB, Column.FLAG_DEFAULT);
 	public final Column<RemoteAppEntryTable, String> type = createColumn(
 		"type_", String.class, Types.VARCHAR, Column.FLAG_DEFAULT);
 

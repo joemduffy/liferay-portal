@@ -3,7 +3,15 @@ definition {
 	var entryAuthorFullName = "Test Test";
 
 	macro addContent {
-		AlloyEditor.addContent(content = "${entryContent}");
+		if (isSet(javascript)) {
+			Type(
+				key_editor = "content",
+				locator1 = "AlloyEditor#EDITOR",
+				value1 = "${entryContent}");
+		}
+		else {
+			AlloyEditor.addContent(content = "${entryContent}");
+		}
 	}
 
 	macro addContentWithInlineImage {
@@ -83,6 +91,32 @@ definition {
 		}
 	}
 
+	macro addEntryContentViaCodeView {
+		AlloyEditor.clickContentField();
+
+		Click(locator1 = "Button#EDITOR_SWITCH");
+
+		if ("${viewMode}" == "Dark Theme") {
+			Click(
+				key_text = "moon",
+				locator1 = "Icon#ANY");
+		}
+
+		if ("${viewMode}" == "Fullscreen") {
+			Click(
+				key_text = "expand",
+				locator1 = "Icon#ANY");
+		}
+
+		Type.typeAceEditor(
+			locator1 = "TextArea#ACE_EDITOR",
+			value1 = "${entryContent}");
+
+		if ("${viewMode}" == "Fullscreen") {
+			Button.clickDone();
+		}
+	}
+
 	macro addEntryExternalLinkViaBrowseButton {
 		if (isSet(entryContent)) {
 			DoubleClick(
@@ -99,9 +133,16 @@ definition {
 
 		Click(locator1 = "AlloyEditor#TEXT_FORMATTING_LINK_BROWSE_BUTTON");
 
-		ItemSelector.selectDMImage(
-			imageFileName = "${imageFileName}",
-			navTab = "${navTab}");
+		if (isSet(imageFileName)) {
+			ItemSelector.selectDMImage(
+				imageFileName = "${imageFileName}",
+				navTab = "${navTab}");
+		}
+		else {
+			ItemSelector.uploadFile(
+				navTab = "${navTab}",
+				uploadFileName = "${uploadFileName}");
+		}
 
 		PortletEntry.publish();
 	}
@@ -307,6 +348,17 @@ definition {
 		AssertVisible(
 			key_coverImageName = "${coverImageName}",
 			locator1 = "BlogsEntry#ENTRY_COVER_IMAGE_UNPUBLISHED");
+	}
+
+	macro editCustomURL {
+		if (isSet(automatic)) {
+			Click(locator1 = "Radio#AUTOMATIC_URL");
+		}
+		else {
+			Type(
+				locator1 = "TextInput#BLOGS_ENTRY_URL",
+				value1 = "${customURL}");
+		}
 	}
 
 	macro editDisplayDate {
@@ -559,6 +611,14 @@ definition {
 			locator1 = "BlogsEntry#ENTRY_COVER_IMAGE_UNPUBLISHED");
 	}
 
+	macro removeExternalLink {
+		Click(
+			key_entryContent = "${entryContent}",
+			locator1 = "BlogsEntry#CONTENT_LINK");
+
+		Click(locator1 = "AlloyEditor#TEXT_FORMATTING_REMOVE_LINK_BUTTON");
+	}
+
 	macro removeSmallImage {
 		Panel.expandPanel(panel = "Configuration");
 
@@ -783,6 +843,12 @@ definition {
 			value1 = "${entryTitle}");
 	}
 
+	macro viewCoverImage {
+		AssertVisible(
+			key_uploadFileName = "${uploadFileName}",
+			locator1 = "BlogsEntry#ENTRY_COVER_IMAGE");
+	}
+
 	macro viewDefaultCP {
 		AssertTextEquals(
 			locator1 = "Message#EMPTY_INFO",
@@ -887,6 +953,16 @@ definition {
 		}
 	}
 
+	macro viewEntryEmbeddedImage {
+		Click.pauseClickAt(
+			key_entryContent = "${entryContent}",
+			locator1 = "BlogsEntry#CONTENT_LINK");
+
+		AssertElementPresent.pauseAssertVisible(
+			key_imageSourceURL = "${imageSourceURL}",
+			locator1 = "DocumentsAndMediaDocument#DOCUMENT_VIEWPORT_PREVIEW");
+	}
+
 	macro viewEntryExternalURL {
 		BlogsNavigator.gotoEditCP(entryTitle = "${entryTitle}");
 
@@ -959,6 +1035,12 @@ definition {
 				value1 = "${entryContentBold}");
 		}
 
+		if (isSet(entryContentHTML)) {
+			AssertTextEquals.assertPartialText(
+				locator1 = "BlogsEntry#CONTENT_HTML_H2",
+				value1 = "${entryContentHTML}");
+		}
+
 		if (isSet(entryContentItalics)) {
 			AssertTextEquals.assertPartialText(
 				locator1 = "BlogsEntry#CONTENT_HTML_ITALICS",
@@ -1014,9 +1096,7 @@ definition {
 	macro viewInlineImage {
 		var key_uploadFileName = "${uploadFileName}";
 
-		AssertVisible(
-			locator1 = "BlogsEntry#CONTENT_INLINE_IMAGE",
-			value1 = "${uploadFileName}");
+		AssertVisible(locator1 = "BlogsEntry#CONTENT_INLINE_IMAGE");
 	}
 
 	macro viewNoAddPermissions {
@@ -1053,6 +1133,12 @@ definition {
 		AssertElementPresent(locator1 = "BlogsAggregator#NO_ENTRY_MESSAGE");
 	}
 
+	macro viewNoInlineImage {
+		AssertElementNotPresent(
+			key_uploadFileName = "${inlineImageName}",
+			locator1 = "BlogsEntry#CONTENT_INLINE_IMAGE");
+	}
+
 	macro viewNoPG {
 		AssertElementNotPresent(
 			key_entryTitle = "${entryTitle}",
@@ -1065,6 +1151,12 @@ definition {
 		AssertElementNotPresent(locator1 = "AssetRelatedAssets#RELATED_ASSETS_TABLE_TITLE");
 
 		AssertElementNotPresent(locator1 = "AssetRelatedAssets#RELATED_ASSETS_TABLE_REMOVE_LINK");
+	}
+
+	macro viewNoSmallImage {
+		AssertElementNotPresent(
+			key_imageFileName = "${uploadFileName}",
+			locator1 = "BlogsEntry#CONTENT_SMALL_IMAGE");
 	}
 
 	macro viewNoTag {
@@ -1231,30 +1323,75 @@ definition {
 			value1 = "Shared Content");
 
 		if ("${contentSharingPermission}" == "View") {
-			AssertElementNotPresent(locator1 = "Button#EDIT");
+			AssertElementNotPresent(locator1 = "CKEditor#BODY_FIELD_IFRAME");
+
+			if (!(isSet(shareable))) {
+				AssertElementNotPresent(locator1 = "Notifications#NOTIFICATIONS_PORTLET_VERTICAL_ELLIPSIS");
+			}
+			else {
+				MouseOver.mouseOverNotVisible(locator1 = "Notifications#NOTIFICATIONS_PORTLET_VERTICAL_ELLIPSIS");
+
+				Click(locator1 = "Notifications#NOTIFICATIONS_PORTLET_VERTICAL_ELLIPSIS");
+
+				MenuItem.viewNotPresent(menuItem = "Edit");
+
+				MenuItem.viewPresent(menuItem = "Share");
+			}
 		}
 
 		else if ("${contentSharingPermission}" == "Comment") {
-			AssertElementNotPresent(locator1 = "Button#EDIT");
-		}
-
-		else {
 			SelectFrame.selectFrameNoLoading(locator1 = "CKEditor#BODY_FIELD_IFRAME");
 
 			AssertElementPresent(locator1 = "CKEditor#BODY");
 
 			SelectFrame(value1 = "relative=top");
+
+			if (!(isSet(shareable))) {
+				AssertElementNotPresent(locator1 = "Notifications#NOTIFICATIONS_PORTLET_VERTICAL_ELLIPSIS");
+			}
+			else {
+				MouseOver.mouseOverNotVisible(locator1 = "Notifications#NOTIFICATIONS_PORTLET_VERTICAL_ELLIPSIS");
+
+				Click(locator1 = "Notifications#NOTIFICATIONS_PORTLET_VERTICAL_ELLIPSIS");
+
+				MenuItem.viewNotPresent(menuItem = "Edit");
+
+				MenuItem.viewPresent(menuItem = "Share");
+			}
 		}
 
-		var key_entryTitle = "${entryTitle}";
+		else if (("${contentSharingPermission}" == "Update")) {
+			SelectFrame.selectFrameNoLoading(locator1 = "CKEditor#BODY_FIELD_IFRAME");
+
+			AssertElementPresent(locator1 = "CKEditor#BODY");
+
+			SelectFrame(value1 = "relative=top");
+
+			MouseOver.mouseOverNotVisible(locator1 = "Notifications#NOTIFICATIONS_PORTLET_VERTICAL_ELLIPSIS");
+
+			Click(locator1 = "Notifications#NOTIFICATIONS_PORTLET_VERTICAL_ELLIPSIS");
+
+			MenuItem.viewPresent(menuItem = "Edit");
+
+			if (isSet(shareable)) {
+				MenuItem.viewPresent(menuItem = "Share");
+			}
+		}
 
 		AssertTextEquals(
 			locator1 = "Sharing#BLOGS_CONTENT",
 			value1 = "${entryContent}");
 
 		AssertTextEquals(
+			key_entryTitle = "${entryTitle}",
 			locator1 = "Sharing#BLOGS_TITLE",
 			value1 = "${entryTitle}");
+	}
+
+	macro viewSmallImage {
+		AssertVisible(
+			key_imageFileName = "${uploadFileName}",
+			locator1 = "BlogsEntry#CONTENT_SMALL_IMAGE");
 	}
 
 	macro viewStatus {

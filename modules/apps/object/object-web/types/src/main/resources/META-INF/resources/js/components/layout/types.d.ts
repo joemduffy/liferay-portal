@@ -12,7 +12,7 @@
  * details.
  */
 
-declare type TName = {
+export declare type TName = {
 	[key: string]: string;
 };
 export declare type TObjectLayout = {
@@ -39,6 +39,7 @@ export declare type TObjectLayoutRow = {
 export declare type TObjectLayoutColumn = {
 	objectFieldId: number;
 	priority: number;
+	size: number;
 };
 export declare type TObjectField = {
 	id: number;
@@ -61,4 +62,3 @@ export declare type TObjectRelationship = {
 	objectDefinitionId2: number;
 	type: string;
 };
-export {};

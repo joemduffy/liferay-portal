@@ -94,7 +94,8 @@ public class RemoteAppEntryDeployerImpl implements RemoteAppEntryDeployer {
 				"com.liferay.portlet.display-category",
 				_getPortletCategoryName(remoteAppEntry)
 			).put(
-				"com.liferay.portlet.instanceable", true
+				"com.liferay.portlet.instanceable",
+				remoteAppEntry.isInstanceable()
 			).put(
 				"javax.portlet.display-name",
 				remoteAppEntry.getName(LocaleUtil.US)
@@ -111,21 +112,23 @@ public class RemoteAppEntryDeployerImpl implements RemoteAppEntryDeployer {
 			String customElementURLs = remoteAppEntry.getCustomElementURLs();
 
 			dictionary.put(
-				"com.liferay.portlet.header-portal-javascript",
+				"com.liferay.portlet.footer-portal-javascript",
 				customElementURLs.split(StringPool.NEW_LINE));
 
 			String customElementCSSURLs =
 				remoteAppEntry.getCustomElementCSSURLs();
 
-			dictionary.put(
-				"com.liferay.portlet.header-portlet-css",
-				customElementCSSURLs.split(StringPool.NEW_LINE));
+			if (Validator.isNotNull(customElementCSSURLs)) {
+				dictionary.put(
+					"com.liferay.portlet.footer-portlet-css",
+					customElementCSSURLs.split(StringPool.NEW_LINE));
+			}
 		}
 		else if (Objects.equals(
 					remoteAppEntry.getType(), RemoteAppConstants.TYPE_IFRAME)) {
 
 			dictionary.put(
-				"com.liferay.portlet.header-portlet-css",
+				"com.liferay.portlet.footer-portlet-css",
 				"/display/css/main.css");
 		}
 		else {

@@ -56,8 +56,10 @@ public class RemoteAppEntryWrapper
 			"customElementHTMLElementName", getCustomElementHTMLElementName());
 		attributes.put("customElementURLs", getCustomElementURLs());
 		attributes.put("iFrameURL", getIFrameURL());
+		attributes.put("instanceable", isInstanceable());
 		attributes.put("name", getName());
 		attributes.put("portletCategoryName", getPortletCategoryName());
+		attributes.put("properties", getProperties());
 		attributes.put("type", getType());
 
 		return attributes;
@@ -139,6 +141,12 @@ public class RemoteAppEntryWrapper
 			setIFrameURL(iFrameURL);
 		}
 
+		Boolean instanceable = (Boolean)attributes.get("instanceable");
+
+		if (instanceable != null) {
+			setInstanceable(instanceable);
+		}
+
 		String name = (String)attributes.get("name");
 
 		if (name != null) {
@@ -150,6 +158,12 @@ public class RemoteAppEntryWrapper
 
 		if (portletCategoryName != null) {
 			setPortletCategoryName(portletCategoryName);
+		}
+
+		String properties = (String)attributes.get("properties");
+
+		if (properties != null) {
+			setProperties(properties);
 		}
 
 		String type = (String)attributes.get("type");
@@ -252,6 +266,16 @@ public class RemoteAppEntryWrapper
 	@Override
 	public String getIFrameURL() {
 		return model.getIFrameURL();
+	}
+
+	/**
+	 * Returns the instanceable of this remote app entry.
+	 *
+	 * @return the instanceable of this remote app entry
+	 */
+	@Override
+	public boolean getInstanceable() {
+		return model.getInstanceable();
 	}
 
 	/**
@@ -381,6 +405,16 @@ public class RemoteAppEntryWrapper
 	}
 
 	/**
+	 * Returns the properties of this remote app entry.
+	 *
+	 * @return the properties of this remote app entry
+	 */
+	@Override
+	public String getProperties() {
+		return model.getProperties();
+	}
+
+	/**
 	 * Returns the remote app entry ID of this remote app entry.
 	 *
 	 * @return the remote app entry ID of this remote app entry
@@ -438,6 +472,16 @@ public class RemoteAppEntryWrapper
 	@Override
 	public String getUuid() {
 		return model.getUuid();
+	}
+
+	/**
+	 * Returns <code>true</code> if this remote app entry is instanceable.
+	 *
+	 * @return <code>true</code> if this remote app entry is instanceable; <code>false</code> otherwise
+	 */
+	@Override
+	public boolean isInstanceable() {
+		return model.isInstanceable();
 	}
 
 	@Override
@@ -530,6 +574,16 @@ public class RemoteAppEntryWrapper
 	@Override
 	public void setIFrameURL(String iFrameURL) {
 		model.setIFrameURL(iFrameURL);
+	}
+
+	/**
+	 * Sets whether this remote app entry is instanceable.
+	 *
+	 * @param instanceable the instanceable of this remote app entry
+	 */
+	@Override
+	public void setInstanceable(boolean instanceable) {
+		model.setInstanceable(instanceable);
 	}
 
 	/**
@@ -643,6 +697,16 @@ public class RemoteAppEntryWrapper
 	@Override
 	public void setPrimaryKey(long primaryKey) {
 		model.setPrimaryKey(primaryKey);
+	}
+
+	/**
+	 * Sets the properties of this remote app entry.
+	 *
+	 * @param properties the properties of this remote app entry
+	 */
+	@Override
+	public void setProperties(String properties) {
+		model.setProperties(properties);
 	}
 
 	/**

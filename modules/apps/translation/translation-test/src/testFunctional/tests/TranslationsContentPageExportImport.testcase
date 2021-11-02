@@ -3,7 +3,7 @@ definition {
 
 	property portal.release = "true";
 	property portal.upstream = "true";
-	property testray.main.component.name = "Translation Management";
+	property testray.main.component.name = "Translations Management";
 
 	setUp {
 		TestCase.setUpPortalInstance();
@@ -122,6 +122,8 @@ definition {
 			translationFileName = "TranslationContentPage-en_US-ja_JP",
 			translationZipFileName = "TranslationContentPage-en_US.zip");
 
+		SitePages.openPagesAdmin(siteURLKey = "guest");
+
 		Translations.importTranslation(
 			contentPageTranslation = "true",
 			fileName = "TranslationContentPage-en_US-ja_JP.xlf",
@@ -153,19 +155,19 @@ definition {
 			pageName = "TranslationContentPage",
 			siteName = "Guest");
 
-		AssertTextEquals(
-			key_fragmentName = "heading",
-			locator1 = "Fragment#FRAGMENT_BASIC_COMPONENT",
-			value1 = "Heading");
+		ContentPages.viewFragmentText(
+			fragmentName = "heading",
+			id = "element-text",
+			text = "Heading");
 
 		Navigator.ensureLocaleURL(locale = "ja");
 
 		Page.viewCurrentPage(pageName = "翻訳ページ");
 
-		AssertTextEquals(
-			key_fragmentName = "heading",
-			locator1 = "Fragment#FRAGMENT_BASIC_COMPONENT",
-			value1 = "タイトル");
+		ContentPages.viewFragmentText(
+			fragmentName = "heading",
+			id = "element-text",
+			text = "タイトル");
 	}
 
 	@description = "This ensures that the user can import the exported content page xliff file with default version."
@@ -233,19 +235,19 @@ definition {
 			pageName = "TranslationContentPage",
 			siteName = "Guest");
 
-		AssertTextEquals(
-			key_fragmentName = "heading",
-			locator1 = "Fragment#FRAGMENT_BASIC_COMPONENT",
-			value1 = "Heading");
+		ContentPages.viewFragmentText(
+			fragmentName = "heading",
+			id = "element-text",
+			text = "Heading");
 
 		Navigator.ensureLocaleURL(locale = "es");
 
 		Page.viewCurrentPage(pageName = "TranslatedContentPage");
 
-		AssertTextEquals(
-			key_fragmentName = "heading",
-			locator1 = "Fragment#FRAGMENT_BASIC_COMPONENT",
-			value1 = "Titulo");
+		ContentPages.viewFragmentText(
+			fragmentName = "heading",
+			id = "element-text",
+			text = "Titulo");
 	}
 
 	@description = "This ensures that the user can not import an invalid translation file."
@@ -280,17 +282,9 @@ definition {
 			pageName = "TranslationContentPage2",
 			validateInvalidFile = "true");
 
-		Alert.viewErrorMessage(errorMessage = "The translation file does not correspond to this page.");
-
-		SitePages.openPagesAdmin(siteURLKey = "guest");
-
-		Translations.importTranslation(
-			contentPageTranslation = "true",
-			pageName = "TranslationContentPage2",
-			uploadInvalidFile = "Document_1.doc",
-			validateInvalidFile = "true");
-
-		Alert.viewErrorMessage(errorMessage = "The file is an invalid XLIFF file.");
+		Translations.viewErrorMessages(
+			errorMessage = "1 Error: Some files could not be published, check them and upload another file.",
+			errorMessageItem = "The translation file does not correspond to this page.");
 	}
 
 	@description = "This ensures that the user can import the translated content page file with Button fragment."
@@ -334,6 +328,8 @@ definition {
 			translationFileName = "TranslationContentPage-en_US-es_ES",
 			translationZipFileName = "TranslationContentPage-en_US.zip");
 
+		SitePages.openPagesAdmin(siteURLKey = "guest");
+
 		Translations.importTranslation(
 			contentPageTranslation = "true",
 			fileName = "TranslationContentPage-en_US-es_ES.xlf",
@@ -365,19 +361,19 @@ definition {
 			pageName = "TranslationContentPage",
 			siteName = "Guest");
 
-		AssertTextEquals(
-			key_fragmentName = "button",
-			locator1 = "Fragment#FRAGMENT_BASIC_COMPONENT",
-			value1 = "Title");
+		ContentPages.viewFragmentText(
+			fragmentName = "button",
+			id = "link",
+			text = "Title");
 
 		Navigator.ensureLocaleURL(locale = "es");
 
 		Page.viewCurrentPage(pageName = "TranslatedContentPage");
 
-		AssertTextEquals(
-			key_fragmentName = "button",
-			locator1 = "Fragment#FRAGMENT_BASIC_COMPONENT",
-			value1 = "Titulo");
+		ContentPages.viewFragmentText(
+			fragmentName = "button",
+			id = "link",
+			text = "Titulo");
 	}
 
 	@description = "This ensures that the user can import the translated content page file with HTML fragment."
@@ -398,8 +394,8 @@ definition {
 
 		PageEditor.editFragmentHTML(
 			content = "HTMLTitle",
-			editableId = "element-html",
-			fragmentName = "HTML");
+			fragmentName = "HTML",
+			id = "element-html");
 
 		PageEditor.clickPublish();
 
@@ -420,6 +416,8 @@ definition {
 			pageNameTranslation = "TranslatedContentPage",
 			translationFileName = "TranslationContentPage-en_US-es_ES",
 			translationZipFileName = "TranslationContentPage-en_US.zip");
+
+		SitePages.openPagesAdmin(siteURLKey = "guest");
 
 		Translations.importTranslation(
 			contentPageTranslation = "true",
@@ -445,19 +443,19 @@ definition {
 			pageName = "TranslationContentPage",
 			siteName = "Guest");
 
-		AssertTextEquals(
-			key_fragmentName = "html",
-			locator1 = "Fragment#FRAGMENT_BASIC_COMPONENT",
-			value1 = "HTMLTitle");
+		ContentPages.viewFragmentText(
+			fragmentName = "html",
+			id = "element-html",
+			text = "HTMLTitle");
 
 		Navigator.ensureLocaleURL(locale = "es");
 
 		Page.viewCurrentPage(pageName = "TranslatedContentPage");
 
-		AssertTextEquals(
-			key_fragmentName = "html",
-			locator1 = "Fragment#FRAGMENT_BASIC_COMPONENT",
-			value1 = "HTMLTitulo");
+		ContentPages.viewFragmentText(
+			fragmentName = "html",
+			id = "element-html",
+			text = "HTMLTitulo");
 	}
 
 }

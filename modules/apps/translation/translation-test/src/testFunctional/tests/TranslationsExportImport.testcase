@@ -3,7 +3,7 @@ definition {
 
 	property portal.release = "true";
 	property portal.upstream = "true";
-	property testray.main.component.name = "Translation Management";
+	property testray.main.component.name = "Translations Management";
 
 	setUp {
 		TestCase.setUpPortalInstance();
@@ -94,6 +94,8 @@ definition {
 			webContentDescription = "Description",
 			webContentTitle = "WebContentTitle");
 
+		WebContentNavigator.openWebContentAdmin(siteURLKey = "guest");
+
 		Translations.importTranslation(
 			fileName = "WebContentTitle-en_US-es_ES.xlf",
 			webContentTitle = "WebContentTitle");
@@ -182,6 +184,8 @@ definition {
 			webContentDescription = "Description",
 			webContentTitle = "WebContentTitle");
 
+		WebContentNavigator.openWebContentAdmin(siteURLKey = "guest");
+
 		Translations.importTranslation(
 			fileName = "WebContentTitle-en_US-ja_JP_utf8.xlf",
 			webContentTitle = "WebContentTitle");
@@ -227,6 +231,8 @@ definition {
 			webContentContent = "WebContent",
 			webContentDescription = "Description",
 			webContentTitle = "WebContentTitle");
+
+		WebContentNavigator.openWebContentAdmin(siteURLKey = "guest");
 
 		Translations.importTranslation(
 			fileName = "WebContentTitle-en_US-de_DE.xliff",

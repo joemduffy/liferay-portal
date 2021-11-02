@@ -23,6 +23,8 @@ import com.liferay.petra.portlet.url.builder.PortletURLBuilder;
 import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.portlet.LiferayWindowState;
 import com.liferay.portal.kernel.portlet.PortletURLUtil;
+import com.liferay.portal.kernel.security.permission.ActionKeys;
+import com.liferay.portal.kernel.security.permission.resource.ModelResourcePermission;
 
 import java.util.Arrays;
 import java.util.List;
@@ -38,7 +40,12 @@ import javax.servlet.http.HttpServletRequest;
 public class ObjectDefinitionsRelationshipsDisplayContext {
 
 	public ObjectDefinitionsRelationshipsDisplayContext(
-		HttpServletRequest httpServletRequest) {
+		HttpServletRequest httpServletRequest,
+		ModelResourcePermission<ObjectDefinition>
+			objectDefinitionModelResourcePermission) {
+
+		_objectDefinitionModelResourcePermission =
+			objectDefinitionModelResourcePermission;
 
 		_objectRequestHelper = new ObjectRequestHelper(httpServletRequest);
 	}
@@ -57,21 +64,28 @@ public class ObjectDefinitionsRelationshipsDisplayContext {
 				PortletURLBuilder.create(
 					getPortletURL()
 				).setMVCRenderCommandName(
-					"/object_definitions/edit_object_field"
+					"/object_definitions/edit_object_relationship"
 				).setParameter(
-					"objectFieldId", "{id}"
+					"objectRelationshipId", "{id}"
 				).setWindowState(
 					LiferayWindowState.POP_UP
 				).buildString(),
 				"view", "view",
 				LanguageUtil.get(_objectRequestHelper.getRequest(), "view"),
-				"get", null, "sidePanel"));
+				"get", null, "sidePanel"),
+			new ClayDataSetActionDropdownItem(
+				"/o/object-admin/v1.0/object-relationships/{id}", "trash",
+				"delete",
+				LanguageUtil.get(_objectRequestHelper.getRequest(), "delete"),
+				"delete", "delete", "async"));
 	}
 
 	public CreationMenu getCreationMenu() throws Exception {
 		CreationMenu creationMenu = new CreationMenu();
 
-		// TODO Check permissions
+		if (!_hasAddObjectRelationshipPermission()) {
+			return creationMenu;
+		}
 
 		creationMenu.addDropdownItem(
 			dropdownItem -> {
@@ -105,6 +119,14 @@ public class ObjectDefinitionsRelationshipsDisplayContext {
 			_objectRequestHelper.getLiferayPortletResponse());
 	}
 
+	private boolean _hasAddObjectRelationshipPermission() throws Exception {
+		return _objectDefinitionModelResourcePermission.contains(
+			_objectRequestHelper.getPermissionChecker(),
+			getObjectDefinitionId(), ActionKeys.UPDATE);
+	}
+
+	private final ModelResourcePermission<ObjectDefinition>
+		_objectDefinitionModelResourcePermission;
 	private final ObjectRequestHelper _objectRequestHelper;
 
 }

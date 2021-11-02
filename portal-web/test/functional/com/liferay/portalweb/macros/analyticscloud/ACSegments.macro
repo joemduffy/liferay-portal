@@ -86,6 +86,12 @@ definition {
 
 		Click(locator1 = "ACSegments#ADD_MEMBERS_BUTTON");
 
+		while (IsElementNotPresent(locator1 = "ACSegments#TABLE_CHECKBOX") && (maxIterations = "50")) {
+			ACSegments.searchSegment(findSegment = "${tableMember}");
+
+			ACUtils.clearSearchBar();
+		}
+
 		Click(locator1 = "ACSegments#TABLE_CHECKBOX");
 
 		Click(locator1 = "ACSegments#ADD_BUTTON");
@@ -96,6 +102,14 @@ definition {
 
 		for (var tableMember : list "${tableMember}") {
 			var key_TableMember = "${tableMember}";
+
+			ACSegments.searchSegment(findSegment = "${tableMember}");
+
+			while (IsElementNotPresent(locator1 = "ACSegments#TABLE_CHECKBOX") && (maxIterations = "50")) {
+				ACUtils.clearSearchBar();
+
+				ACSegments.searchSegment(findSegment = "${tableMember}");
+			}
 
 			Click(locator1 = "ACSegments#TABLE_CHECKBOX");
 		}
@@ -213,11 +227,13 @@ definition {
 			index = "${index}",
 			locator1 = "ACSegments#CRITERIA_ELLIPSIS");
 
-		MenuItem.click(menuItem = "Delete");
+		MenuItem.clickNoError(menuItem = "Delete");
 	}
 
 	macro deleteSegmentViaSegmentListInlineButton {
 		var key_segmentName = "${segmentName}";
+
+		ACUtils.waitForLoading();
 
 		Click.javaScriptClick(locator1 = "ACSegments#DELETE_SEGMENT_INLINE_BUTTON");
 
@@ -489,6 +505,14 @@ definition {
 		Click(locator1 = "Icon#EYE_PREVIEW");
 	}
 
+	macro removeStaticMember {
+		var key_TableMember = "${tableMember}";
+
+		Click(locator1 = "ACSegments#TABLE_CHECKBOX");
+
+		Click(locator1 = "ACSegments#REMOVE_MEMBERS_BUTTON");
+	}
+
 	macro saveSegment {
 		Click(locator1 = "ACSegments#SAVE_SEGMENT");
 
@@ -550,6 +574,12 @@ definition {
 
 		ACSegments.searchSegment(findSegment = "${documentTitle}");
 
+		while (IsElementNotPresent(locator1 = "ACSegments#TABLE_CHECKBOX") && (maxIterations = "50")) {
+			ACUtils.clearSearchBar();
+
+			ACSegments.searchSegment(findSegment = "${documentTitle}");
+		}
+
 		Click(locator1 = "ACSegments#TABLE_CHECKBOX");
 
 		Click(locator1 = "ACSegments#ADD_BUTTON");
@@ -576,6 +606,10 @@ definition {
 		Type(
 			locator1 = "ACSegments#OCCURENCE_INPUT",
 			value1 = "${occurenceNumber}");
+	}
+
+	macro sortSegmentButton {
+		Click(locator1 = "ACSegments#ADD_MEMBERS_SORT_BUTTON");
 	}
 
 	macro viewActivePageCreationModel {
@@ -638,30 +672,10 @@ definition {
 		AssertElementPresent(locator1 = "ACSegments#ANONYMOUS_LABEL");
 	}
 
-	macro viewKnownSegmentMemberNameLinksSpecificOrder {
-		var resultOrder = "0";
-
-		for (var username : list "${username}") {
-			var resultOrder = ${resultOrder} + 1;
-
-			AssertVisible(
-				key_userName = "${username}",
-				locator1 = "ACSegments#KNOWN_SEGMENT_MEMBERS_VIEW_SPECIFIC_ORDER",
-				resultOrder = "${resultOrder}");
-		}
-	}
-
-	macro viewKnownSegmentMembersSpecificOrder {
-		var resultOrder = "0";
-
-		for (var username : list "${username}") {
-			var resultOrder = ${resultOrder} + 1;
-
-			AssertVisible(
-				key_userName = "${username}",
-				locator1 = "ACSegments#KNOWN_SEGMENT_MEMBERS_VIEW_SPECIFIC_ORDER",
-				resultOrder = "${resultOrder}");
-		}
+	macro viewPreviewNumber {
+		AssertTextPresent(
+			locator1 = "ACLoading#PREVIEW_NUMBER",
+			value1 = "${previewNumber}");
 	}
 
 	macro viewSegmentComposition {
@@ -699,20 +713,26 @@ definition {
 			locator1 = "ACSegments#SEGMENT_CRITERIA_TYPE",
 			type = "Individual");
 
-		AssertTextEquals(
-			index = "${index}",
-			locator1 = "ACSegments#SEGMENT_CRITERIA_ATTRIBUTE_NAME",
-			value1 = "${attributeName}");
+		if (isSet(attributeName)) {
+			AssertTextEquals(
+				index = "${index}",
+				locator1 = "ACSegments#SEGMENT_CRITERIA_ATTRIBUTE_NAME",
+				value1 = "${attributeName}");
+		}
 
-		AssertTextEquals(
-			index = "${index}",
-			locator1 = "ACSegments#SEGMENT_CRITERIA_CONDITION",
-			value1 = "${condition}");
+		if (isSet(condition)) {
+			AssertTextEquals(
+				index = "${index}",
+				locator1 = "ACSegments#SEGMENT_CRITERIA_CONDITION",
+				value1 = "${condition}");
+		}
 
-		AssertTextEquals(
-			index = "${index}",
-			locator1 = "ACSegments#SEGMENT_CRITERIA_ATTRIBUTE_VALUE",
-			value1 = "${attributeValue}");
+		if (isSet(attributeValue)) {
+			AssertTextEquals(
+				index = "${index}",
+				locator1 = "ACSegments#SEGMENT_CRITERIA_ATTRIBUTE_VALUE",
+				value1 = "${attributeValue}");
+		}
 
 		if (isSet(conjunction)) {
 			AssertTextEquals(
@@ -746,10 +766,12 @@ definition {
 			locator1 = "ACSegments#SEGMENT_CRITERIA_CONDITION",
 			value1 = "${condition}");
 
-		AssertTextEquals(
-			index = "${index}",
-			locator1 = "ACSegments#SEGMENT_CRITERIA_ATTRIBUTE_VALUE",
-			value1 = "${attributeValue}");
+		if (isSet(attributeValue)) {
+			AssertTextEquals(
+				index = "${index}",
+				locator1 = "ACSegments#SEGMENT_CRITERIA_ATTRIBUTE_VALUE",
+				value1 = "${attributeValue}");
+		}
 
 		AssertTextEquals(
 			index = "${index}",

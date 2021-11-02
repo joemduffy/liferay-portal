@@ -1,3 +1,20 @@
+create table ObjectAction (
+	mvccVersion LONG default 0 not null,
+	uuid_ VARCHAR(75) null,
+	objectActionId LONG not null primary key,
+	companyId LONG,
+	userId LONG,
+	userName VARCHAR(75) null,
+	createDate DATE null,
+	modifiedDate DATE null,
+	objectDefinitionId LONG,
+	active_ BOOLEAN,
+	name VARCHAR(75) null,
+	objectActionExecutorKey VARCHAR(75) null,
+	objectActionTriggerKey VARCHAR(75) null,
+	parameters TEXT null
+);
+
 create table ObjectDefinition (
 	mvccVersion LONG default 0 not null,
 	uuid_ VARCHAR(75) null,
@@ -7,6 +24,8 @@ create table ObjectDefinition (
 	userName VARCHAR(75) null,
 	createDate DATE null,
 	modifiedDate DATE null,
+	descriptionObjectFieldId LONG,
+	titleObjectFieldId LONG,
 	active_ BOOLEAN,
 	dbTableName VARCHAR(75) null,
 	label STRING null,
@@ -62,24 +81,6 @@ create table ObjectField (
 	name VARCHAR(75) null,
 	relationshipType VARCHAR(75) null,
 	required BOOLEAN,
-	type_ VARCHAR(75) null
-);
-
-create table ObjectRelationship (
-	mvccVersion LONG default 0 not null,
-	uuid_ VARCHAR(75) null,
-	objectRelationshipId LONG not null primary key,
-	companyId LONG,
-	userId LONG,
-	userName VARCHAR(75) null,
-	createDate DATE null,
-	modifiedDate DATE null,
-	objectDefinitionId1 LONG,
-	objectDefinitionId2 LONG,
-	objectFieldId2 LONG,
-	dbTableName VARCHAR(75) null,
-	label STRING null,
-	name VARCHAR(75) null,
 	type_ VARCHAR(75) null
 );
 
@@ -167,8 +168,10 @@ create table ObjectRelationship (
 	objectDefinitionId1 LONG,
 	objectDefinitionId2 LONG,
 	objectFieldId2 LONG,
+	deletionType VARCHAR(75) null,
 	dbTableName VARCHAR(75) null,
 	label STRING null,
 	name VARCHAR(75) null,
+	reverse BOOLEAN,
 	type_ VARCHAR(75) null
 );

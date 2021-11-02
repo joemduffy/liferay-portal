@@ -11,17 +11,50 @@
 
 import {render} from '@liferay/frontend-js-react-web';
 
-import Diagram from '../src/main/resources/META-INF/resources/js/Diagram';
+import Diagram from '../src/main/resources/META-INF/resources/js/Diagram/Diagram';
+import DiagramTable from '../src/main/resources/META-INF/resources/js/DiagramTable/DiagramTable';
+import DiagramWithAutomapping from '../src/main/resources/META-INF/resources/js/DiagramWithAutomapping/Diagram';
 
 render(
 	Diagram,
 	{
-		imageURL: './assets/308056.svg',
+		diagramId: '46375',
+		imageURL:
+			'/documents/20118/0/login_portlet_splash.jpg/31c61626-ae8c-6a29-8ab6-22a10249be49?version=1.0&t=1634051992174&download=true',
 		isAdmin: true,
-		namespace: 'portlet_shop_by_diagram_namespace_',
-		productId: 44212,
-		spritemap: './assets/clay/icons.svg',
-		type: 'diagram.type.default',
+		pinsRadius: 1.0,
+		productId: '46355',
 	},
 	document.getElementById('shop-by-diagram')
+);
+
+render(
+	DiagramTable,
+	{
+		isAdmin: false,
+		productId: '46355',
+	},
+	document.getElementById('shop-by-diagram-table')
+);
+
+render(
+	DiagramWithAutomapping,
+	{
+		diagramId: '46522',
+		imageURL:
+			'/documents/20123/0/308056.svg/b77d6493-ab31-d7e5-cb6a-616c9d37ab9b?version=1.0&t=1634286500938&download=true',
+		isAdmin: false,
+		pinsCSSSelectors: ['#Livello_Testi > text', '[id*=MTEXT] > text'],
+		productId: '46505',
+	},
+	document.getElementById('shop-by-diagram-automapping')
+);
+
+render(
+	DiagramTable,
+	{
+		isAdmin: false,
+		productId: '46505',
+	},
+	document.getElementById('shop-by-diagram-automapping-table')
 );

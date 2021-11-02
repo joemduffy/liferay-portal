@@ -401,6 +401,8 @@ components:
             type: object
         Diagram:
             properties:
+                attachmentBase64:
+                    $ref: "#/components/schemas/AttachmentBase64"
                 color:
                     example: black
                     type: string
@@ -416,6 +418,7 @@ components:
                     type: integer
                 imageURL:
                     example: Name 1
+                    readOnly: true
                     type: string
                 productExternalReferenceCode:
                     example: exampleERC
@@ -482,12 +485,17 @@ components:
             type: object
         MappedProduct:
             properties:
-                diagram:
-                    example: false
-                    type: boolean
-                expando:
-                    additionalProperties: true
+                actions:
+                    additionalProperties:
+                        additionalProperties:
+                            type: string
+                        type: object
+                    readOnly: true
                     type: object
+                customFields:
+                    items:
+                        $ref: "#/components/schemas/CustomField"
+                    type: array
                 id:
                     example: 33130
                     format: int64
@@ -501,6 +509,15 @@ components:
                     format: int64
                     minimum: 0
                     type: integer
+                productName:
+                    additionalProperties:
+                        type: string
+                    example:
+                        en_US: Hand Saw
+                        hr_HR: Product Name HR
+                        hu_HU: Product Name HU
+                    readOnly: true
+                    type: object
                 quantity:
                     example: 1
                     format: int32
@@ -520,6 +537,13 @@ components:
                     format: int64
                     minimum: 0
                     type: integer
+                type:
+                    enum:
+                        - diagram
+                        - external
+                        - sku
+                    example: sku
+                    type: string
             type: object
         Option:
             properties:
@@ -824,6 +848,8 @@ components:
                     items:
                         $ref: "#/components/schemas/ProductChannel"
                     type: array
+                productConfiguration:
+                    $ref: "#/components/schemas/ProductConfiguration"
                 productId:
                     format: int64
                     readOnly: true
@@ -1484,7 +1510,7 @@ info:
         name: Commerce Team
     description:
         "Liferay Commerce Admin Catalog API. A Java client JAR is available for use with the group ID 'com.liferay',
-        artifact ID 'com.liferay.headless.commerce.admin.catalog.client', and version '4.0.6'."
+        artifact ID 'com.liferay.headless.commerce.admin.catalog.client', and version '4.0.9'."
     license:
         name: "Apache 2.0"
         url: "http://www.apache.org/licenses/LICENSE-2.0.html"
@@ -6738,6 +6764,16 @@ paths:
                   schema:
                       type: integer
                   style: form
+                - in: query
+                  name: search
+                  required: false
+                  schema:
+                      type: string
+                - in: query
+                  name: sort
+                  required: false
+                  schema:
+                      type: string
             responses:
                 200:
                     content:
@@ -10897,6 +10933,16 @@ paths:
                   schema:
                       type: integer
                   style: form
+                - in: query
+                  name: search
+                  required: false
+                  schema:
+                      type: string
+                - in: query
+                  name: sort
+                  required: false
+                  schema:
+                      type: string
             responses:
                 200:
                     content:

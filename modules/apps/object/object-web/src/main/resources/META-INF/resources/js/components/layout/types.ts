@@ -12,7 +12,7 @@
  * details.
  */
 
-type TName = {
+export type TName = {
 	[key: string]: string;
 };
 
@@ -44,6 +44,7 @@ export type TObjectLayoutRow = {
 export type TObjectLayoutColumn = {
 	objectFieldId: number;
 	priority: number;
+	size: number;
 };
 
 export type TObjectField = {

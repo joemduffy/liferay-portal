@@ -16,10 +16,8 @@ package com.liferay.layout.internal.util;
 
 import com.liferay.exportimport.kernel.staging.LayoutStagingUtil;
 import com.liferay.exportimport.kernel.staging.Staging;
-import com.liferay.layout.internal.configuration.FFLayoutPreviewDraftConfiguration;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
-import com.liferay.portal.configuration.metatype.bnd.util.ConfigurableUtil;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
@@ -44,6 +42,7 @@ import com.liferay.portal.kernel.service.permission.GroupPermissionUtil;
 import com.liferay.portal.kernel.service.permission.LayoutPermissionUtil;
 import com.liferay.portal.kernel.servlet.BrowserSnifferUtil;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
+import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.SessionClicks;
@@ -57,15 +56,12 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Objects;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Modified;
 import org.osgi.service.component.annotations.Reference;
 
 /**
@@ -76,10 +72,7 @@ import org.osgi.service.component.annotations.Reference;
  * @author Zsolt Szabó
  * @author Tibor Lipusz
  */
-@Component(
-	configurationPid = "com.liferay.layout.internal.configuration.FFLayoutPreviewDraftConfiguration",
-	immediate = true, service = LayoutsTree.class
-)
+@Component(immediate = true, service = LayoutsTree.class)
 public class LayoutsTreeImpl implements LayoutsTree {
 
 	@Override
@@ -254,25 +247,22 @@ public class LayoutsTreeImpl implements LayoutsTree {
 			httpServletRequest, groupId, layoutTreeNodes, layoutSetBranch);
 	}
 
-	@Activate
-	@Modified
-	protected void activate(Map<String, Object> properties) {
-		_ffLayoutPreviewDraftConfiguration =
-			ConfigurableUtil.createConfigurable(
-				FFLayoutPreviewDraftConfiguration.class, properties);
-	}
-
 	private Layout _getDraftLayout(Layout layout) {
-		if (!_ffLayoutPreviewDraftConfiguration.enabled() ||
-			!layout.isTypeContent()) {
-
+		if (!layout.isTypeContent()) {
 			return null;
 		}
 
 		Layout draftLayout = layout.fetchDraftLayout();
 
-		if ((draftLayout != null) &&
-			(draftLayout.getStatus() == WorkflowConstants.STATUS_DRAFT)) {
+		if (draftLayout == null) {
+			return null;
+		}
+
+		boolean published = GetterUtil.getBoolean(
+			draftLayout.getTypeSettingsProperty("published"));
+
+		if ((draftLayout.getStatus() == WorkflowConstants.STATUS_DRAFT) ||
+			!published) {
 
 			return draftLayout;
 		}
@@ -530,7 +520,11 @@ public class LayoutsTreeImpl implements LayoutsTree {
 
 			Layout draftLayout = _getDraftLayout(layout);
 
-			if (draftLayout != null) {
+			if ((draftLayout != null) &&
+				LayoutPermissionUtil.contains(
+					themeDisplay.getPermissionChecker(), layout,
+					ActionKeys.UPDATE)) {
+
 				jsonObject.put("draftStatus", "draft");
 
 				String draftLayoutURL = _portal.getLayoutFriendlyURL(
@@ -675,9 +669,6 @@ public class LayoutsTreeImpl implements LayoutsTree {
 
 	private static final Log _log = LogFactoryUtil.getLog(
 		LayoutsTreeImpl.class);
-
-	private volatile FFLayoutPreviewDraftConfiguration
-		_ffLayoutPreviewDraftConfiguration;
 
 	@Reference
 	private GroupLocalService _groupLocalService;

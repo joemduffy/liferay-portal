@@ -12,14 +12,16 @@
  * details.
  */
 
-import launcher from '../../../src/main/resources/META-INF/resources/components/mini_cart/entry';
+import launcher from '../../src/main/resources/META-INF/resources/components/mini_cart/entry';
 
-import '../../../src/main/resources/META-INF/resources/styles/main.scss';
+import '../../src/main/resources/META-INF/resources/styles/main.scss';
 
 launcher('mini_cart', 'mini-cart-root-id', {
 	cartActionURLs: {
 		checkoutURL: 'http://localhost:8080',
 		orderDetailURL: 'http://localhost:8080?commerceOrderUuid=12323',
+		siteDefaultURL: 'http://localhost:8080/group/siteDefaultUrl',
+		productURLSeparator: 'p',
 	},
 	spritemap: './assets/clay/icons.svg',
 });

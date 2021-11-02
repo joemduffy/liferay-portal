@@ -279,6 +279,40 @@ definition {
 		PortletEntry.save();
 	}
 
+	macro addBusinessAccountWithTag {
+		LexiconEntry.gotoAdd();
+
+		PortletEntry.inputName(name = "${accountName}");
+
+		if ("${addTagMethod}" == "Select") {
+			Click(locator1 = "AssetCategorization#TAGS_SELECT_BUTTON");
+
+			IFrame.selectTagFrame();
+
+			for (var tagName : list "${tagNameList}") {
+				var tagName = StringUtil.lowerCase("${tagName}");
+
+				Check(
+					key_rowEntry = "${tagName}",
+					locator1 = "ContentRow#ENTRY_CONTENT_ENTRY_CHECKBOX");
+			}
+
+			SelectFrameTop();
+
+			Button.clickDone();
+		}
+
+		else {
+			for (var tagName : list "${tagNameList}") {
+				var tagName = StringUtil.lowerCase("${tagName}");
+
+				AssetCategorization.addTag(tagName = "${tagName}");
+			}
+		}
+
+		PortletEntry.save();
+	}
+
 	macro addInactiveBusinessAccount {
 		LexiconEntry.gotoAdd();
 
@@ -419,7 +453,12 @@ definition {
 			locator1 = "Button#SAVE",
 			value1 = "Save");
 
-		Alert.viewSuccessMessage();
+		if (IsElementPresent(locator1 = "Message#ERROR_REQUEST_FAILED")) {
+			Button.clickCancel();
+		}
+		else {
+			Alert.viewSuccessMessage();
+		}
 	}
 
 	macro addNewUserWithInvalidDomain {
@@ -996,7 +1035,14 @@ definition {
 	macro removeOrganizationAsAssignee {
 		var key_assigneeName = "${assigneeName}";
 
-		Search.searchCP(searchTerm = "${assigneeName}");
+		if (isSet(accountName)) {
+			Search.searchPG(
+				portletName = "${accountName}",
+				searchTerm = "${assigneeName}");
+		}
+		else {
+			Search.searchCP(searchTerm = "${assigneeName}");
+		}
 
 		ClickNoError(
 			locator1 = "Icon#REMOVE_ASSIGNEE",
@@ -1017,6 +1063,72 @@ definition {
 			rowEntry = "${assigneeName}");
 
 		AssertConfirm(value1 = "Are you sure you want to remove this user?");
+
+		Alert.viewSuccessMessage();
+	}
+
+	macro searchAccountsViaId {
+		var key_tableEntry = "${accountName}";
+		var key_columnName = "lfr-id";
+		var accountId = selenium.getText("LexiconTable#TABLE_ENTRY_INFO");
+
+		Search.searchPG(
+			portletName = "Account Management",
+			searchTerm = "${accountId}");
+
+		AssertTextEquals(
+			locator1 = "LexiconTable#TABLE_ENTRY_INFO",
+			value1 = "${accountId}");
+	}
+
+	macro setAddAccountEntryPermissions {
+		JSONRole.addRegularRole(roleTitle = "${roleTitle}");
+
+		Permissions.definePermissionViaJSONAPI(
+			resourceAction = "ADD_ACCOUNT_ENTRY",
+			resourceName = "90",
+			roleTitle = "${roleTitle}");
+
+		JSONRole.assignRoleToUser(
+			roleTitle = "${roleTitle}",
+			userEmailAddress = "${userEmailAddress}");
+	}
+
+	macro setAllowedAccountTypeInSiteSettings {
+		ProductMenu.gotoPortlet(
+			category = "Configuration",
+			portlet = "Site Settings");
+
+		SystemSettings.gotoConfiguration(
+			configurationCategory = "Accounts",
+			configurationName = "Accounts",
+			configurationScope = "Site Scope");
+
+		AssertElementPresent(locator1 = "FormFields#FIELD_ADD_REMOVE");
+
+		Click(locator1 = "FormFields#FIELD_ADD_REMOVE");
+
+		AssertElementNotPresent(locator1 = "FormFields#FIELD_ADD_REMOVE");
+
+		Click(
+			key_fieldName = "Allowed Account Types",
+			locator1 = "FormFields#SELECT_FIELD");
+
+		AssertClick(
+			key_selectOption = "${allowedType}",
+			locator1 = "FormFields#SELECT_FIELD_OPTIONS_LIST",
+			value1 = "${allowedType}");
+
+		if (IsElementPresent(locator1 = "Button#SAVE")) {
+			AssertClick(
+				locator1 = "Button#SAVE",
+				value1 = "Save");
+		}
+		else if (IsElementPresent(locator1 = "Button#UPDATE")) {
+			AssertClick(
+				locator1 = "Button#UPDATE",
+				value1 = "Update");
+		}
 
 		Alert.viewSuccessMessage();
 	}
@@ -1078,16 +1190,29 @@ definition {
 	}
 
 	macro tearDownCP {
-		ApplicationsMenu.gotoPortlet(
-			category = "Accounts",
-			panel = "Applications",
-			portlet = "Accounts");
+		Accounts.openAccountsAdmin();
 
 		PortletEntry.selectAll();
 
 		ClickNoError(locator1 = "Icon#DELETE");
 
 		AssertConfirm(value1 = "Are you sure you want to delete this? It will be deleted immediately.");
+
+		Alert.viewSuccessMessage();
+	}
+
+	macro unassignMultipleOrganizations {
+		Accounts.gotoAssigneeTab(assigneeTab = "Organizations");
+
+		for (var organizationNumber : list "${organizationNumber}") {
+			LexiconEntry.selectEntry(rowEntry = "Organization ${organizationNumber}");
+		}
+
+		ClickNoError(
+			key_text = "times-circle",
+			locator1 = "Icon#ANY");
+
+		AssertConfirm.waitForConfirmation(value1 = "Are you sure you want to remove the selected organizations?");
 
 		Alert.viewSuccessMessage();
 	}
@@ -1108,13 +1233,13 @@ definition {
 		if (isSet(accountType)) {
 			AssertTextEquals(
 				key_typeName = "${accountType}",
-				locator1 = "Select#TYPE_SELECTED",
+				locator1 = "TextInput#TYPE",
 				value1 = "${accountType}");
 		}
 
 		AssertElementPresent(
 			key_selectFieldLabel = "Type",
-			locator1 = "Select#ANY_DISABLED");
+			locator1 = "TextInput#ANY_DISABLED");
 
 		if (isSet(accountTaxID)) {
 			AssertTextEquals(
@@ -1285,6 +1410,32 @@ definition {
 		AssertElementNotPresent(
 			key_tab = "${navTab}",
 			locator1 = "NavTab#TAB_LINK");
+	}
+
+	macro viewSelectedAccount {
+		Search.searchPG(
+			portletName = "Account Management",
+			searchTerm = "${selectedAccountSearchTerm}");
+
+		LexiconEntry.viewEntryName(rowEntry = "${selectedAccount}");
+
+		LexiconEntry.viewNoEntry(rowEntry = "${previousAccount}");
+
+		AssertElementPresent(
+			key_text = "check",
+			locator1 = "Icon#ANY");
+
+		Search.searchPG(
+			portletName = "Account Management",
+			searchTerm = "${previousAccountSearchTerm}");
+
+		LexiconEntry.viewEntryName(rowEntry = "${previousAccount}");
+
+		LexiconEntry.viewNoEntry(rowEntry = "${selectedAccount}");
+
+		AssertElementNotPresent(
+			key_text = "check",
+			locator1 = "Icon#ANY");
 	}
 
 }

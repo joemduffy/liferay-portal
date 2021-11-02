@@ -25,10 +25,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.osgi.framework.Bundle;
-import org.osgi.framework.FrameworkUtil;
-import org.osgi.util.tracker.ServiceTracker;
-
 /**
  * The persistence utility for the object definition service. This utility wraps <code>com.liferay.object.service.persistence.impl.ObjectDefinitionPersistenceImpl</code> and provides direct access to the database for CRUD operations. This utility should only be used by the service layer, as it must operate within a transaction. Never access this utility in a JSP, controller, model, or other front-end class.
  *
@@ -1127,6 +1123,72 @@ public class ObjectDefinitionUtil {
 	}
 
 	/**
+	 * Returns the object definition where companyId = &#63; and className = &#63; or throws a <code>NoSuchObjectDefinitionException</code> if it could not be found.
+	 *
+	 * @param companyId the company ID
+	 * @param className the class name
+	 * @return the matching object definition
+	 * @throws NoSuchObjectDefinitionException if a matching object definition could not be found
+	 */
+	public static ObjectDefinition findByC_C(long companyId, String className)
+		throws com.liferay.object.exception.NoSuchObjectDefinitionException {
+
+		return getPersistence().findByC_C(companyId, className);
+	}
+
+	/**
+	 * Returns the object definition where companyId = &#63; and className = &#63; or returns <code>null</code> if it could not be found. Uses the finder cache.
+	 *
+	 * @param companyId the company ID
+	 * @param className the class name
+	 * @return the matching object definition, or <code>null</code> if a matching object definition could not be found
+	 */
+	public static ObjectDefinition fetchByC_C(
+		long companyId, String className) {
+
+		return getPersistence().fetchByC_C(companyId, className);
+	}
+
+	/**
+	 * Returns the object definition where companyId = &#63; and className = &#63; or returns <code>null</code> if it could not be found, optionally using the finder cache.
+	 *
+	 * @param companyId the company ID
+	 * @param className the class name
+	 * @param useFinderCache whether to use the finder cache
+	 * @return the matching object definition, or <code>null</code> if a matching object definition could not be found
+	 */
+	public static ObjectDefinition fetchByC_C(
+		long companyId, String className, boolean useFinderCache) {
+
+		return getPersistence().fetchByC_C(
+			companyId, className, useFinderCache);
+	}
+
+	/**
+	 * Removes the object definition where companyId = &#63; and className = &#63; from the database.
+	 *
+	 * @param companyId the company ID
+	 * @param className the class name
+	 * @return the object definition that was removed
+	 */
+	public static ObjectDefinition removeByC_C(long companyId, String className)
+		throws com.liferay.object.exception.NoSuchObjectDefinitionException {
+
+		return getPersistence().removeByC_C(companyId, className);
+	}
+
+	/**
+	 * Returns the number of object definitions where companyId = &#63; and className = &#63;.
+	 *
+	 * @param companyId the company ID
+	 * @param className the class name
+	 * @return the number of matching object definitions
+	 */
+	public static int countByC_C(long companyId, String className) {
+		return getPersistence().countByC_C(companyId, className);
+	}
+
+	/**
 	 * Returns the object definition where companyId = &#63; and name = &#63; or throws a <code>NoSuchObjectDefinitionException</code> if it could not be found.
 	 *
 	 * @param companyId the company ID
@@ -1930,27 +1992,9 @@ public class ObjectDefinitionUtil {
 	}
 
 	public static ObjectDefinitionPersistence getPersistence() {
-		return _serviceTracker.getService();
+		return _persistence;
 	}
 
-	private static ServiceTracker
-		<ObjectDefinitionPersistence, ObjectDefinitionPersistence>
-			_serviceTracker;
-
-	static {
-		Bundle bundle = FrameworkUtil.getBundle(
-			ObjectDefinitionPersistence.class);
-
-		ServiceTracker<ObjectDefinitionPersistence, ObjectDefinitionPersistence>
-			serviceTracker =
-				new ServiceTracker
-					<ObjectDefinitionPersistence, ObjectDefinitionPersistence>(
-						bundle.getBundleContext(),
-						ObjectDefinitionPersistence.class, null);
-
-		serviceTracker.open();
-
-		_serviceTracker = serviceTracker;
-	}
+	private static volatile ObjectDefinitionPersistence _persistence;
 
 }

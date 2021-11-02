@@ -16,6 +16,11 @@ import ClayLayout from '@clayui/layout';
 import classnames from 'classnames';
 import React, {forwardRef} from 'react';
 
+import {useFormState} from '../../hooks/useForm.es';
+
+const DDM_FORM_ADMIN_PORTLET_NAMESPACE =
+	'com_liferay_dynamic_data_mapping_form_web_portlet_DDMFormAdminPortlet';
+
 export const Container = ({
 	activePage,
 	children,
@@ -25,7 +30,7 @@ export const Container = ({
 	<div
 		className={classnames('fade tab-pane', {
 			'active show': activePage === pageIndex,
-			hide: activePage !== pageIndex,
+			'hide': activePage !== pageIndex,
 		})}
 		role="tabpanel"
 	>
@@ -56,6 +61,8 @@ export const Column = forwardRef(
 		},
 		ref
 	) => {
+		const {portletId} = useFormState();
+
 		const addr = {
 			'data-ddm-field-column': index,
 			'data-ddm-field-page': pageIndex,
@@ -90,7 +97,12 @@ export const Column = forwardRef(
 						data-field-name={firstField.fieldName}
 					>
 						{column.fields.map((field, index) => {
-							if (viewMode && field.type !== 'numeric') {
+							if (
+								viewMode &&
+								portletId.includes(
+									DDM_FORM_ADMIN_PORTLET_NAMESPACE
+								)
+							) {
 								field.predefinedValue = '';
 							}
 

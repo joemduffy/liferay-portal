@@ -370,8 +370,8 @@ function serializeRequestInfo(resource: RequestInfo): StructuredClonable {
 	serialized.credentials = resource.credentials;
 	serialized.destination = resource.destination;
 	serialized.integrity = resource.integrity;
-	serialized.isHistoryNavigation = resource.isHistoryNavigation;
-	serialized.isReloadNavigation = resource.isReloadNavigation;
+	serialized.isHistoryNavigation = (resource as any).isHistoryNavigation;
+	serialized.isReloadNavigation = (resource as any).isReloadNavigation;
 	serialized.keepalive = resource.keepalive;
 	serialized.method = resource.method;
 	serialized.mode = resource.mode;
@@ -466,11 +466,11 @@ function Client({debug}: ClientOptions = {debug: false}) {
 	const messageQueue: Array<Payload> = [];
 
 	const promises = {
-		fetch: {} as PromiseMap<BasicResponse>,
+		'fetch': {} as PromiseMap<BasicResponse>,
 		'fetch:response:blob': {} as PromiseMap<Blob>,
 		'fetch:response:json': {} as PromiseMap<JSONValue>,
 		'fetch:response:text': {} as PromiseMap<string>,
-		get: {} as PromiseMap<string>,
+		'get': {} as PromiseMap<string>,
 	} as const;
 
 	let state: State = 'unregistered';

@@ -88,15 +88,13 @@ definition {
 				userLoginEmailAddress = "ac@liferay.com",
 				userLoginFullName = "ac ac");
 
-			Navigator.gotoSitePage(
+			ACUtils.navigateToSitePage(
 				pageName = "AC Page",
 				siteName = "Site Name");
 		}
 
 		task ("Close sessions") {
-			ACUtils.closeAllSessions();
-
-			Pause(locator1 = "30000");
+			ACUtils.closeAllSessionsAndWait();
 		}
 
 		task ("Switch to new property in AC") {
@@ -126,7 +124,7 @@ definition {
 		task ("View the user showns on the Preview mode") {
 			ACSegments.previewSegmentMembership();
 
-			ACAssets.viewAssets(assetName = "ac ac");
+			ACUtils.viewNameList(nameList = "ac ac");
 		}
 	}
 
@@ -152,15 +150,13 @@ definition {
 				userLoginEmailAddress = "ac@liferay.com",
 				userLoginFullName = "ac ac");
 
-			Navigator.gotoSitePage(
+			ACUtils.navigateToSitePage(
 				pageName = "AC Page",
 				siteName = "Site Name");
 		}
 
 		task ("Close sessions") {
-			ACUtils.closeAllSessions();
-
-			Pause(locator1 = "30000");
+			ACUtils.closeAllSessionsAndWait();
 		}
 
 		task ("Switch to new property in AC") {
@@ -190,7 +186,7 @@ definition {
 		task ("View the user showns on the Preview mode") {
 			ACSegments.previewSegmentMembership();
 
-			ACAssets.viewAssets(assetName = "ac ac");
+			ACUtils.viewNameList(nameList = "ac ac");
 		}
 	}
 
@@ -228,15 +224,13 @@ definition {
 				userLoginEmailAddress = "ac@liferay.com",
 				userLoginFullName = "ac ac");
 
-			Navigator.gotoSitePage(
+			ACUtils.navigateToSitePage(
 				pageName = "AC Page",
 				siteName = "Site Name");
 		}
 
 		task ("Close sessions") {
-			ACUtils.closeAllSessions();
-
-			Pause(locator1 = "30000");
+			ACUtils.closeAllSessionsAndWait();
 		}
 
 		task ("Switch to new property in AC") {
@@ -266,7 +260,7 @@ definition {
 		task ("View the user showns on the Preview mode") {
 			ACSegments.previewSegmentMembership();
 
-			ACAssets.viewAssets(assetName = "ac ac");
+			ACUtils.viewNameList(nameList = "ac ac");
 		}
 	}
 
@@ -292,7 +286,7 @@ definition {
 				userLoginEmailAddress = "ac@liferay.com",
 				userLoginFullName = "ac ac");
 
-			Navigator.gotoSitePage(
+			ACUtils.navigateToSitePage(
 				pageName = "AC Page",
 				siteName = "Site Name");
 
@@ -301,8 +295,8 @@ definition {
 				entryTitle = "Blogs Entry Title");
 		}
 
-		task ("Pause for 30 seconds") {
-			Pause(locator1 = "30000");
+		task ("Close sessions") {
+			ACUtils.closeAllSessionsAndWait();
 		}
 
 		task ("Switch to new property in AC") {
@@ -332,7 +326,7 @@ definition {
 		task ("View and asset user") {
 			ACSegments.previewSegmentMembership();
 
-			ACAssets.viewAssets(assetName = "ac ac");
+			ACUtils.viewNameList(nameList = "ac ac");
 
 			ACSegments.saveSegment();
 		}
@@ -340,9 +334,7 @@ definition {
 		task ("Asset user present in the Segments") {
 			ACNavigation.switchTab(tabName = "Membership");
 
-			AssertElementPresent(
-				key_userName = "ac ac",
-				locator1 = "ACSegments#SEGMENT_MEMBERS");
+			ACUtils.viewNameList(nameList = "ac ac");
 		}
 	}
 
@@ -372,15 +364,13 @@ definition {
 				userLoginEmailAddress = "ac@liferay.com",
 				userLoginFullName = "ac ac");
 
-			Navigator.gotoSitePage(
+			ACUtils.navigateToSitePage(
 				pageName = "AC Page",
 				siteName = "Site Name");
 		}
 
 		task ("Close sessions") {
-			ACUtils.closeAllSessions();
-
-			Pause(locator1 = "30000");
+			ACUtils.closeAllSessionsAndWait();
 		}
 
 		task ("Switch to new property in AC") {
@@ -410,7 +400,7 @@ definition {
 		task ("View the user showns on the Preview mode") {
 			ACSegments.previewSegmentMembership();
 
-			ACAssets.viewAssets(assetName = "ac ac");
+			ACUtils.viewNameList(nameList = "ac ac");
 		}
 	}
 
@@ -462,15 +452,13 @@ definition {
 				userLoginEmailAddress = "ac@liferay.com",
 				userLoginFullName = "ac ac");
 
-			Navigator.gotoSitePage(
+			ACUtils.navigateToSitePage(
 				pageName = "AC Page",
 				siteName = "Site Name");
 		}
 
 		task ("Close sessions") {
-			ACUtils.closeAllSessions();
-
-			Pause(locator1 = "30000");
+			ACUtils.closeAllSessionsAndWait();
 		}
 
 		task ("Switch to new property in AC") {
@@ -498,7 +486,7 @@ definition {
 		task ("View the user showns on the Preview mode") {
 			ACSegments.previewSegmentMembership();
 
-			ACAssets.viewAssets(assetName = "ac ac");
+			ACUtils.viewNameList(nameList = "ac ac");
 		}
 	}
 
@@ -538,15 +526,13 @@ definition {
 				userLoginEmailAddress = "ac@liferay.com",
 				userLoginFullName = "ac ac");
 
-			Navigator.gotoSitePage(
+			ACUtils.navigateToSitePage(
 				pageName = "AC Page",
 				siteName = "Site Name");
 		}
 
 		task ("Close sessions") {
-			ACUtils.closeAllSessions();
-
-			Pause(locator1 = "30000");
+			ACUtils.closeAllSessionsAndWait();
 		}
 
 		task ("Switch to new property in AC") {
@@ -574,7 +560,7 @@ definition {
 		task ("View the user showns on the Preview mode") {
 			ACSegments.previewSegmentMembership();
 
-			ACAssets.viewAssets(assetName = "ac ac");
+			ACUtils.viewNameList(nameList = "ac ac");
 		}
 	}
 

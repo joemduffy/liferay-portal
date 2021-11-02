@@ -55,15 +55,13 @@ import com.liferay.dynamic.data.mapping.model.LocalizedValue;
 			condition = "equals(getValue('hideField'), TRUE)"
 		),
 		@DDMFormRule(
-			actions = {
-				"setEnabled('required', FALSE)",
-				"setValue('required', isRequiredObjectField(getValue('objectFieldName')))"
-			},
-			condition = "not(isEmpty(getValue('objectFieldName')))"
+			actions = "setValue('required', isRequiredObjectField(getValue('objectFieldName')))",
+			condition = "hasObjectField(getValue('objectFieldName'))"
 		),
 		@DDMFormRule(
 			actions = {
 				"setDataType('predefinedValue', getValue('dataType'))",
+				"setEnabled('required', not(hasObjectField(getValue('objectFieldName'))))",
 				"setPropertyValue('predefinedValue', 'inputMask', getValue('inputMask'))",
 				"setPropertyValue('predefinedValue', 'inputMaskFormat', getLocalizedValue('inputMaskFormat'))",
 				"setPropertyValue('predefinedValue', 'numericInputMask', getLocalizedValue('numericInputMask'))",
@@ -178,6 +176,7 @@ public interface NumericDDMFormFieldTypeSettings
 	@DDMFormField(
 		dataType = "string", label = "%format",
 		properties = {
+			"invalidCharacters=[1-8]",
 			"placeholder=%input-mask-format-placeholder",
 			"tooltip=%an-input-mask-helps-to-ensure-a-predefined-format"
 		},
@@ -190,7 +189,7 @@ public interface NumericDDMFormFieldTypeSettings
 	public LocalizedValue inputMaskFormat();
 
 	@DDMFormField(
-		predefinedValue = "%{\"append\": \"\", \"appendType\": \"prefix\", \"symbols\": {\"decimalSymbol\": \".\", \"thousandsSeparator\": \"none\"}}",
+		predefinedValue = "%{\"append\": \"\", \"appendType\": \"prefix\", \"decimalPlaces\": 2, \"symbols\": {\"decimalSymbol\": \".\", \"thousandsSeparator\": \"none\"}}",
 		type = "numeric_input_mask"
 	)
 	public LocalizedValue numericInputMask();

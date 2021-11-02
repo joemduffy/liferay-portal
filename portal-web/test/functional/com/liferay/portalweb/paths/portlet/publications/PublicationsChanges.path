@@ -11,6 +11,11 @@
 
 <tbody>
 <tr>
+	<td>CHANGE_HEADER</td>
+	<td>//span[contains(@class,'control-menu-level-1-heading') and contains(.,'Changes')]</td>
+	<td></td>
+</tr>
+<tr>
 	<td>COMMENT_ACTIONS</td>
 	<td>//div[contains(@class,'autofit-row') and contains(.,'${key_commentValue}')]/preceding-sibling::div//button[*[name()='svg'][contains(@class,'icon-ellipsis')]]</td>
 	<td></td>
@@ -96,8 +101,28 @@
 	<td></td>
 </tr>
 <tr>
-	<td>PUBLICATIONS_ELLIPSIS</td>
+	<td>PUBLICATIONS_CHANGE_ELLIPSIS</td>
 	<td>//div[contains(@class,'autofit-col')]//button[*[contains(@class,'lexicon-icon-ellipsis-v')]]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>SHOW_ALL_ITEMS_TOGGLE_SWITCH</td>
+	<td>//input[contains(@class,'toggle-switch-check')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>SORT_BUTTON</td>
+	<td>//button[contains(.,'${key_name}')]/span</td>
+	<td></td>
+</tr>
+<tr>
+	<td>SORTED_ASCENDING_ICON</td>
+	<td>//span//*[name()='svg'][contains(@class,'lexicon-icon-order-list-up')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>SORTED_DESCENDING_ICON</td>
+	<td>//span//*[name()='svg'][contains(@class,'lexicon-icon-order-list-down')]</td>
 	<td></td>
 </tr>
 </tbody>

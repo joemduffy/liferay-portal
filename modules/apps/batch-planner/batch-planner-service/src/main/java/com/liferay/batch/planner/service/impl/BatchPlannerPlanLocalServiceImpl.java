@@ -16,8 +16,10 @@ package com.liferay.batch.planner.service.impl;
 
 import com.liferay.batch.planner.constants.BatchPlannerPlanConstants;
 import com.liferay.batch.planner.exception.BatchPlannerPlanExternalTypeException;
+import com.liferay.batch.planner.exception.BatchPlannerPlanInternalClassNameException;
 import com.liferay.batch.planner.exception.BatchPlannerPlanNameException;
 import com.liferay.batch.planner.exception.DuplicateBatchPlannerPlanException;
+import com.liferay.batch.planner.model.BatchPlannerLog;
 import com.liferay.batch.planner.model.BatchPlannerPlan;
 import com.liferay.batch.planner.service.base.BatchPlannerPlanLocalServiceBaseImpl;
 import com.liferay.petra.string.StringBundler;
@@ -48,10 +50,15 @@ public class BatchPlannerPlanLocalServiceImpl
 	public BatchPlannerPlan addBatchPlannerPlan(
 			long userId, boolean export, String externalType,
 			String externalURL, String internalClassName, String name,
-			boolean template)
+			String taskItemDelegateName, boolean template)
 		throws PortalException {
 
 		_validateExternalType(externalType);
+		_validateInternalClassName(internalClassName);
+
+		if (Validator.isNull(name)) {
+			name = _generateName(internalClassName);
+		}
 
 		User user = userLocalService.getUser(userId);
 
@@ -68,6 +75,7 @@ public class BatchPlannerPlanLocalServiceImpl
 		batchPlannerPlan.setExternalURL(externalURL);
 		batchPlannerPlan.setInternalClassName(internalClassName);
 		batchPlannerPlan.setName(name);
+		batchPlannerPlan.setTaskItemDelegateName(taskItemDelegateName);
 		batchPlannerPlan.setTemplate(template);
 
 		batchPlannerPlan = batchPlannerPlanPersistence.update(batchPlannerPlan);
@@ -90,8 +98,14 @@ public class BatchPlannerPlanLocalServiceImpl
 		resourceLocalService.deleteResource(
 			batchPlannerPlan, ResourceConstants.SCOPE_COMPANY);
 
-		batchPlannerLogPersistence.removeByBatchPlannerPlanId(
-			batchPlannerPlanId);
+		BatchPlannerLog batchPlannerLog =
+			batchPlannerLogPersistence.fetchByBatchPlannerPlanId(
+				batchPlannerPlanId);
+
+		if (batchPlannerLog != null) {
+			batchPlannerLogPersistence.removeByBatchPlannerPlanId(
+				batchPlannerPlanId);
+		}
 
 		batchPlannerMappingPersistence.removeByBatchPlannerPlanId(
 			batchPlannerPlanId);
@@ -132,6 +146,11 @@ public class BatchPlannerPlanLocalServiceImpl
 		return batchPlannerPlanPersistence.update(batchPlannerPlan);
 	}
 
+	private String _generateName(String value) {
+		return value.substring(value.lastIndexOf(StringPool.PERIOD) + 1) +
+			" Plan Execution " + System.currentTimeMillis();
+	}
+
 	private void _validateExternalType(String externalType)
 		throws PortalException {
 
@@ -147,6 +166,14 @@ public class BatchPlannerPlanLocalServiceImpl
 		throw new BatchPlannerPlanExternalTypeException(
 			"Batch planner plan external type must be one of following: " +
 				merge);
+	}
+
+	private void _validateInternalClassName(String internalClassName)
+		throws PortalException {
+
+		if (Validator.isNull(internalClassName)) {
+			throw new BatchPlannerPlanInternalClassNameException();
+		}
 	}
 
 	private void _validateName(

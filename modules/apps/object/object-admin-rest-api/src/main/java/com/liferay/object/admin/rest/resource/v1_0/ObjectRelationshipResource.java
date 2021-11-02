@@ -69,6 +69,24 @@ public interface ObjectRelationshipResource {
 			Long objectDefinitionId, String callbackURL, Object object)
 		throws Exception;
 
+	public void deleteObjectRelationship(Long objectRelationshipId)
+		throws Exception;
+
+	public Response deleteObjectRelationshipBatch(
+			String callbackURL, Object object)
+		throws Exception;
+
+	public ObjectRelationship getObjectRelationship(Long objectRelationshipId)
+		throws Exception;
+
+	public ObjectRelationship putObjectRelationship(
+			Long objectRelationshipId, ObjectRelationship objectRelationship)
+		throws Exception;
+
+	public Response putObjectRelationshipBatch(
+			String callbackURL, Object object)
+		throws Exception;
+
 	public default void setContextAcceptLanguage(
 		AcceptLanguage contextAcceptLanguage) {
 	}

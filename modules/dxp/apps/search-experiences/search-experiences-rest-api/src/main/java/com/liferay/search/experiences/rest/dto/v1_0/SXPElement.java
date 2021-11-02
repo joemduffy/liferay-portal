@@ -35,6 +35,8 @@ import java.util.Set;
 
 import javax.annotation.Generated;
 
+import javax.validation.Valid;
+
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
@@ -49,6 +51,10 @@ public class SXPElement implements Serializable {
 
 	public static SXPElement toDTO(String json) {
 		return ObjectMapperUtil.readValue(SXPElement.class, json);
+	}
+
+	public static SXPElement unsafeToDTO(String json) {
+		return ObjectMapperUtil.unsafeReadValue(SXPElement.class, json);
 	}
 
 	@Schema
@@ -78,6 +84,36 @@ public class SXPElement implements Serializable {
 	@GraphQLField
 	@JsonProperty(access = JsonProperty.Access.READ_WRITE)
 	protected String description;
+
+	@Schema
+	@Valid
+	public ElementDefinition getElementDefinition() {
+		return elementDefinition;
+	}
+
+	public void setElementDefinition(ElementDefinition elementDefinition) {
+		this.elementDefinition = elementDefinition;
+	}
+
+	@JsonIgnore
+	public void setElementDefinition(
+		UnsafeSupplier<ElementDefinition, Exception>
+			elementDefinitionUnsafeSupplier) {
+
+		try {
+			elementDefinition = elementDefinitionUnsafeSupplier.get();
+		}
+		catch (RuntimeException re) {
+			throw re;
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	@GraphQLField
+	@JsonProperty(access = JsonProperty.Access.READ_WRITE)
+	protected ElementDefinition elementDefinition;
 
 	@Schema
 	public Long getId() {
@@ -172,6 +208,16 @@ public class SXPElement implements Serializable {
 			sb.append(_escape(description));
 
 			sb.append("\"");
+		}
+
+		if (elementDefinition != null) {
+			if (sb.length() > 1) {
+				sb.append(", ");
+			}
+
+			sb.append("\"elementDefinition\": ");
+
+			sb.append(String.valueOf(elementDefinition));
 		}
 
 		if (id != null) {

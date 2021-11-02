@@ -19,7 +19,7 @@
 <%
 SearchContainer<?> igSearchContainer = (SearchContainer)request.getAttribute("view.jsp-igSearchContainer");
 
-DLPortletInstanceSettingsHelper dlPortletInstanceSettingsHelper = new DLPortletInstanceSettingsHelper(igRequestHelper);
+DLPortletInstanceSettingsHelper dlPortletInstanceSettingsHelper = new DLPortletInstanceSettingsHelper(new IGRequestHelper(request));
 %>
 
 <liferay-ui:search-container
@@ -96,7 +96,7 @@ DLPortletInstanceSettingsHelper dlPortletInstanceSettingsHelper = new DLPortletI
 				%>
 
 				<liferay-ui:search-container-column-text>
-					<div class="image-link preview" <%= (hasAudio || hasVideo) ? "data-options=\"height=" + playerHeight + "&thumbnailURL=" + HtmlUtil.escapeURL(DLURLHelperUtil.getPreviewURL(fileEntry, fileVersion, themeDisplay, "&videoThumbnail=1")) + "&width=640" + dataOptions + "\"" : StringPool.BLANK %> href="<%= imageURL %>" thumbnailId="<%= thumbnailId %>" title="<%= title %>">
+					<a class="image-link preview" <%= (hasAudio || hasVideo) ? "data-options=\"height=" + playerHeight + "&thumbnailURL=" + HtmlUtil.escapeURL(DLURLHelperUtil.getPreviewURL(fileEntry, fileVersion, themeDisplay, "&videoThumbnail=1")) + "&width=640" + dataOptions + "\"" : StringPool.BLANK %> href="<%= imageURL %>" thumbnailId="<%= thumbnailId %>" title="<%= title %>">
 						<c:choose>
 							<c:when test="<%= Validator.isNull(imagePreviewURL) %>">
 								<liferay-frontend:icon-vertical-card
@@ -121,7 +121,7 @@ DLPortletInstanceSettingsHelper dlPortletInstanceSettingsHelper = new DLPortletI
 								/>
 							</c:otherwise>
 						</c:choose>
-					</div>
+					</a>
 				</liferay-ui:search-container-column-text>
 			</c:when>
 			<c:otherwise>
@@ -239,13 +239,16 @@ PortletURL embeddedPlayerURL = PortletURLBuilder.createRenderURL(
 							'<iframe frameborder="0" height="{height}" scrolling="no" src="<%= embeddedPlayerURL.toString() %>&<portlet:namespace />thumbnailURL={thumbnailURL}&<portlet:namespace />mp3PreviewURL={mp3PreviewURL}&<portlet:namespace />mp4PreviewURL={mp4PreviewURL}&<portlet:namespace />oggPreviewURL={oggPreviewURL}&<portlet:namespace />ogvPreviewURL={ogvPreviewURL}" width="{width}"></iframe>',
 						matcher: /(.+)&mediaGallery=1/,
 						mediaRegex: /(.+)&mediaGallery=1/,
-						options: A.merge(A.MediaViewerPlugin.DEFAULT_OPTIONS, {
-							mp3PreviewURL: '',
-							mp4PreviewURL: '',
-							oggPreviewURL: '',
-							ogvPreviewURL: '',
-							thumbnailURL: '',
-						}),
+						options: Object.assign(
+							A.MediaViewerPlugin.DEFAULT_OPTIONS,
+							{
+								mp3PreviewURL: '',
+								mp4PreviewURL: '',
+								oggPreviewURL: '',
+								ogvPreviewURL: '',
+								thumbnailURL: '',
+							}
+						),
 					},
 				},
 				fn: A.MediaViewerPlugin,

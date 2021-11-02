@@ -24,7 +24,7 @@ import com.liferay.object.rest.internal.resource.v1_0.ObjectEntryResourceImpl;
 import com.liferay.object.rest.manager.v1_0.ObjectEntryManager;
 import com.liferay.object.scope.ObjectScopeProvider;
 import com.liferay.object.scope.ObjectScopeProviderRegistry;
-import com.liferay.object.service.ObjectEntryLocalService;
+import com.liferay.object.service.ObjectEntryService;
 import com.liferay.object.service.ObjectFieldLocalService;
 import com.liferay.portal.kernel.search.BooleanClauseOccur;
 import com.liferay.portal.kernel.search.Field;
@@ -75,15 +75,15 @@ public class ObjectEntryManagerImpl implements ObjectEntryManager {
 
 	@Override
 	public ObjectEntry addObjectEntry(
-			DTOConverterContext dtoConverterContext, long userId,
+			DTOConverterContext dtoConverterContext,
 			ObjectDefinition objectDefinition, ObjectEntry objectEntry,
 			String scopeKey)
 		throws Exception {
 
 		return _toObjectEntry(
-			dtoConverterContext,
-			_objectEntryLocalService.addObjectEntry(
-				userId, _getGroupId(objectDefinition, scopeKey),
+			dtoConverterContext, objectDefinition,
+			_objectEntryService.addObjectEntry(
+				_getGroupId(objectDefinition, scopeKey),
 				objectDefinition.getObjectDefinitionId(),
 				_toObjectValues(
 					objectDefinition.getObjectDefinitionId(),
@@ -95,16 +95,14 @@ public class ObjectEntryManagerImpl implements ObjectEntryManager {
 	@Override
 	public ObjectEntry addOrUpdateObjectEntry(
 			DTOConverterContext dtoConverterContext,
-			String externalReferenceCode, long userId,
-			ObjectDefinition objectDefinition, ObjectEntry objectEntry,
-			String scopeKey)
+			String externalReferenceCode, ObjectDefinition objectDefinition,
+			ObjectEntry objectEntry, String scopeKey)
 		throws Exception {
 
 		return _toObjectEntry(
-			dtoConverterContext,
-			_objectEntryLocalService.addOrUpdateObjectEntry(
-				externalReferenceCode, userId,
-				_getGroupId(objectDefinition, scopeKey),
+			dtoConverterContext, objectDefinition,
+			_objectEntryService.addOrUpdateObjectEntry(
+				externalReferenceCode, _getGroupId(objectDefinition, scopeKey),
 				objectDefinition.getObjectDefinitionId(),
 				_toObjectValues(
 					objectDefinition.getObjectDefinitionId(),
@@ -115,7 +113,7 @@ public class ObjectEntryManagerImpl implements ObjectEntryManager {
 
 	@Override
 	public void deleteObjectEntry(long objectEntryId) throws Exception {
-		_objectEntryLocalService.deleteObjectEntry(objectEntryId);
+		_objectEntryService.deleteObjectEntry(objectEntryId);
 	}
 
 	@Override
@@ -124,9 +122,26 @@ public class ObjectEntryManagerImpl implements ObjectEntryManager {
 			ObjectDefinition objectDefinition, String scopeKey)
 		throws Exception {
 
-		_objectEntryLocalService.deleteObjectEntry(
+		_objectEntryService.deleteObjectEntry(
 			externalReferenceCode, companyId,
 			_getGroupId(objectDefinition, scopeKey));
+	}
+
+	@Override
+	public ObjectEntry fetchObjectEntry(
+			DTOConverterContext dtoConverterContext,
+			ObjectDefinition objectDefinition, long objectEntryId)
+		throws Exception {
+
+		com.liferay.object.model.ObjectEntry objectEntry =
+			_objectEntryService.fetchObjectEntry(objectEntryId);
+
+		if (objectEntry != null) {
+			return _toObjectEntry(
+				dtoConverterContext, objectDefinition, objectEntry);
+		}
+
+		return null;
 	}
 
 	@Override
@@ -187,18 +202,19 @@ public class ObjectEntryManagerImpl implements ObjectEntryManager {
 			},
 			sorts,
 			document -> getObjectEntry(
-				dtoConverterContext,
+				dtoConverterContext, objectDefinition,
 				GetterUtil.getLong(document.get(Field.ENTRY_CLASS_PK))));
 	}
 
 	@Override
 	public ObjectEntry getObjectEntry(
-			DTOConverterContext dtoConverterContext, long objectEntryId)
+			DTOConverterContext dtoConverterContext,
+			ObjectDefinition objectDefinition, long objectEntryId)
 		throws Exception {
 
 		return _toObjectEntry(
-			dtoConverterContext,
-			_objectEntryLocalService.getObjectEntry(objectEntryId));
+			dtoConverterContext, objectDefinition,
+			_objectEntryService.getObjectEntry(objectEntryId));
 	}
 
 	@Override
@@ -209,25 +225,26 @@ public class ObjectEntryManagerImpl implements ObjectEntryManager {
 		throws Exception {
 
 		return _toObjectEntry(
-			dtoConverterContext,
-			_objectEntryLocalService.getObjectEntry(
+			dtoConverterContext, objectDefinition,
+			_objectEntryService.getObjectEntry(
 				externalReferenceCode, companyId,
 				_getGroupId(objectDefinition, scopeKey)));
 	}
 
 	@Override
 	public ObjectEntry updateObjectEntry(
-			DTOConverterContext dtoConverterContext, long userId,
-			long objectEntryId, ObjectEntry objectEntry)
+			DTOConverterContext dtoConverterContext,
+			ObjectDefinition objectDefinition, long objectEntryId,
+			ObjectEntry objectEntry)
 		throws Exception {
 
 		com.liferay.object.model.ObjectEntry serviceBuilderObjectEntry =
-			_objectEntryLocalService.getObjectEntry(objectEntryId);
+			_objectEntryService.getObjectEntry(objectEntryId);
 
 		return _toObjectEntry(
-			dtoConverterContext,
-			_objectEntryLocalService.updateObjectEntry(
-				userId, objectEntryId,
+			dtoConverterContext, objectDefinition,
+			_objectEntryService.updateObjectEntry(
+				objectEntryId,
 				_toObjectValues(
 					serviceBuilderObjectEntry.getObjectDefinitionId(),
 					objectEntry.getProperties(),
@@ -287,15 +304,17 @@ public class ObjectEntryManagerImpl implements ObjectEntryManager {
 	}
 
 	private ObjectEntry _toObjectEntry(
-		DTOConverterContext dtoConverterContext,
-		com.liferay.object.model.ObjectEntry objectEntry) {
+			DTOConverterContext dtoConverterContext,
+			ObjectDefinition objectDefinition,
+			com.liferay.object.model.ObjectEntry objectEntry)
+		throws Exception {
 
 		Optional<UriInfo> uriInfoOptional =
 			dtoConverterContext.getUriInfoOptional();
 
 		UriInfo uriInfo = uriInfoOptional.orElse(null);
 
-		return _objectEntryDTOConverter.toDTO(
+		DefaultDTOConverterContext defaultDTOConverterContext =
 			new DefaultDTOConverterContext(
 				dtoConverterContext.isAcceptAllLanguages(),
 				HashMapBuilder.put(
@@ -329,8 +348,13 @@ public class ObjectEntryManagerImpl implements ObjectEntryManager {
 				dtoConverterContext.getDTOConverterRegistry(),
 				dtoConverterContext.getHttpServletRequest(),
 				objectEntry.getObjectEntryId(), dtoConverterContext.getLocale(),
-				uriInfo, dtoConverterContext.getUser()),
-			objectEntry);
+				uriInfo, dtoConverterContext.getUser());
+
+		defaultDTOConverterContext.setAttribute(
+			"objectDefinition", objectDefinition);
+
+		return _objectEntryDTOConverter.toDTO(
+			defaultDTOConverterContext, objectEntry);
 	}
 
 	private Map<String, Serializable> _toObjectValues(
@@ -354,6 +378,12 @@ public class ObjectEntryManagerImpl implements ObjectEntryManager {
 			if (Objects.equals(objectField.getType(), "Date")) {
 				values.put(name, _toDate(locale, String.valueOf(object)));
 			}
+
+			if (objectField.getListTypeDefinitionId() != 0) {
+				Map<String, String> map = (HashMap<String, String>)object;
+
+				values.put(name, map.get("key"));
+			}
 			else {
 				values.put(name, (Serializable)object);
 			}
@@ -372,7 +402,7 @@ public class ObjectEntryManagerImpl implements ObjectEntryManager {
 	private ObjectEntryDTOConverter _objectEntryDTOConverter;
 
 	@Reference
-	private ObjectEntryLocalService _objectEntryLocalService;
+	private ObjectEntryService _objectEntryService;
 
 	@Reference
 	private ObjectFieldLocalService _objectFieldLocalService;

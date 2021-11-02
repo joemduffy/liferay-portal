@@ -13,17 +13,20 @@
  */
 
 import {ClassicEditor} from 'frontend-editor-ckeditor-web';
-import React, {useEffect, useRef} from 'react';
+import React, {useEffect, useMemo, useRef} from 'react';
 
 import {FieldBase} from '../FieldBase/ReactFieldBase.es';
 
 const RichText = ({
+	editable,
 	editingLanguageId,
 	editorConfig,
 	id,
 	name,
+	onBlur,
 	onChange,
-	predefinedValue,
+	onFocus,
+	predefinedValue = '',
 	readOnly,
 	value,
 	visible,
@@ -31,23 +34,23 @@ const RichText = ({
 }) => {
 	const editorRef = useRef();
 
+	const contents = useMemo(
+		() => (editable ? predefinedValue : value ?? predefinedValue),
+		[editable, predefinedValue, value]
+	);
+
 	useEffect(() => {
 		const editor = editorRef.current?.editor;
 
 		if (editor) {
-			const data = {...editor.getData()};
-			const config = {...data.config};
-
-			config.contentsLangDirection =
+			editor.config.contentsLangDirection =
 				Liferay.Language.direction[editingLanguageId];
 
-			config.contentsLanguage = editingLanguageId;
+			editor.config.contentsLanguage = editingLanguageId;
 
-			editor.setData({...data, config});
+			editor.setData(editor.getData());
 		}
-	}, [editingLanguageId, editorRef]);
-
-	const currentValue = value ?? predefinedValue;
+	}, [editingLanguageId]);
 
 	return (
 		<FieldBase
@@ -59,14 +62,16 @@ const RichText = ({
 			visible={visible}
 		>
 			<ClassicEditor
-				contents={currentValue}
+				contents={contents}
 				editorConfig={editorConfig}
 				name={name}
+				onBlur={onBlur}
 				onChange={(content) => {
-					if (currentValue !== content) {
+					if (contents !== content) {
 						onChange({target: {value: content}});
 					}
 				}}
+				onFocus={onFocus}
 				onSetData={({data: {dataValue: value}, editor: {mode}}) => {
 					if (mode === 'source') {
 						onChange({target: {value}});
@@ -76,7 +81,7 @@ const RichText = ({
 				ref={editorRef}
 			/>
 
-			<input name={name} type="hidden" value={currentValue} />
+			<input name={name} type="hidden" value={contents} />
 		</FieldBase>
 	);
 };

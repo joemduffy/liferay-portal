@@ -3,7 +3,7 @@ definition {
 
 	property portal.release = "true";
 	property portal.upstream = "true";
-	property testray.main.component.name = "Translation Management";
+	property testray.main.component.name = "Translations Management";
 
 	setUp {
 		TestCase.setUpPortalInstance();
@@ -165,6 +165,8 @@ definition {
 			webContentContent = "WebContent",
 			webContentDescription = "Description",
 			webContentTitle = "WebContentTitle");
+
+		WebContentNavigator.openWebContentAdmin(siteURLKey = "guest");
 
 		Translations.importTranslation(
 			fileName = "WebContentTitle-en_US-es_ES.xlf",
@@ -386,7 +388,7 @@ definition {
 		AssertTextEquals(
 			key_localizedLanguage = "es-ES",
 			locator1 = "Translation#TRANSLATION_STATUS_TITLE",
-			value1 = "Untranslated");
+			value1 = "Not Translated");
 	}
 
 	@description = "This ensures that an imported translation can be Rejected and Resubmited through the workflow."
@@ -423,6 +425,8 @@ definition {
 			webContentContent = "WebContent",
 			webContentDescription = "Description",
 			webContentTitle = "WebContentTitle");
+
+		WebContentNavigator.openWebContentAdmin(siteURLKey = "guest");
 
 		Translations.importTranslation(
 			fileName = "WebContentTitle-en_US-fr_FR.xlf",

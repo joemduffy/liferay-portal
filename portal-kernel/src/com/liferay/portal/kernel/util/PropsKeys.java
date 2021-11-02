@@ -1210,6 +1210,9 @@ public interface PropsKeys {
 	public static final String EHCACHE_SOCKET_START_PORT =
 		"ehcache.socket.start.port";
 
+	public static final String ENTERPRISE_PRODUCT_NOTIFICATION_ENABLED =
+		"enterprise.product.notification.enabled";
+
 	public static final String ETAG_RESPONSE_SIZE_MAX =
 		"etag.response.size.max";
 
@@ -2916,6 +2919,9 @@ public interface PropsKeys {
 	public static final String SEARCH_CONTAINER_SHOW_PAGINATION_TOP_DELTA =
 		"search.container.show.pagination.top.delta";
 
+	public static final String SEARCH_EXPERIENCES_POWER_TOOLS_ENABLED =
+		"search.experiences.power.tools.enabled";
+
 	public static final String SERVLET_CONTEXT_CLASS_LOADER_POOL_FALLBACK =
 		"servlet.context.class.loader.pool.fallback";
 
@@ -3531,6 +3537,10 @@ public interface PropsKeys {
 	public static final String VERIFY_PATCH_LEVELS_DISABLED =
 		"verify.patch.levels.disabled";
 
+	/**
+	 * @deprecated As of Cavanaugh (7.4.x), with no direct replacement
+	 */
+	@Deprecated
 	public static final String VERIFY_PROCESS_CONCURRENCY_THRESHOLD =
 		"verify.process.concurrency.threshold";
 

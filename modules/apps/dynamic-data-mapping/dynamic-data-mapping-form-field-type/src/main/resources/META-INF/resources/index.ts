@@ -25,6 +25,10 @@ declare global {
 
 	type Direction = 'ltr' | 'rtl';
 
+	type FieldChangeEventHandler<T = any> = (event: {
+		target: {value: T};
+	}) => void;
+
 	type Locale =
 		| 'ar_SA'
 		| 'ca_ES'
@@ -42,6 +46,7 @@ declare global {
 
 	type LocalizedTextKey =
 		| 'choose-an-option'
+		| 'decimal-places'
 		| 'decimal-separator'
 		| 'input-mask-append-placeholder'
 		| 'prefix'

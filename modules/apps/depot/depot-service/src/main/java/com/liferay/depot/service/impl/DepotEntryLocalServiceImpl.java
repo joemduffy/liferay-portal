@@ -36,6 +36,7 @@ import com.liferay.portal.kernel.model.ModelHintsUtil;
 import com.liferay.portal.kernel.model.Role;
 import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.service.GroupLocalService;
+import com.liferay.portal.kernel.service.ResourceLocalService;
 import com.liferay.portal.kernel.service.RoleLocalService;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.service.UserGroupRoleLocalService;
@@ -45,7 +46,6 @@ import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.MapUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.PropsKeys;
-import com.liferay.portal.kernel.util.ResourceBundleUtil;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.UnicodeProperties;
 import com.liferay.portal.kernel.util.Validator;
@@ -55,7 +55,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
-import java.util.ResourceBundle;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -93,7 +92,7 @@ public class DepotEntryLocalServiceImpl extends DepotEntryLocalServiceBaseImpl {
 
 		depotEntry = depotEntryPersistence.update(depotEntry);
 
-		resourceLocalService.addResources(
+		_resourceLocalService.addResources(
 			serviceContext.getCompanyId(), 0, serviceContext.getUserId(),
 			DepotEntry.class.getName(), depotEntry.getDepotEntryId(), false,
 			false, false);
@@ -147,7 +146,7 @@ public class DepotEntryLocalServiceImpl extends DepotEntryLocalServiceBaseImpl {
 
 		depotEntry = depotEntryPersistence.update(depotEntry);
 
-		resourceLocalService.addResources(
+		_resourceLocalService.addResources(
 			serviceContext.getCompanyId(), 0, serviceContext.getUserId(),
 			DepotEntry.class.getName(), depotEntry.getDepotEntryId(), false,
 			false, false);
@@ -316,11 +315,8 @@ public class DepotEntryLocalServiceImpl extends DepotEntryLocalServiceBaseImpl {
 			return Optional.empty();
 		}
 
-		ResourceBundle resourceBundle = ResourceBundleUtil.getBundle(
-			defaultLocale, DepotEntryLocalServiceImpl.class);
-
 		return Optional.of(
-			_language.get(resourceBundle, "unnamed-asset-library"));
+			_language.get(defaultLocale, "unnamed-asset-library"));
 	}
 
 	private boolean _isStaged(DepotEntry depotEntry) throws PortalException {
@@ -407,6 +403,9 @@ public class DepotEntryLocalServiceImpl extends DepotEntryLocalServiceBaseImpl {
 
 	@Reference
 	private Language _language;
+
+	@Reference
+	private ResourceLocalService _resourceLocalService;
 
 	@Reference
 	private RoleLocalService _roleLocalService;

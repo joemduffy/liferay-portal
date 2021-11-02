@@ -27,13 +27,28 @@ public class SXPBlueprintUtil {
 
 		return new SXPBlueprint() {
 			{
-				configuration = Configuration.toDTO(
-					sxpBlueprint.getConfigurationsJSON());
+				configuration = ConfigurationUtil.toConfiguration(
+					sxpBlueprint.getConfigurationJSON());
 				description = "";
 				id = sxpBlueprint.getSXPBlueprintId();
 				title = "";
 			}
 		};
+	}
+
+	public static SXPBlueprint toSXPBlueprint(String json) {
+		return unpack(SXPBlueprint.unsafeToDTO(json));
+	}
+
+	protected static SXPBlueprint unpack(SXPBlueprint sxpBlueprint) {
+		Configuration configuration = sxpBlueprint.getConfiguration();
+
+		if (configuration != null) {
+			sxpBlueprint.setConfiguration(
+				ConfigurationUtil.unpack(configuration));
+		}
+
+		return sxpBlueprint;
 	}
 
 }

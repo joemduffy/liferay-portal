@@ -175,7 +175,9 @@ const DatePicker = ({
 	locale,
 	localizedValue: localizedValueInitial = {},
 	name,
+	onBlur,
 	onChange,
+	onFocus,
 	spritemap,
 	value: initialValue,
 }) => {
@@ -223,12 +225,14 @@ const DatePicker = ({
 			const currentValue = localizedValue[locale];
 
 			if (currentValue) {
-				inputRef.current.value =
-					currentValue.includes('/') ||
-					currentValue.includes('.') ||
-					(currentValue.includes('-') && currentValue.includes('_'))
-						? currentValue
-						: moment(currentValue).format(dateMask.toUpperCase());
+				if (
+					currentValue !== inputRef.current.value ||
+					!/[//.-]/.test(currentValue)
+				) {
+					inputRef.current.value = moment(currentValue).format(
+						dateMask.toUpperCase()
+					);
+				}
 			}
 			else if (initialValueMemoized) {
 				var year = parseInt(
@@ -280,21 +284,21 @@ const DatePicker = ({
 		<>
 			<input
 				aria-hidden="true"
-				id={name + '_fieldDetails'}
 				name={name}
 				type="hidden"
 				value={getValueForHidden(value, locale)}
 			/>
 			<ClayDatePicker
-				aria-labelledby={name + '_fieldDetails'}
 				dateFormat={dateMask}
 				disabled={disabled}
 				expanded={expanded}
 				initialMonth={getInitialMonth(value)}
 				months={Months}
+				onBlur={onBlur}
 				onExpandedChange={(expand) => {
 					setExpand(expand);
 				}}
+				onFocus={onFocus}
 				onInput={(event) => {
 					maskInstance.current.update(event.target.value);
 					setLocalizedValue({
@@ -348,7 +352,9 @@ const Main = ({
 	locale = themeDisplay.getDefaultLanguageId(),
 	localizedValue,
 	name,
+	onBlur,
 	onChange,
+	onFocus,
 	placeholder,
 	predefinedValue,
 	readOnly,
@@ -372,7 +378,9 @@ const Main = ({
 			locale={locale}
 			localizedValue={localizedValue}
 			name={name}
+			onBlur={onBlur}
 			onChange={(value) => onChange({}, value)}
+			onFocus={onFocus}
 			placeholder={placeholder}
 			spritemap={spritemap}
 			value={value ? value : predefinedValue}

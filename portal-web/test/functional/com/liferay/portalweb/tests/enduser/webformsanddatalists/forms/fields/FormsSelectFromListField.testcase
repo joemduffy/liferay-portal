@@ -59,7 +59,9 @@ definition {
 
 		Form.gotoAdvancedTab();
 
-		FormFields.enableSwitch(fieldName = "Multiple");
+		FormFields.enableSwitch(fieldName = "multiple");
+
+		Pause(locator1 = "1000");
 
 		Form.closeSidebar();
 
@@ -442,10 +444,6 @@ definition {
 			fieldName = "Create List",
 			selectOption = "From Autofill");
 
-		Form.save();
-
-		Form.publishForm();
-
 		FormsAdminNavigator.gotoRules();
 
 		FormRules.addRule();
@@ -467,6 +465,10 @@ definition {
 		FormRules.save();
 
 		FormsAdminNavigator.gotoFormBuilder();
+
+		Form.save();
+
+		Form.publishForm();
 
 		FormsAdminNavigator.gotoPublishedForm();
 

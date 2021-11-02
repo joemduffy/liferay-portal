@@ -1,5 +1,19 @@
 definition {
 
+	macro addPage {
+		if (!(isSet(siteName))) {
+			siteName = "Site Name";
+		}
+
+		if (!(isSet(layoutName))) {
+			layoutName = "AC Page";
+		}
+
+		JSONLayout.addPublicLayout(
+			groupName = "${siteName}",
+			layoutName = "${layoutName}");
+	}
+
 	macro addSiteAndPage {
 		if (!(isSet(siteName))) {
 			siteName = "Site Name";
@@ -11,9 +25,9 @@ definition {
 			layoutName = "AC Page";
 		}
 
-		JSONLayout.addPublicLayout(
-			groupName = "${siteName}",
-			layoutName = "${layoutName}");
+		ACUtils.addPage(
+			layoutName = "${layoutName}",
+			siteName = "${siteName}");
 	}
 
 	macro addWidgetToPage {
@@ -31,20 +45,141 @@ definition {
 			siteName = "Site Name");
 	}
 
+	macro assertActiveIndividualChart {
+		var key_timeFilter = "${timeFilter}";
+
+		if (isSet(visitorLegend)) {
+			var key_visitorLegend = "${visitorLegend}";
+
+			MouseOver(locator1 = "ACIndividualsDashboard#VISITORS_LEGEND");
+
+			while (IsElementNotPresent(locator1 = "ACIndividualsDashboard#ACTIVE_INDIVIDUAL_CHART") && (maxIterations = "50")) {
+				TestUtils.hardRefresh();
+
+				if ("${timeFilter}" != "Custom Range") {
+					ACTimeFilter.clickTimeFilterButton();
+
+					if ("${timeFilter}" == "Last 24 hours") {
+						ACTimeFilter.setLast24Hours();
+					}
+
+					if ("${timeFilter}" == "Yesterday") {
+						ACTimeFilter.setYesterday();
+					}
+
+					if ("${timeFilter}" == "Last 7 days") {
+						ACTimeFilter.setLast7Days();
+					}
+
+					if ("${timeFilter}" == "Last 28 days") {
+						ACTimeFilter.setLast28Days();
+					}
+
+					if ("${timeFilter}" == "Last 30 days") {
+						ACTimeFilter.setLast30Days();
+					}
+
+					if ("${timeFilter}" == "Last 90 days") {
+						ACTimeFilter.setLast90Days();
+					}
+
+					if ("${timeFilter}" == "Last 180 days") {
+						ACTimeFilter.setLast180Days();
+					}
+
+					if ("${timeFilter}" == "Last Year") {
+						ACTimeFilter.setLastYear();
+					}
+				}
+
+				if ("${timeFilter}" == "Custom Range") {
+					ACTimeFilter.setCustomRange(
+						endDay = "${endDay}",
+						endMonth = "${endMonth}",
+						endYear = "${endYear}",
+						startDay = "${startDay}",
+						startMonth = "${startMonth}",
+						startYear = "${startYear}");
+				}
+
+				MouseOver(locator1 = "ACIndividualsDashboard#VISITORS_LEGEND");
+			}
+		}
+
+		else {
+			while (IsElementNotPresent(locator1 = "ACIndividualsDashboard#ACTIVE_INDIVIDUAL_CHART")) {
+				TestUtils.hardRefresh();
+
+				if ("${timeFilter}" != "Custom Range") {
+					ACTimeFilter.clickTimeFilterButton();
+
+					if ("${timeFilter}" == "Last 24 hours") {
+						ACTimeFilter.setLast24Hours();
+					}
+
+					if ("${timeFilter}" == "Yesterday") {
+						ACTimeFilter.setYesterday();
+					}
+
+					if ("${timeFilter}" == "Last 7 days") {
+						ACTimeFilter.setLast7Days();
+					}
+
+					if ("${timeFilter}" == "Last 28 days") {
+						ACTimeFilter.setLast28Days();
+					}
+
+					if ("${timeFilter}" == "Last 30 days") {
+						ACTimeFilter.setLast30Days();
+					}
+
+					if ("${timeFilter}" == "Last 90 days") {
+						ACTimeFilter.setLast90Days();
+					}
+
+					if ("${timeFilter}" == "Last 180 days") {
+						ACTimeFilter.setLast180Days();
+					}
+
+					if ("${timeFilter}" == "Last Year") {
+						ACTimeFilter.setLastYear();
+					}
+				}
+
+				if ("${timeFilter}" == "Custom Range") {
+					ACTimeFilter.setCustomRange(
+						endDay = "${endDay}",
+						endMonth = "${endMonth}",
+						endYear = "${endYear}",
+						startDay = "${startDay}",
+						startMonth = "${startMonth}",
+						startYear = "${startYear}");
+				}
+			}
+		}
+		AssertElementPresent(locator1 = "ACIndividualsDashboard#ACTIVE_INDIVIDUAL_CHART");
+	}
+
 	macro assertAudienceCard {
 		var key_index = "${index}";
 
 		for (var percentage : list "${percentageList}") {
 			var key_percentage = "${percentage}";
 
-			AssertElementPresent(locator1 = "ACUtils#METRIC_VALUE_PERCENTAGE");
+			while (IsElementNotPresent(locator1 = "ACUtils#METRIC_VALUE_PERCENTAGE") && (maxIterations = "50")) {
+				TestUtils.hardRefresh();
+			}
+
+			AssertTextEquals(
+				locator1 = "ACUtils#METRIC_VALUE_PERCENTAGE",
+				value1 = "${percentage}");
 		}
 	}
 
 	macro assertDataSourceName {
 		var itemName = "${dataSourceName}";
 
-		AssertElementPresent(locator1 = "ACSettings#ITEM_ON_LIST");
+		ACUtils.assertItemsName(itemList = "${itemName}");
 	}
 
 	macro assertDatePattern {
@@ -58,6 +193,10 @@ definition {
 
 		if ("${format}" == "MMM d - d") {
 			var pattern = "[A-Z][a-z][a-z]\s\d+\s-\s\d+";
+		}
+
+		if ("${format}" == "MMM d - MMM d") {
+			var pattern = "[A-Z][a-z][a-z]\s\d+\s-\s[A-Z][a-z][a-z]\s\d+";
 		}
 
 		if ("${format}" == "yyyy MMM dd") {
@@ -153,8 +292,18 @@ definition {
 		}
 	}
 
+	@summary = "Asserts an element not present in the list of items by the name"
+	macro assertItemsNameNotPresent {
+		for (var itemName : list "${itemList}") {
+			AssertElementNotPresent(
+				itemName = "${itemName}",
+				locator1 = "ACSettings#ITEM_ON_LIST");
+		}
+	}
+
 	macro assertPageTitle {
 		var key_pageTitle = "${pageTitle}";
+
 		AssertTextEquals(
 			locator1 = "ACUtils#PAGE_TITLE",
 			value1 = "${pageTitle}");
@@ -262,8 +411,11 @@ definition {
 		com.liferay.poshi.runner.util.JSONCurlUtil.post("${cleanCurl}");
 	}
 
+	@summary = "This macro close all open AC sessions. It needs a 30 second pause which is the time required for the command to be executed. For more information about pause see LRAC-9518"
 	macro closeAllSessionsAndWait {
 		ACUtils.closeAllSessions();
+
+		// It needs a 30 second pause which is the time required for the command to be executed. For more information about pause see LRAC-9518
 
 		Pause(locator1 = "30000");
 	}
@@ -487,6 +639,69 @@ definition {
 		}
 	}
 
+	@summary = "This macro access a page/document"
+	macro navigateToSitePage {
+		for (var documentTitle : list "${documentTitleList}") {
+			Navigator.gotoSitePage(
+				pageName = "${pageName}",
+				siteName = "${siteName}");
+
+			if ("${actionType}" == "View Blog") {
+				BlogsNavigator.gotoPG(entryTitle = "${documentTitle}");
+			}
+
+			if ("${actionType}" == "Comment Blog") {
+				BlogsNavigator.gotoPG(entryTitle = "${documentTitle}");
+
+				Comments.addPG(entryComment = "${commentText}");
+			}
+
+			if ("${actionType}" == "View DM") {
+				DMNavigator.gotoDocumentPG(dmDocumentTitle = "${documentTitle}");
+			}
+
+			if ("${actionType}" == "Download DM") {
+				DMDocument.downloadPG(dmDocumentTitle = "${documentTitle}");
+			}
+
+			if ("${actionType}" == "View Form") {
+				FormPortlet.waitFormRenderer(text = "Submit");
+			}
+
+			if ("${actionType}" == "Submit Form") {
+				FormPortlet.waitFormRenderer(text = "Submit");
+
+				FormFields.viewTextLabel(
+					fieldLabel = "Text",
+					fieldName = "Text");
+
+				FormFields.editText(
+					fieldName = "Text",
+					fieldValue = "${submitText}");
+
+				FormPortlet.submitLocalizedSuccessfully(buttonName = "Submit");
+			}
+		}
+	}
+
+	@summary = "This macro access a page/document with different users. Pause is necessary because poshi logs in from one user to another very quickly. For more information about pause see LRAC-9514"
+	macro navigateToSitePageWithUser {
+		for (var email : list "${emailList}") {
+			User.logoutAndLoginPG(userLoginEmailAddress = "${email}");
+
+			ACUtils.navigateToSitePage(
+				actionType = "${actionType}",
+				documentTitleList = "${documentTitleList}",
+				pageName = "${pageName}",
+				siteName = "${siteName}",
+				submitText = "${submitText}");
+
+			// Pause is necessary because poshi logs in from one user to another very quickly. For more information about pause see LRAC-9514
+
+			Pause(locator1 = "5000");
+		}
+	}
+
 	macro orderArrow {
 		var type = "${type}";
 
@@ -568,8 +783,48 @@ definition {
 			value1 = "${infoMessage}");
 	}
 
+	macro viewNameList {
+		for (var name : list "${nameList}") {
+			var key_nameList = "${name}";
+
+			WaitForPageLoad();
+
+			while (IsElementNotPresent(locator1 = "ACUtils#NAME_LIST") && (maxIterations = "50")) {
+				ACSegments.searchSegment(findSegment = "${name}");
+
+				ACUtils.clearSearchBar();
+			}
+
+			AssertTextEquals(
+				locator1 = "ACUtils#NAME_LIST",
+				value1 = "${name}");
+		}
+	}
+
+	macro viewNameListInOrder {
+		var key_userName = "${name}";
+
+		var index = "${index}";
+
+		WaitForPageLoad();
+
+		while (IsElementNotPresent(locator1 = "ACSegments#ADD_MEMBERS_INDEX_TABLE") && (maxIterations = "50")) {
+			Refresh();
+		}
+
+		AssertTextEquals(
+			locator1 = "ACSegments#ADD_MEMBERS_INDEX_TABLE",
+			value1 = "${name}");
+	}
+
 	macro viewNoResultsMessage {
 		var key_noResultMessage = "${noResultMessage}";
+
+		WaitForPageLoad();
+
+		while (IsElementNotPresent(locator1 = "ACAssets#NO_RESULTS_CONTENT_MESSAGE") && (maxIterations = "50")) {
+			TestUtils.hardRefresh();
+		}
 
 		AssertTextEquals(
 			locator1 = "ACAssets#NO_RESULTS_CONTENT_MESSAGE",

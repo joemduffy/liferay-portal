@@ -15,10 +15,12 @@
 package com.liferay.object.web.internal.object.entries.portlet;
 
 import com.liferay.object.model.ObjectDefinition;
+import com.liferay.object.scope.ObjectScopeProviderRegistry;
 import com.liferay.object.service.ObjectDefinitionLocalService;
 import com.liferay.object.web.internal.constants.ObjectWebKeys;
 import com.liferay.object.web.internal.object.entries.display.context.ViewObjectEntriesDisplayContext;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCPortlet;
+import com.liferay.portal.kernel.security.permission.resource.PortletResourcePermission;
 import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.WebKeys;
 
@@ -37,12 +39,14 @@ public class ObjectEntriesPortlet extends MVCPortlet {
 	public ObjectEntriesPortlet(
 		long objectDefinitionId,
 		ObjectDefinitionLocalService objectDefinitionLocalService,
-		Portal portal, String restContextPath) {
+		ObjectScopeProviderRegistry objectScopeProviderRegistry, Portal portal,
+		PortletResourcePermission portletResourcePermission) {
 
 		_objectDefinitionId = objectDefinitionId;
 		_objectDefinitionLocalService = objectDefinitionLocalService;
+		_objectScopeProviderRegistry = objectScopeProviderRegistry;
 		_portal = portal;
-		_restContextPath = restContextPath;
+		_portletResourcePermission = portletResourcePermission;
 	}
 
 	@Override
@@ -61,14 +65,18 @@ public class ObjectEntriesPortlet extends MVCPortlet {
 			WebKeys.PORTLET_DISPLAY_CONTEXT,
 			new ViewObjectEntriesDisplayContext(
 				_portal.getHttpServletRequest(renderRequest),
-				_restContextPath));
+				_objectScopeProviderRegistry.getObjectScopeProvider(
+					objectDefinition.getScope()),
+				_portletResourcePermission,
+				objectDefinition.getRESTContextPath()));
 
 		super.render(renderRequest, renderResponse);
 	}
 
 	private final long _objectDefinitionId;
 	private final ObjectDefinitionLocalService _objectDefinitionLocalService;
+	private final ObjectScopeProviderRegistry _objectScopeProviderRegistry;
 	private final Portal _portal;
-	private final String _restContextPath;
+	private final PortletResourcePermission _portletResourcePermission;
 
 }

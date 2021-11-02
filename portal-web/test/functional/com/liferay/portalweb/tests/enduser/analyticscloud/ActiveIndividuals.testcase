@@ -34,6 +34,8 @@ definition {
 		}
 		else {
 			JSONGroup.deleteGroupByName(groupName = "Site Name");
+
+			JSONUser.tearDownNonAdminUsers();
 		}
 
 		ACUtils.tearDownAC();
@@ -46,10 +48,6 @@ definition {
 			ACUtils.createDMAndAddToPage();
 		}
 
-		task ("Get site assigned property name") {
-			var propertyName = ACDXPSettings.connectDXPtoAnalyticsCloud(siteName = "Site Name");
-		}
-
 		task ("Add a new user in DXP") {
 			JSONUser.addUser(
 				userEmailAddress = "ac@liferay.com",
@@ -58,23 +56,27 @@ definition {
 				userScreenName = "ac");
 		}
 
+		task ("Get site assigned property name") {
+			var propertyName = ACDXPSettings.connectDXPtoAnalyticsCloud(siteName = "Site Name");
+		}
+
 		task ("Sign in with the new user to visit the site pages") {
 			User.logoutAndLoginPG(
 				userLoginEmailAddress = "ac@liferay.com",
 				userLoginFullName = "ac ac");
 
-			Navigator.gotoSitePage(
+			ACUtils.navigateToSitePage(
+				actionType = "View DM",
+				documentTitleList = "DM AC Title,DM AC Title,DM AC Title",
 				pageName = "AC Page",
 				siteName = "Site Name");
+		}
 
-			DMNavigator.gotoDocumentCP(dmDocumentTitle = "DM AC Title");
+		task ("Close all sessions") {
+			ACUtils.closeAllSessionsAndWait();
 		}
 
 		task ("Switch to new property in AC") {
-			ACUtils.closeAllSessions();
-
-			Pause(locator1 = "30000");
-
 			ACUtils.launchAC();
 
 			ACProperties.switchProperty(propertyName = "${propertyName}");
@@ -107,10 +109,11 @@ definition {
 
 		task ("Assert chart popover date formatted") {
 			var formattedDate = ACIndividualsDashboard.getChartPopoverDate();
+			var formattedDate = StringUtil.extractFirst("${formattedDate}",",");
 
 			ACUtils.assertDatePattern(
 				date = "${formattedDate}",
-				format = "yyyy MMM dd");
+				format = "MMM d");
 		}
 	}
 
@@ -121,10 +124,6 @@ definition {
 			ACUtils.createDMAndAddToPage();
 		}
 
-		task ("Get site assigned property name") {
-			var propertyName = ACDXPSettings.connectDXPtoAnalyticsCloud(siteName = "Site Name");
-		}
-
 		task ("Add a new user in DXP") {
 			JSONUser.addUser(
 				userEmailAddress = "ac@liferay.com",
@@ -133,23 +132,27 @@ definition {
 				userScreenName = "ac");
 		}
 
+		task ("Get site assigned property name") {
+			var propertyName = ACDXPSettings.connectDXPtoAnalyticsCloud(siteName = "Site Name");
+		}
+
 		task ("Sign in with the new user to visit the site pages") {
 			User.logoutAndLoginPG(
 				userLoginEmailAddress = "ac@liferay.com",
 				userLoginFullName = "ac ac");
 
-			Navigator.gotoSitePage(
+			ACUtils.navigateToSitePage(
+				actionType = "View DM",
+				documentTitleList = "DM AC Title,DM AC Title,DM AC Title",
 				pageName = "AC Page",
 				siteName = "Site Name");
+		}
 
-			DMNavigator.gotoDocumentCP(dmDocumentTitle = "DM AC Title");
+		task ("Close all sessions") {
+			ACUtils.closeAllSessionsAndWait();
 		}
 
 		task ("Switch to new property in AC") {
-			ACUtils.closeAllSessions();
-
-			Pause(locator1 = "30000");
-
 			ACUtils.launchAC();
 
 			ACProperties.switchProperty(propertyName = "${propertyName}");
@@ -196,7 +199,8 @@ definition {
 
 		task ("Get the last 24 hours Date") {
 			var previousDay = DateUtil.getFormattedDate("-1", "d");
-			var previousDate = "${displayDateMonth} ${previousDay}, ${displayDateYear}";
+			var previousMonth = DateUtil.getFormattedDate("-1", "MMMM");
+			var previousDate = "${previousMonth} ${previousDay}, ${displayDateYear}";
 		}
 
 		task ("Assert the display time range") {
@@ -233,18 +237,18 @@ definition {
 				userLoginEmailAddress = "ac@liferay.com",
 				userLoginFullName = "ac ac");
 
-			Navigator.gotoSitePage(
+			ACUtils.navigateToSitePage(
+				actionType = "View DM",
+				documentTitleList = "DM AC Title",
 				pageName = "AC Page",
 				siteName = "Site Name");
+		}
 
-			DMNavigator.gotoDocumentCP(dmDocumentTitle = "DM AC Title");
+		task ("Close all sessions") {
+			ACUtils.closeAllSessionsAndWait();
 		}
 
 		task ("Switch to new property in AC") {
-			ACUtils.closeAllSessions();
-
-			Pause(locator1 = "30000");
-
 			ACUtils.launchAC();
 
 			ACProperties.switchProperty(propertyName = "${propertyName}");
@@ -282,10 +286,6 @@ definition {
 
 		ACDXPSettings.syncNewContactData();
 
-		Navigator.openURL();
-
-		Pause(locator1 = "5000");
-
 		User.logoutAndLoginPG(
 			userLoginEmailAddress = "userea@liferay.com",
 			userLoginFullName = "userfn userln");
@@ -322,13 +322,11 @@ definition {
 
 		var propertyName = ACDXPSettings.connectDXPtoAnalyticsCloud(siteName = "Site Name");
 
-		for (var n : list "1,2,3,4") {
-			Navigator.gotoSitePage(
-				pageName = "AC Page",
-				siteName = "Site Name");
-
-			DMNavigator.gotoDocumentCP(dmDocumentTitle = "DM AC Title");
-		}
+		ACUtils.navigateToSitePage(
+			actionType = "View DM",
+			documentTitleList = "DM AC Title,DM AC Title,DM AC Title,DM AC Title",
+			pageName = "AC Page",
+			siteName = "Site Name");
 
 		ACUtils.closeAllSessionsAndWait();
 
@@ -339,22 +337,19 @@ definition {
 		ACNavigation.goToIndividuals();
 
 		var displayDateDay = DateUtil.getCurrentDate();
-		var displayMonth = DateUtil.getCurrentMonth();
 		var displayDateMonth = DateUtil.getCurrentMonthName();
 		var displayDateYear = DateUtil.getCurrentYear();
 		var previousDay = DateUtil.getFormattedDate("-1", "d");
 		var previousMonth = DateUtil.getFormattedDate("-1", "MMMM");
-		var previousYear = DateUtil.getFormattedDate("-1", "yyyy");
 
-		ACTimeFilter.setCustomRange(
+		ACUtils.assertActiveIndividualChart(
 			endDay = "${displayDateDay}",
 			endMonth = "${displayDateMonth}",
 			endYear = "${displayDateYear}",
 			startDay = "${previousDay}",
 			startMonth = "${previousMonth}",
-			startYear = "${previousYear}");
-
-		AssertElementPresent(locator1 = "ACIndividualsDashboard#ACTIVE_INDIVIDUAL_CHART");
+			startYear = "${displayDateYear}",
+			timeFilter = "Custom Range");
 	}
 
 	@description = "Set custom range filter with empty data for individual activity"
@@ -364,13 +359,11 @@ definition {
 
 		var propertyName = ACDXPSettings.connectDXPtoAnalyticsCloud(siteName = "Site Name");
 
-		for (var n : list "1,2,3,4") {
-			Navigator.gotoSitePage(
-				pageName = "AC Page",
-				siteName = "Site Name");
-
-			DMNavigator.gotoDocumentCP(dmDocumentTitle = "DM AC Title");
-		}
+		ACUtils.navigateToSitePage(
+			actionType = "View DM",
+			documentTitleList = "DM AC Title,DM AC Title,DM AC Title,DM AC Title",
+			pageName = "AC Page",
+			siteName = "Site Name");
 
 		ACUtils.closeAllSessionsAndWait();
 
@@ -412,13 +405,11 @@ definition {
 			userLoginEmailAddress = "ac@liferay.com",
 			userLoginFullName = "ac ac");
 
-		for (var n : list "1,2,3,4") {
-			Navigator.gotoSitePage(
-				pageName = "AC Page",
-				siteName = "Site Name");
-
-			DMNavigator.gotoDocumentCP(dmDocumentTitle = "DM AC Title");
-		}
+		ACUtils.navigateToSitePage(
+			actionType = "View DM",
+			documentTitleList = "DM AC Title,DM AC Title,DM AC Title,DM AC Title",
+			pageName = "AC Page",
+			siteName = "Site Name");
 
 		ACUtils.closeAllSessionsAndWait();
 
@@ -432,7 +423,7 @@ definition {
 
 		ACTimeFilter.setLast24Hours();
 
-		AssertElementPresent(locator1 = "ACIndividualsDashboard#ACTIVE_INDIVIDUAL_CHART");
+		ACUtils.assertActiveIndividualChart(timeFilter = "Last 24 hours");
 	}
 
 }

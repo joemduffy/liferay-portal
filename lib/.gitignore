@@ -28,7 +28,6 @@
 /development/jacocoreport.jar
 /development/jalopy.jar
 /development/jargs.jar
-/development/jarjar.jar
 /development/jasper.jar
 /development/jaxb-api.jar
 /development/jbi_rt.jar
@@ -177,7 +176,6 @@
 /portal/jcifs.jar
 /portal/jcl-over-slf4j.jar
 /portal/jcommon.jar
-/portal/jdom.jar
 /portal/jdom2.jar
 /portal/jempbox.jar
 /portal/jena.jar
@@ -228,7 +226,6 @@
 /portal/rdffilter.jar
 /portal/rhino.jar
 /portal/rmi-api.jar
-/portal/rome.jar
 /portal/rometools-utils.jar
 /portal/rometools.jar
 /portal/saaj-api.jar
@@ -281,4 +278,3 @@
 /portal/xstream.jar
 /portal/xuggle-xuggler-noarch.jar
 /portal/xz.jar
-/portal/yui-compressor.jar

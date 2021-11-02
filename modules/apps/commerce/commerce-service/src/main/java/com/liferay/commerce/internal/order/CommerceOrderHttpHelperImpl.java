@@ -514,41 +514,11 @@ public class CommerceOrderHttpHelperImpl implements CommerceOrderHttpHelper {
 		return userCommerceOrder;
 	}
 
-	private CommerceContext _getCommerceContext(
+	private String _fetchCommerceOrderUuid(
+		CommerceChannel commerceChannel,
 		HttpServletRequest httpServletRequest) {
 
-		return (CommerceContext)httpServletRequest.getAttribute(
-			CommerceWebKeys.COMMERCE_CONTEXT);
-	}
-
-	private CommerceOrder _getCurrentCommerceOrder(
-			CommerceContext commerceContext,
-			HttpServletRequest httpServletRequest)
-		throws PortalException {
-
-		CommerceOrder commerceOrder = _commerceOrderThreadLocal.get();
-
-		if (commerceOrder != null) {
-			CommerceOrder persistenceCommerceOrder =
-				_commerceOrderLocalService.fetchCommerceOrder(
-					commerceOrder.getCommerceOrderId());
-
-			if (persistenceCommerceOrder == null) {
-				return commerceOrder;
-			}
-
-			_commerceOrderThreadLocal.set(persistenceCommerceOrder);
-
-			return persistenceCommerceOrder;
-		}
-
-		CommerceChannel commerceChannel =
-			_commerceChannelLocalService.fetchCommerceChannel(
-				commerceContext.getCommerceChannelId());
-
-		CommerceAccount commerceAccount = commerceContext.getCommerceAccount();
-
-		if ((commerceChannel == null) || (commerceAccount == null)) {
+		if (commerceChannel == null) {
 			return null;
 		}
 
@@ -566,6 +536,59 @@ public class CommerceOrderHttpHelperImpl implements CommerceOrderHttpHelper {
 				httpServletRequest, cookieName, true);
 		}
 
+		return commerceOrderUuid;
+	}
+
+	private CommerceContext _getCommerceContext(
+		HttpServletRequest httpServletRequest) {
+
+		return (CommerceContext)httpServletRequest.getAttribute(
+			CommerceWebKeys.COMMERCE_CONTEXT);
+	}
+
+	private CommerceOrder _getCurrentCommerceOrder(
+			CommerceContext commerceContext,
+			HttpServletRequest httpServletRequest)
+		throws PortalException {
+
+		CommerceAccount commerceAccount = commerceContext.getCommerceAccount();
+
+		CommerceChannel commerceChannel =
+			_commerceChannelLocalService.fetchCommerceChannel(
+				commerceContext.getCommerceChannelId());
+
+		String commerceOrderUuid = _fetchCommerceOrderUuid(
+			commerceChannel, httpServletRequest);
+
+		CommerceOrder commerceOrder = _commerceOrderThreadLocal.get();
+
+		if (commerceOrder != null) {
+			CommerceOrder persistedCommerceOrder =
+				_commerceOrderLocalService.fetchCommerceOrder(
+					commerceOrder.getCommerceOrderId());
+
+			if (persistedCommerceOrder != null) {
+				commerceOrder = persistedCommerceOrder;
+
+				_commerceOrderThreadLocal.set(persistedCommerceOrder);
+			}
+
+			if ((commerceAccount == null) ||
+				(commerceAccount.getCommerceAccountId() ==
+					CommerceAccountConstants.ACCOUNT_ID_GUEST) ||
+				(Validator.isNotNull(commerceOrderUuid) &&
+				 commerceOrderUuid.equals(commerceOrder.getUuid()) &&
+				 (commerceAccount.getCommerceAccountId() ==
+					 commerceOrder.getCommerceAccountId()))) {
+
+				return commerceOrder;
+			}
+		}
+
+		if ((commerceAccount == null) || (commerceChannel == null)) {
+			return null;
+		}
+
 		if (commerceAccount.getCommerceAccountId() !=
 				CommerceAccountConstants.ACCOUNT_ID_GUEST) {
 
@@ -573,7 +596,10 @@ public class CommerceOrderHttpHelperImpl implements CommerceOrderHttpHelper {
 				_commerceOrderLocalService.fetchCommerceOrderByUuidAndGroupId(
 					commerceOrderUuid, commerceChannel.getGroupId());
 
-			if (commerceOrder == null) {
+			if ((commerceOrder == null) ||
+				(commerceAccount.getCommerceAccountId() !=
+					commerceOrder.getCommerceAccountId())) {
+
 				commerceOrder = _commerceOrderService.fetchCommerceOrder(
 					commerceAccount.getCommerceAccountId(),
 					commerceChannel.getGroupId(),

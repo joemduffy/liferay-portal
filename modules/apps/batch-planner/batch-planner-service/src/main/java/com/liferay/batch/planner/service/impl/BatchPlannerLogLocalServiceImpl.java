@@ -17,13 +17,20 @@ package com.liferay.batch.planner.service.impl;
 import com.liferay.batch.planner.exception.BatchPlannerLogBatchEngineExportTaskERCException;
 import com.liferay.batch.planner.exception.BatchPlannerLogBatchEngineImportTaskERCException;
 import com.liferay.batch.planner.model.BatchPlannerLog;
+import com.liferay.batch.planner.model.BatchPlannerLogTable;
 import com.liferay.batch.planner.model.BatchPlannerPlan;
+import com.liferay.batch.planner.model.BatchPlannerPlanTable;
 import com.liferay.batch.planner.service.base.BatchPlannerLogLocalServiceBaseImpl;
+import com.liferay.petra.sql.dsl.DSLQueryFactoryUtil;
+import com.liferay.petra.sql.dsl.expression.Predicate;
 import com.liferay.portal.aop.AopService;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.model.ModelHintsUtil;
 import com.liferay.portal.kernel.model.User;
+import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.util.Validator;
+
+import java.util.List;
 
 import org.osgi.service.component.annotations.Component;
 
@@ -111,6 +118,81 @@ public class BatchPlannerLogLocalServiceImpl
 	}
 
 	@Override
+	public BatchPlannerLog fetchBatchPlannerPlanBatchPlannerLog(
+		long batchPlannerPlanId) {
+
+		return batchPlannerLogPersistence.fetchByBatchPlannerPlanId(
+			batchPlannerPlanId);
+	}
+
+	@Override
+	public int getBatchPlannerLogsCount(long batchPlannerPlanId) {
+		return batchPlannerLogPersistence.countByBatchPlannerPlanId(
+			batchPlannerPlanId);
+	}
+
+	@Override
+	public BatchPlannerLog getBatchPlannerPlanBatchPlannerLog(
+			long batchPlannerPlanId)
+		throws PortalException {
+
+		return batchPlannerLogPersistence.findByBatchPlannerPlanId(
+			batchPlannerPlanId);
+	}
+
+	@Override
+	public List<BatchPlannerLog> getCompanyBatchPlannerLogs(
+		long companyId, boolean export, int start, int end,
+		OrderByComparator<BatchPlannerLog> orderByComparator) {
+
+		return batchPlannerLogPersistence.dslQuery(
+			DSLQueryFactoryUtil.select(
+				BatchPlannerLogTable.INSTANCE
+			).from(
+				BatchPlannerLogTable.INSTANCE
+			).innerJoinON(
+				BatchPlannerPlanTable.INSTANCE,
+				BatchPlannerLogTable.INSTANCE.batchPlannerPlanId.eq(
+					BatchPlannerPlanTable.INSTANCE.batchPlannerPlanId)
+			).where(
+				_getPredicate(companyId, export)
+			).orderBy(
+				BatchPlannerLogTable.INSTANCE, orderByComparator
+			).limit(
+				start, end
+			));
+	}
+
+	@Override
+	public List<BatchPlannerLog> getCompanyBatchPlannerLogs(
+		long companyId, int start, int end,
+		OrderByComparator<BatchPlannerLog> orderByComparator) {
+
+		return batchPlannerLogPersistence.findByCompanyId(
+			companyId, start, end, orderByComparator);
+	}
+
+	@Override
+	public int getCompanyBatchPlannerLogsCount(long companyId) {
+		return batchPlannerLogPersistence.countByCompanyId(companyId);
+	}
+
+	@Override
+	public int getCompanyBatchPlannerLogsCount(long companyId, boolean export) {
+		return dslQueryCount(
+			DSLQueryFactoryUtil.count(
+			).from(
+				BatchPlannerLogTable.INSTANCE
+			).innerJoinON(
+				BatchPlannerPlanTable.INSTANCE,
+				BatchPlannerLogTable.INSTANCE.batchPlannerPlanId.eq(
+					BatchPlannerPlanTable.INSTANCE.batchPlannerPlanId)
+			).where(
+				_getPredicate(companyId, export)
+			));
+	}
+
+	@Override
 	public BatchPlannerLog updateBatchPlannerLogSize(
 			long batchPlannerLogId, int size)
 		throws PortalException {
@@ -134,6 +216,14 @@ public class BatchPlannerLogLocalServiceImpl
 		batchPlannerLog.setStatus(status);
 
 		return batchPlannerLogPersistence.update(batchPlannerLog);
+	}
+
+	private Predicate _getPredicate(long companyId, boolean export) {
+		return BatchPlannerLogTable.INSTANCE.companyId.eq(
+			companyId
+		).and(
+			BatchPlannerPlanTable.INSTANCE.export.eq(export)
+		);
 	}
 
 }

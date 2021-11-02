@@ -27,8 +27,10 @@ import com.liferay.headless.commerce.admin.catalog.dto.v1_0.MappedProduct;
 import com.liferay.headless.commerce.admin.catalog.dto.v1_0.Pin;
 import com.liferay.headless.commerce.admin.catalog.dto.v1_0.Product;
 import com.liferay.headless.commerce.admin.catalog.internal.dto.v1_0.converter.PinDTOConverter;
+import com.liferay.headless.commerce.admin.catalog.internal.util.v1_0.MappedProductUtil;
 import com.liferay.headless.commerce.admin.catalog.internal.util.v1_0.PinUtil;
 import com.liferay.headless.commerce.admin.catalog.resource.v1_0.PinResource;
+import com.liferay.headless.commerce.core.util.ServiceContextHelper;
 import com.liferay.portal.kernel.search.Sort;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.util.GetterUtil;
@@ -39,7 +41,10 @@ import com.liferay.portal.vulcan.pagination.Page;
 import com.liferay.portal.vulcan.pagination.Pagination;
 import com.liferay.portal.vulcan.util.TransformUtil;
 
+import java.io.Serializable;
+
 import java.util.List;
+import java.util.Map;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -116,9 +121,14 @@ public class PinResourceImpl
 
 	@Override
 	public Pin patchPin(Long pinId, Pin pin) throws Exception {
-		PinUtil.updateCSDiagramPin(
-			_csDiagramPinService.getCSDiagramPin(pinId), _csDiagramPinService,
-			pin);
+		CSDiagramPin csDiagramPin = _csDiagramPinService.getCSDiagramPin(pinId);
+
+		PinUtil.updateCSDiagramPin(csDiagramPin, _csDiagramPinService, pin);
+
+		CPDefinition cpDefinition = csDiagramPin.getCPDefinition();
+
+		_addOrUpdateMappedProduct(
+			csDiagramPin.getCPDefinitionId(), cpDefinition.getGroupId(), pin);
 
 		return _toPin(pinId);
 	}
@@ -139,7 +149,8 @@ public class PinResourceImpl
 					externalReferenceCode);
 		}
 
-		return _addPin(cpDefinition.getCPDefinitionId(), pin);
+		return _addPin(
+			cpDefinition.getCPDefinitionId(), cpDefinition.getGroupId(), pin);
 	}
 
 	@Override
@@ -152,12 +163,13 @@ public class PinResourceImpl
 				"Unable to find product with ID " + productId);
 		}
 
-		return _addPin(cpDefinition.getCPDefinitionId(), pin);
+		return _addPin(
+			cpDefinition.getCPDefinitionId(), cpDefinition.getGroupId(), pin);
 	}
 
-	private Pin _addPin(long cpDefinitionId, Pin pin) throws Exception {
-		CSDiagramPin csDiagramPin = PinUtil.addCSDiagramPin(
-			cpDefinitionId, _csDiagramPinService, pin);
+	private void _addOrUpdateMappedProduct(
+			long cpDefinitionId, long groupId, Pin pin)
+		throws Exception {
 
 		MappedProduct mappedProduct = pin.getMappedProduct();
 
@@ -185,6 +197,19 @@ public class PinResourceImpl
 				productId = cpDefinition.getCProductId();
 			}
 
+			ServiceContext serviceContext =
+				_serviceContextHelper.getServiceContext(groupId);
+
+			Map<String, Serializable> expandoBridgeAttributes =
+				MappedProductUtil.getExpandoBridgeAttributes(
+					contextCompany.getCompanyId(),
+					contextAcceptLanguage.getPreferredLocale(), mappedProduct);
+
+			if (expandoBridgeAttributes != null) {
+				serviceContext.setExpandoBridgeAttributes(
+					expandoBridgeAttributes);
+			}
+
 			CSDiagramEntry csDiagramEntry =
 				_csDiagramEntryService.fetchCSDiagramEntry(
 					cpDefinitionId, GetterUtil.getString(pin.getSequence()));
@@ -192,22 +217,31 @@ public class PinResourceImpl
 			if (csDiagramEntry == null) {
 				_csDiagramEntryService.addCSDiagramEntry(
 					cpDefinitionId, skuId, productId,
-					GetterUtil.getBoolean(mappedProduct.getDiagram()),
+					MappedProductUtil.isDiagram(csDiagramEntry, mappedProduct),
 					GetterUtil.getInteger(mappedProduct.getQuantity()),
 					GetterUtil.getString(mappedProduct.getSequence()),
 					GetterUtil.getString(mappedProduct.getSku()),
-					new ServiceContext());
+					serviceContext);
 			}
 			else {
 				_csDiagramEntryService.updateCSDiagramEntry(
 					csDiagramEntry.getCSDiagramEntryId(), skuId, productId,
-					GetterUtil.getBoolean(mappedProduct.getDiagram()),
+					MappedProductUtil.isDiagram(csDiagramEntry, mappedProduct),
 					GetterUtil.getInteger(mappedProduct.getQuantity()),
 					GetterUtil.getString(mappedProduct.getSequence()),
 					GetterUtil.getString(mappedProduct.getSku()),
-					new ServiceContext());
+					serviceContext);
 			}
 		}
+	}
+
+	private Pin _addPin(long cpDefinitionId, long groupId, Pin pin)
+		throws Exception {
+
+		CSDiagramPin csDiagramPin = PinUtil.addCSDiagramPin(
+			cpDefinitionId, _csDiagramPinService, pin);
+
+		_addOrUpdateMappedProduct(cpDefinitionId, groupId, pin);
 
 		return _toPin(csDiagramPin.getCSDiagramPinId());
 	}
@@ -238,5 +272,8 @@ public class PinResourceImpl
 
 	@Reference
 	private PinDTOConverter _pinDTOConverter;
+
+	@Reference
+	private ServiceContextHelper _serviceContextHelper;
 
 }

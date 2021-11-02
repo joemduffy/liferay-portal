@@ -49,7 +49,7 @@ ObjectField objectField = (ObjectField)request.getAttribute(ObjectWebKeys.OBJECT
 					</aui:select>
 
 					<aui:field-wrapper cssClass="form-group lfr-input-text-container">
-						<aui:input inlineLabel="right" label='<%= LanguageUtil.get(request, "mandatory") %>' labelCssClass="simple-toggle-switch" name="required" type="toggle-switch" value="<%= objectField.getRequired() %>" />
+						<aui:input disabled="<%= objectDefinition.isApproved() %>" inlineLabel="right" label='<%= LanguageUtil.get(request, "mandatory") %>' labelCssClass="simple-toggle-switch" name="required" type="toggle-switch" value="<%= objectField.getRequired() %>" />
 					</aui:field-wrapper>
 				</div>
 
@@ -112,44 +112,59 @@ ObjectField objectField = (ObjectField)request.getAttribute(ObjectWebKeys.OBJECT
 </liferay-frontend:side-panel-content>
 
 <script>
-	function getNode(name) {
-		return document.querySelector('#<portlet:namespace />' + name);
-	}
-
 	function <portlet:namespace />onChangeFieldType(event) {
-		const searchableContainer = getNode('searchableContainer');
+		const searchableContainer = document.querySelector(
+			'#<portlet:namespace />searchableContainer'
+		);
+		const indexedGroup = document.querySelector(
+			'#<portlet:namespace />indexedGroup'
+		);
+		const indexed = document.querySelector('#<portlet:namespace />indexed')
+			.value;
 
+		indexedGroup.style.display =
+			indexed && event.target.value === 'String' ? 'block' : 'none';
 		searchableContainer.style.display =
 			event.target.value !== 'Blob' ? 'block' : 'none';
 	}
 
 	function <portlet:namespace />onChangeSeachableSwitch(event) {
-		const indexedGroup = getNode('indexedGroup');
-		const type = '<%= objectField.getType() %>';
+		const indexedGroup = document.querySelector(
+			'#<portlet:namespace />indexedGroup'
+		);
+		const type = document.querySelector('#<portlet:namespace />type').value;
 
 		indexedGroup.style.display =
 			event.target.checked && type === 'String' ? 'block' : 'none';
 	}
 
 	function <portlet:namespace />onChangeSeachableType(value) {
-		const indexedLanguageIdGroup = getNode('indexedLanguageIdGroup');
+		const indexedLanguageIdGroup = document.querySelector(
+			'#<portlet:namespace />indexedLanguageIdGroup'
+		);
 
 		indexedLanguageIdGroup.style.display = value === 'text' ? 'block' : 'none';
 	}
 
 	function <portlet:namespace />saveObjectField() {
-		const inputIndexed = getNode('indexed');
-		const inputIndexedTypeKeyword = getNode(
-			'inputIndexedTypeKeyword'
-		).querySelector('input');
-		const inputIndexedTypeText = getNode('inputIndexedTypeText').querySelector(
-			'input'
+		const inputIndexed = document.querySelector(
+			'#<portlet:namespace />indexed'
 		);
-		const inputIndexedLanguageId = getNode('indexedLanguageId');
-		const inputLabel = getNode('label');
-		const inputName = getNode('name');
-		const inputRequired = getNode('required');
-		const inputType = getNode('type');
+		const inputIndexedTypeKeyword = document
+			.querySelector('#<portlet:namespace />inputIndexedTypeKeyword')
+			.querySelector('input');
+		const inputIndexedTypeText = document
+			.querySelector('#<portlet:namespace />inputIndexedTypeText')
+			.querySelector('input');
+		const inputIndexedLanguageId = document.querySelector(
+			'#<portlet:namespace />indexedLanguageId'
+		);
+		const inputLabel = document.querySelector('#<portlet:namespace />label');
+		const inputName = document.querySelector('#<portlet:namespace />name');
+		const inputRequired = document.querySelector(
+			'#<portlet:namespace />required'
+		);
+		const inputType = document.querySelector('#<portlet:namespace />type');
 
 		const indexed = inputIndexed.checked;
 		const indexedAsKeyword =
@@ -170,6 +185,7 @@ ObjectField objectField = (ObjectField)request.getAttribute(ObjectWebKeys.OBJECT
 		const localizedInputs = document.querySelectorAll(
 			"input[id^='<portlet:namespace />'][type='hidden']"
 		);
+
 		const localizedLabels = Array(...localizedInputs).reduce(
 			(prev, cur, index) => {
 				if (cur.value) {
@@ -196,7 +212,7 @@ ObjectField objectField = (ObjectField)request.getAttribute(ObjectWebKeys.OBJECT
 					type,
 				}),
 				headers: new Headers({
-					Accept: 'application/json',
+					'Accept': 'application/json',
 					'Content-Type': 'application/json',
 				}),
 				method: 'PUT',

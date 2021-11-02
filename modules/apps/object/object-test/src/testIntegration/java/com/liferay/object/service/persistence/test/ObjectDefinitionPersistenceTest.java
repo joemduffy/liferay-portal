@@ -138,6 +138,11 @@ public class ObjectDefinitionPersistenceTest {
 
 		newObjectDefinition.setModifiedDate(RandomTestUtil.nextDate());
 
+		newObjectDefinition.setDescriptionObjectFieldId(
+			RandomTestUtil.nextLong());
+
+		newObjectDefinition.setTitleObjectFieldId(RandomTestUtil.nextLong());
+
 		newObjectDefinition.setActive(RandomTestUtil.randomBoolean());
 
 		newObjectDefinition.setDBTableName(RandomTestUtil.randomString());
@@ -195,6 +200,12 @@ public class ObjectDefinitionPersistenceTest {
 		Assert.assertEquals(
 			Time.getShortTimestamp(existingObjectDefinition.getModifiedDate()),
 			Time.getShortTimestamp(newObjectDefinition.getModifiedDate()));
+		Assert.assertEquals(
+			existingObjectDefinition.getDescriptionObjectFieldId(),
+			newObjectDefinition.getDescriptionObjectFieldId());
+		Assert.assertEquals(
+			existingObjectDefinition.getTitleObjectFieldId(),
+			newObjectDefinition.getTitleObjectFieldId());
 		Assert.assertEquals(
 			existingObjectDefinition.isActive(),
 			newObjectDefinition.isActive());
@@ -271,6 +282,15 @@ public class ObjectDefinitionPersistenceTest {
 	}
 
 	@Test
+	public void testCountByC_C() throws Exception {
+		_persistence.countByC_C(RandomTestUtil.nextLong(), "");
+
+		_persistence.countByC_C(0L, "null");
+
+		_persistence.countByC_C(0L, (String)null);
+	}
+
+	@Test
 	public void testCountByC_N() throws Exception {
 		_persistence.countByC_N(RandomTestUtil.nextLong(), "");
 
@@ -326,6 +346,7 @@ public class ObjectDefinitionPersistenceTest {
 			"ObjectDefinition", "mvccVersion", true, "uuid", true,
 			"objectDefinitionId", true, "companyId", true, "userId", true,
 			"userName", true, "createDate", true, "modifiedDate", true,
+			"descriptionObjectFieldId", true, "titleObjectFieldId", true,
 			"active", true, "dbTableName", true, "label", true, "className",
 			true, "name", true, "panelAppOrder", true, "panelCategoryKey", true,
 			"pkObjectFieldDBColumnName", true, "pkObjectFieldName", true,
@@ -608,6 +629,17 @@ public class ObjectDefinitionPersistenceTest {
 				objectDefinition, "getColumnOriginalValue",
 				new Class<?>[] {String.class}, "companyId"));
 		Assert.assertEquals(
+			objectDefinition.getClassName(),
+			ReflectionTestUtil.invoke(
+				objectDefinition, "getColumnOriginalValue",
+				new Class<?>[] {String.class}, "className"));
+
+		Assert.assertEquals(
+			Long.valueOf(objectDefinition.getCompanyId()),
+			ReflectionTestUtil.<Long>invoke(
+				objectDefinition, "getColumnOriginalValue",
+				new Class<?>[] {String.class}, "companyId"));
+		Assert.assertEquals(
 			objectDefinition.getName(),
 			ReflectionTestUtil.invoke(
 				objectDefinition, "getColumnOriginalValue",
@@ -632,6 +664,10 @@ public class ObjectDefinitionPersistenceTest {
 		objectDefinition.setCreateDate(RandomTestUtil.nextDate());
 
 		objectDefinition.setModifiedDate(RandomTestUtil.nextDate());
+
+		objectDefinition.setDescriptionObjectFieldId(RandomTestUtil.nextLong());
+
+		objectDefinition.setTitleObjectFieldId(RandomTestUtil.nextLong());
 
 		objectDefinition.setActive(RandomTestUtil.randomBoolean());
 

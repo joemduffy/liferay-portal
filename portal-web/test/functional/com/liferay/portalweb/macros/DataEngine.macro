@@ -874,7 +874,7 @@ definition {
 	}
 
 	macro editFieldLocalizable {
-		var checkboxName = "Localizable";
+		var key_fieldName = "localizable";
 
 		if (isSet(fieldsetModal)) {
 			AssertClick.assertPartialTextClickAt(
@@ -891,7 +891,7 @@ definition {
 
 		Navigator.gotoNavTab(navTab = "Advanced");
 
-		Click.javaScriptClick(locator1 = "Checkbox#ANY_CHECKBOX");
+		Check.checkToggleSwitch(locator1 = "Checkbox#SWITCH");
 
 		Click(locator1 = "Sidebar#BACK");
 	}
@@ -973,6 +973,10 @@ definition {
 		Check.checkToggleSwitch(
 			checkboxName = "Required Field",
 			locator1 = "Checkbox#ANY_CHECKBOX");
+
+		AssertVisible(
+			key_text = "Save",
+			locator1 = "Button#ANY_ENABLED");
 
 		Click(locator1 = "Sidebar#BACK");
 	}
@@ -1215,6 +1219,25 @@ definition {
 		Click(locator1 = "Sidebar#BACK");
 	}
 
+	macro editStyle {
+		Click(
+			key_fieldFieldLabel = "${fieldLabel}",
+			locator1 = "DDMEditStructure#FORM_FIELD_CONTAINER");
+
+		Navigator.gotoNavTab(navTab = "Advanced");
+
+		Type(
+			key_fieldName = "",
+			locator1 = "DDMField#TEXT_BOX",
+			value1 = "${styleValue}");
+
+		AssertElementPresent(
+			key_styleValue = "${styleValue}",
+			locator1 = "DataEngineRenderer#SEPARATOR_STYLE");
+
+		Click(locator1 = "Sidebar#BACK");
+	}
+
 	macro gotoCreateNewFieldset {
 		Navigator.gotoSidebarTab(tabName = "Builder");
 
@@ -1325,8 +1348,13 @@ definition {
 		Navigator.gotoNavTab(navTab = "${tab}");
 
 		Check.checkToggleSwitch(
-			checkboxName = "Repeatable",
-			locator1 = "Checkbox#ANY_CHECKBOX");
+			key_fieldName = "repeatable",
+			locator1 = "Checkbox#SWITCH");
+
+		WaitForElementPresent(
+			index = "${index}",
+			key_fieldLabel = "${fieldLabel}",
+			locator1 = "DataEngineRenderer#REPEATABLE_FIELD_ADD_BUTTON_INDEXED");
 
 		Click(locator1 = "Sidebar#BACK");
 	}
@@ -1450,7 +1478,7 @@ definition {
 			}
 		}
 
-		if (IsTextEqual(locator1 = "DataEngineBuilder#SIDEBAR_FIELD_NAME_BUTTON", value1 = "Fields Group")) {
+		if (IsTextEqual(locator1 = "Sidebar#TITLE", value1 = "Fields Group")) {
 			var tab = "Basic";
 		}
 		else {
@@ -1463,29 +1491,65 @@ definition {
 			Uncheck.uncheckToggleSwitch(
 				checkboxName = "Show Label",
 				locator1 = "Checkbox#ANY_CHECKBOX");
+
+			if (IsElementPresent(locator1 = "Modal#MODAL")) {
+				WaitForElementNotPresent(
+					index = "${index}",
+					key_fieldLabel = "${fieldLabel}",
+					locator1 = "DataEngineBuilder#FIELD_LABEL_IN_MODAL_INDEXED");
+			}
+			else {
+				WaitForElementNotPresent(
+					index = "${index}",
+					key_fieldLabel = "${fieldLabel}",
+					locator1 = "DataEngineBuilder#FIELD_LABEL_INDEXED");
+			}
 		}
 		else {
 			Check.checkToggleSwitch(
 				checkboxName = "Show Label",
 				locator1 = "Checkbox#ANY_CHECKBOX");
+
+			if (IsElementPresent(locator1 = "Modal#MODAL")) {
+				WaitForElementPresent(
+					index = "${index}",
+					key_fieldLabel = "${hiddenFieldLabel}",
+					locator1 = "DataEngineBuilder#FIELD_LABEL_IN_MODAL_INDEXED");
+			}
+			else {
+				WaitForElementPresent(
+					index = "${index}",
+					key_fieldLabel = "${hiddenFieldLabel}",
+					locator1 = "DataEngineBuilder#FIELD_LABEL_INDEXED");
+			}
 		}
 
 		Click(locator1 = "Sidebar#BACK");
 	}
 
 	macro viewField {
-		WaitForVisible(locator1 = "Sidebar#PANEL_OPEN");
+		if (!(isSet(index))) {
+			var index = "1";
+		}
 
-		Click(
-			key_fieldFieldLabel = "${fieldFieldLabel}",
-			locator1 = "DDMEditStructure#FORM_FIELD_CONTAINER_LABEL");
+		if (IsElementPresent(locator1 = "Modal#MODAL")) {
+			AssertClick.assertPartialTextClickAt(
+				index = "${index}",
+				key_fieldLabel = "${fieldFieldLabel}",
+				locator1 = "DataEngineBuilder#FIELD_LABEL_IN_MODAL_INDEXED",
+				value1 = "${fieldFieldLabel}");
+		}
+		else {
+			AssertClick.assertPartialTextClickAt(
+				index = "${index}",
+				key_fieldLabel = "${fieldFieldLabel}",
+				locator1 = "DataEngineBuilder#FIELD_LABEL_INDEXED",
+				value1 = "${fieldFieldLabel}");
+		}
 
-		Navigator.gotoSidebarTab(tabName = "Builder");
-
-		AssertTextEquals(
-			key_text = "${fieldName}",
-			locator1 = "Button#ANY",
-			value1 = "${fieldName}");
+		AssertElementPresent(
+			key_fieldName = "${fieldName}",
+			locator1 = "DataEngineBuilder#FIELD_NAME_INDEXED");
 
 		AssertTextEquals.assertValue(
 			locator1 = "Sidebar#DDM_LABEL",

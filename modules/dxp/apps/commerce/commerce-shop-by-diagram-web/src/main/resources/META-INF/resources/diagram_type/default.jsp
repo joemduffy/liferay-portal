@@ -16,14 +16,11 @@
 
 <%@ include file="/init.jsp" %>
 
-<%
-CSDiagramSettingDisplayContext csDiagramSettingDisplayContext = (CSDiagramSettingDisplayContext)request.getAttribute(WebKeys.PORTLET_DISPLAY_CONTEXT);
+<div>
+	<span aria-hidden="true" class="loading-animation"></span>
 
-CPDefinition cpDefinition = csDiagramSettingDisplayContext.getCPDefinition();
-
-String type = DefaultCSDiagramType.KEY;
-
-CSDiagramSetting csDiagramSetting = csDiagramSettingDisplayContext.fetchCSDiagramSetting();
-%>
-
-<%@ include file="/diagram_type/diagram.jspf" %>
+	<react:component
+		module="js/Diagram/Diagram"
+		props="<%= (Map<String, Object>)request.getAttribute(CSDiagramWebKeys.CS_DIAGRAM_CP_TYPE_PROPS) %>"
+	/>
+</div>

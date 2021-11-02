@@ -99,19 +99,20 @@ public class DLFileEntryModelDocumentContributor
 		}
 
 		try {
+			Locale defaultLocale = _portal.getSiteDefaultLocale(
+				dlFileEntry.getGroupId());
+
 			DLFileVersion dlFileVersion = dlFileEntry.getFileVersion();
 
 			if (indexContent) {
 				if (inputStream != null) {
 					try {
-						Locale defaultLocale = _portal.getSiteDefaultLocale(
-							dlFileEntry.getGroupId());
-
 						String localizedField = Field.getLocalizedName(
 							defaultLocale.toString(), Field.CONTENT);
 
 						document.addFile(
-							localizedField, inputStream, dlFileEntry.getTitle(),
+							localizedField, inputStream,
+							dlFileEntry.getFileName(),
 							PropsValues.DL_FILE_INDEXING_MAX_SIZE);
 					}
 					catch (IOException ioException) {
@@ -129,7 +130,10 @@ public class DLFileEntryModelDocumentContributor
 
 			document.addKeyword(
 				Field.CLASS_TYPE_ID, dlFileEntry.getFileEntryTypeId());
-			document.addText(Field.DESCRIPTION, dlFileEntry.getDescription());
+			document.addText(
+				Field.getLocalizedName(
+					defaultLocale.toString(), Field.DESCRIPTION),
+				dlFileEntry.getDescription());
 			document.addKeyword(Field.FOLDER_ID, dlFileEntry.getFolderId());
 			document.addKeyword(Field.HIDDEN, dlFileEntry.isInHiddenFolder());
 			document.addKeyword(Field.STATUS, dlFileVersion.getStatus());
@@ -140,7 +144,9 @@ public class DLFileEntryModelDocumentContributor
 				title = _trashHelper.getOriginalTitle(title);
 			}
 
-			document.addText(Field.TITLE, title);
+			document.addText(
+				Field.getLocalizedName(defaultLocale.toString(), Field.TITLE),
+				title);
 
 			document.addKeyword(
 				Field.TREE_PATH,

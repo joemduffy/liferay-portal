@@ -15,6 +15,8 @@
 package com.liferay.layout.taglib.servlet.taglib.react;
 
 import com.liferay.exportimport.kernel.staging.StagingUtil;
+import com.liferay.item.selector.criteria.UUIDItemSelectorReturnType;
+import com.liferay.layout.item.selector.LayoutItemSelectorReturnType;
 import com.liferay.layout.taglib.internal.servlet.ServletContextUtil;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
@@ -43,6 +45,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.PageContext;
@@ -59,6 +62,10 @@ public class SelectLayoutTag extends IncludeTag {
 
 	public boolean getFollowURLOnTitleClick() {
 		return _followURLOnTitleClick;
+	}
+
+	public String getItemSelectorReturnType() {
+		return _itemSelectorReturnType;
 	}
 
 	public String getItemSelectorSaveEvent() {
@@ -101,6 +108,10 @@ public class SelectLayoutTag extends IncludeTag {
 		return _privateLayout;
 	}
 
+	public boolean isShowDraftLayouts() {
+		return _showDraftLayouts;
+	}
+
 	public boolean isShowHiddenLayouts() {
 		return _showHiddenLayouts;
 	}
@@ -119,6 +130,10 @@ public class SelectLayoutTag extends IncludeTag {
 
 	public void setFollowURLOnTitleClick(boolean followURLOnTitleClick) {
 		_followURLOnTitleClick = followURLOnTitleClick;
+	}
+
+	public void setItemSelectorReturnType(String itemSelectorReturnType) {
+		_itemSelectorReturnType = itemSelectorReturnType;
 	}
 
 	public void setItemSelectorSaveEvent(String itemSelectorSaveEvent) {
@@ -152,6 +167,10 @@ public class SelectLayoutTag extends IncludeTag {
 		_privateLayout = privateLayout;
 	}
 
+	public void setShowDraftLayouts(boolean showDraftLayouts) {
+		_showDraftLayouts = showDraftLayouts;
+	}
+
 	public void setShowHiddenLayouts(boolean showHiddenLayouts) {
 		_showHiddenLayouts = showHiddenLayouts;
 	}
@@ -172,11 +191,13 @@ public class SelectLayoutTag extends IncludeTag {
 		_componentId = null;
 		_enableCurrentPage = false;
 		_followURLOnTitleClick = false;
+		_itemSelectorReturnType = null;
 		_itemSelectorSaveEvent = null;
 		_multiSelection = false;
 		_namespace = null;
 		_pathThemeImages = null;
 		_privateLayout = false;
+		_showDraftLayouts = false;
 		_showHiddenLayouts = false;
 		_viewType = null;
 	}
@@ -272,8 +293,7 @@ public class SelectLayoutTag extends IncludeTag {
 
 		for (Layout layout : layouts) {
 			if ((layout.isHidden() && !_showHiddenLayouts) ||
-				_isContentLayoutDraft(layout) ||
-				StagingUtil.isIncomplete(layout)) {
+				_isExcludedLayout(layout) || StagingUtil.isIncomplete(layout)) {
 
 				continue;
 			}
@@ -305,7 +325,11 @@ public class SelectLayoutTag extends IncludeTag {
 			).put(
 				"name", layout.getName(themeDisplay.getLocale())
 			).put(
+				"payload", _getPayload(layout, themeDisplay)
+			).put(
 				"privateLayout", layout.isPrivateLayout()
+			).put(
+				"returnType", getItemSelectorReturnType()
 			).put(
 				"url",
 				PortalUtil.getLayoutRelativeURL(layout, themeDisplay, false)
@@ -359,12 +383,43 @@ public class SelectLayoutTag extends IncludeTag {
 			));
 	}
 
+	private String _getPayload(Layout layout, ThemeDisplay themeDisplay)
+		throws Exception {
+
+		if (Objects.equals(
+				LayoutItemSelectorReturnType.class.getName(),
+				getItemSelectorReturnType())) {
+
+			return JSONUtil.put(
+				"layoutId", layout.getLayoutId()
+			).put(
+				"name", layout.getName(themeDisplay.getLocale())
+			).put(
+				"plid", layout.getPlid()
+			).put(
+				"private", layout.isPrivateLayout()
+			).put(
+				"url", PortalUtil.getLayoutFullURL(layout, themeDisplay)
+			).put(
+				"uuid", layout.getUuid()
+			).toString();
+		}
+		else if (Objects.equals(
+					UUIDItemSelectorReturnType.class.getName(),
+					getItemSelectorReturnType())) {
+
+			return layout.getUuid();
+		}
+
+		return PortalUtil.getLayoutRelativeURL(layout, themeDisplay, false);
+	}
+
 	private long _getSelPlid() {
 		return ParamUtil.getLong(
 			getRequest(), "selPlid", LayoutConstants.DEFAULT_PLID);
 	}
 
-	private boolean _isContentLayoutDraft(Layout layout) {
+	private boolean _isExcludedLayout(Layout layout) {
 		if (!layout.isTypeContent()) {
 			return false;
 		}
@@ -372,6 +427,10 @@ public class SelectLayoutTag extends IncludeTag {
 		Layout draftLayout = layout.fetchDraftLayout();
 
 		if (draftLayout != null) {
+			if (_showDraftLayouts) {
+				return false;
+			}
+
 			boolean published = GetterUtil.getBoolean(
 				draftLayout.getTypeSettingsProperty("published"));
 
@@ -394,11 +453,13 @@ public class SelectLayoutTag extends IncludeTag {
 	private String _componentId;
 	private boolean _enableCurrentPage;
 	private boolean _followURLOnTitleClick;
+	private String _itemSelectorReturnType;
 	private String _itemSelectorSaveEvent;
 	private boolean _multiSelection;
 	private String _namespace;
 	private String _pathThemeImages;
 	private boolean _privateLayout;
+	private boolean _showDraftLayouts;
 	private boolean _showHiddenLayouts;
 	private String _viewType;
 

@@ -25,17 +25,17 @@ import com.liferay.batch.planner.service.persistence.BatchPlannerMappingUtil;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.portlet.bridges.mvc.BaseTransactionalMVCActionCommand;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCActionCommand;
-import com.liferay.portal.kernel.util.GetterUtil;
+import com.liferay.portal.kernel.util.Constants;
 import com.liferay.portal.kernel.util.ParamUtil;
-import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 
 import java.util.ArrayList;
-import java.util.Enumeration;
+import java.util.Collections;
 import java.util.List;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
+import javax.portlet.PortletRequest;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -54,38 +54,37 @@ import org.osgi.service.component.annotations.Reference;
 public class EditExportBatchPlannerPlanMVCActionCommand
 	extends BaseTransactionalMVCActionCommand {
 
-	@Override
-	protected void doTransactionalCommand(
-			ActionRequest actionRequest, ActionResponse actionResponse)
+	public BatchPlannerPlan addBatchPlannerPlan(PortletRequest portletRequest)
 		throws Exception {
 
-		String name = ParamUtil.getString(
-			actionRequest, "name", "Plan " + System.currentTimeMillis());
 		String externalType = ParamUtil.getString(
-			actionRequest, "externalType");
+			portletRequest, "externalType");
 		String internalClassName = ParamUtil.getString(
-			actionRequest, "internalClassName");
+			portletRequest, "internalClassName");
+		String name = ParamUtil.getString(portletRequest, "name");
+		String taskItemDelegateName = ParamUtil.getString(
+			portletRequest, "taskItemDelegateName");
+		boolean template = ParamUtil.getBoolean(portletRequest, "template");
+
+		if (Validator.isNull(name)) {
+			name = _getGenericName(internalClassName);
+		}
 
 		BatchPlannerPlan batchPlannerPlan =
 			_batchPlannerPlanService.addBatchPlannerPlan(
 				true, externalType, StringPool.SLASH, internalClassName, name,
-				false);
-
-		boolean containsHeaders = ParamUtil.getBoolean(
-			actionRequest, "containsHeaders");
+				taskItemDelegateName, template);
 
 		_batchPlannerPolicyService.addBatchPlannerPolicy(
 			batchPlannerPlan.getBatchPlannerPlanId(), "containsHeaders",
-			String.valueOf(containsHeaders));
-
-		boolean saveExport = ParamUtil.getBoolean(actionRequest, "saveExport");
+			_getCheckboxValue(portletRequest, "containsHeaders"));
 
 		_batchPlannerPolicyService.addBatchPlannerPolicy(
 			batchPlannerPlan.getBatchPlannerPlanId(), "saveExport",
-			String.valueOf(saveExport));
+			_getCheckboxValue(portletRequest, "saveExport"));
 
 		List<BatchPlannerMapping> batchPlannerMappings =
-			_getBatchPlannerMappings(actionRequest);
+			_getBatchPlannerMappings(portletRequest);
 
 		for (BatchPlannerMapping batchPlannerMapping : batchPlannerMappings) {
 			_batchPlannerMappingService.addBatchPlannerMapping(
@@ -95,55 +94,44 @@ public class EditExportBatchPlannerPlanMVCActionCommand
 				StringPool.BLANK);
 		}
 
-		_batchEngineBroker.submit(batchPlannerPlan.getBatchPlannerPlanId());
+		return batchPlannerPlan;
+	}
+
+	@Override
+	protected void doTransactionalCommand(
+			ActionRequest actionRequest, ActionResponse actionResponse)
+		throws Exception {
+
+		String cmd = ParamUtil.getString(actionRequest, Constants.CMD);
+
+		if (cmd.equals(Constants.EXPORT)) {
+			BatchPlannerPlan batchPlannerPlan = addBatchPlannerPlan(
+				actionRequest);
+
+			if (!batchPlannerPlan.isTemplate()) {
+				_batchEngineBroker.submit(
+					batchPlannerPlan.getBatchPlannerPlanId());
+			}
+		}
 	}
 
 	private List<BatchPlannerMapping> _getBatchPlannerMappings(
-		ActionRequest actionRequest) {
+		PortletRequest portletRequest) {
+
+		String[] fieldNames = portletRequest.getParameterValues("fieldName");
+
+		if (fieldNames == null) {
+			return Collections.emptyList();
+		}
 
 		List<BatchPlannerMapping> batchPlannerMappings = new ArrayList<>();
 
-		Enumeration<String> enumeration = actionRequest.getParameterNames();
-
-		while (enumeration.hasMoreElements()) {
-			String parameterName = enumeration.nextElement();
-
-			if (!parameterName.startsWith("internalFieldName_") ||
-				Validator.isNull(
-					ParamUtil.getString(actionRequest, parameterName))) {
-
-				continue;
-			}
-
-			String suffix = StringUtil.extractLast(
-				parameterName, StringPool.UNDERLINE);
-
-			String externalFieldNameParamValue = ParamUtil.getString(
-				actionRequest, "externalFieldName_" + suffix);
-
-			if (Validator.isNull(externalFieldNameParamValue)) {
-				continue;
-			}
-
-			String internalFieldNameParamValue = ParamUtil.getString(
-				actionRequest, parameterName);
-
-			if (_isCheckboxValue(externalFieldNameParamValue)) {
-				if (GetterUtil.getBoolean(externalFieldNameParamValue)) {
-					externalFieldNameParamValue = internalFieldNameParamValue;
-				}
-				else {
-					continue;
-				}
-			}
-
+		for (String fieldName : fieldNames) {
 			BatchPlannerMapping batchPlannerMapping =
 				BatchPlannerMappingUtil.create(0);
 
-			batchPlannerMapping.setExternalFieldName(
-				externalFieldNameParamValue);
-			batchPlannerMapping.setInternalFieldName(
-				internalFieldNameParamValue);
+			batchPlannerMapping.setExternalFieldName(fieldName);
+			batchPlannerMapping.setInternalFieldName(fieldName);
 
 			batchPlannerMappings.add(batchPlannerMapping);
 		}
@@ -151,14 +139,21 @@ public class EditExportBatchPlannerPlanMVCActionCommand
 		return batchPlannerMappings;
 	}
 
-	private boolean _isCheckboxValue(String value) {
-		if (StringUtil.equalsIgnoreCase(StringPool.FALSE, value) ||
-			StringUtil.equalsIgnoreCase(StringPool.TRUE, value)) {
+	private String _getCheckboxValue(
+		PortletRequest portletRequest, String name) {
 
-			return true;
+		String value = portletRequest.getParameter(name);
+
+		if (value == null) {
+			return Boolean.FALSE.toString();
 		}
 
-		return false;
+		return Boolean.TRUE.toString();
+	}
+
+	private String _getGenericName(String value) {
+		return value.substring(value.lastIndexOf(StringPool.PERIOD)) +
+			" Plan Execution " + System.currentTimeMillis();
 	}
 
 	@Reference

@@ -131,10 +131,13 @@ public class ExportTaskResourceImpl extends BaseExportTaskResourceImpl {
 				contentType = batchEngineExportTask.getContentType();
 				endTime = batchEngineExportTask.getEndTime();
 				errorMessage = batchEngineExportTask.getErrorMessage();
-				executeStatus = ExportTask.ExecuteStatus.valueOf(
+				executeStatus = ExportTask.ExecuteStatus.create(
 					batchEngineExportTask.getExecuteStatus());
 				id = batchEngineExportTask.getBatchEngineExportTaskId();
+				processedItemsCount =
+					batchEngineExportTask.getProcessedItemsCount();
 				startTime = batchEngineExportTask.getStartTime();
+				totalItemsCount = batchEngineExportTask.getTotalItemsCount();
 			}
 		};
 	}

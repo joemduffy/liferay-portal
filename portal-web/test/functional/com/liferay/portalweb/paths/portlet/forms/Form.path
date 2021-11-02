@@ -203,6 +203,11 @@
 	<td></td>
 </tr>
 <tr>
+	<td>PAGE_CONTROLS_DELETE_CURRENT_PAGE_LAST</td>
+	<td>xpath=(//button[contains(@class,'dropdown-item') and contains(text(),'Remove Page')][${key_formDropDownNumber}])[last()]</td>
+	<td></td>
+</tr>
+<tr>
 	<td>PAGE_CONTROLS_DELETE_SUCCESS_PAGE</td>
 	<td>//li[contains(@class,'dropdown-item')]//a[text()='Remove Success Page'] | //button[contains(@class,'dropdown-item') and contains(text(),'Remove Success Page')]</td>
 	<td></td>
@@ -546,12 +551,12 @@
 <!--DATA_PROVIDER_OUTPUT_PARAMETER-->
 <tr>
 	<td>DATA_PROVIDER_OUTPUT_PARAMETER_PATH_FIELD_2</td>
-	<td>xpath=(//input[contains(@class,'ddm-field-text') and contains(@id,'outputParameterPath')])[2]</td>
+	<td>//div[@data-field-name='outputParameters'][2]//div[@data-field-name='outputParameterPath']//input[contains(@class,'ddm-field-text')]</td>
 	<td></td>
 </tr>
 <tr>
 	<td>DATA_PROVIDER_OUTPUT_PARAMETER_LABEL_FIELD_2</td>
-	<td>xpath=(//input[contains(@class,'ddm-field-text') and contains(@id,'outputParameterName')])[2]</td>
+	<td>//div[@data-field-name='outputParameters'][2]//div[@data-field-name='outputParameterName']//input[contains(@class,'ddm-field-text')]</td>
 	<td></td>
 </tr>
 <tr>

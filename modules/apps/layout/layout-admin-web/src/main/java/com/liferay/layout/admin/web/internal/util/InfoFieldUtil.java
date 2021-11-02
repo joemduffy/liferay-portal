@@ -51,7 +51,7 @@ public class InfoFieldUtil {
 
 	public static <E extends Throwable> void forEachInfoField(
 			FragmentRendererController fragmentRendererController,
-			Layout layout,
+			Layout layout, long segmentsExperienceId,
 			UnsafeTriConsumer
 				<String, InfoField<TextInfoFieldType>,
 				 UnsafeSupplier<JSONObject, JSONException>, E> consumer)
@@ -62,8 +62,10 @@ public class InfoFieldUtil {
 		}
 
 		List<FragmentEntryLink> fragmentEntryLinks =
-			FragmentEntryLinkLocalServiceUtil.getFragmentEntryLinksByPlid(
-				layout.getGroupId(), layout.getPlid());
+			FragmentEntryLinkLocalServiceUtil.
+				getFragmentEntryLinksBySegmentsExperienceId(
+					layout.getGroupId(), segmentsExperienceId,
+					layout.getPlid());
 
 		for (FragmentEntryLink fragmentEntryLink : fragmentEntryLinks) {
 			String defaultElementName =

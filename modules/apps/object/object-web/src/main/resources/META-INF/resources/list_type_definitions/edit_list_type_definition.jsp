@@ -54,7 +54,7 @@ ViewListTypeEntriesDisplayContext viewListTypeEntriesDisplayContext = (ViewListT
 						apiURL="<%= viewListTypeEntriesDisplayContext.getAPIURL() %>"
 						clayDataSetActionDropdownItems="<%= viewListTypeEntriesDisplayContext.getClayDataSetActionDropdownItems() %>"
 						creationMenu="<%= viewListTypeEntriesDisplayContext.getCreationMenu() %>"
-						formId="fm"
+						formName="fm"
 						id="<%= ListTypeClayDataSetDisplayNames.LIST_TYPE_DEFINITION_ITEMS %>"
 						itemsPerPage="<%= 20 %>"
 						namespace="<%= liferayPortletResponse.getNamespace() %>"
@@ -86,6 +86,10 @@ ViewListTypeEntriesDisplayContext viewListTypeEntriesDisplayContext = (ViewListT
 </div>
 
 <script>
+	function normalizeLanguageId(languageId) {
+		return languageId.replace('_', '-');
+	}
+
 	function <portlet:namespace />saveListTypeDefinition() {
 		const localizedInputs = document.querySelectorAll(
 			"input[id^='<portlet:namespace />'][type='hidden']"
@@ -94,19 +98,32 @@ ViewListTypeEntriesDisplayContext viewListTypeEntriesDisplayContext = (ViewListT
 		const localizedNames = Array(...localizedInputs).reduce(
 			(prev, cur, index) => {
 				if (cur.value) {
-					const language = cur.id.replace(
+					const languageId = cur.id.replace(
 						'<portlet:namespace />name_',
 						''
 					);
-					const formattedLanguage = language.replace('_', '-');
 
-					prev[formattedLanguage] = cur.value;
+					prev[normalizeLanguageId(languageId)] = cur.value;
 				}
 
 				return prev;
 			},
 			{}
 		);
+
+		if (
+			!localizedNames[
+				normalizeLanguageId(themeDisplay.getDefaultLanguageId())
+			]
+		) {
+			Liferay.Util.openToast({
+				message:
+					'<%= LanguageUtil.get(request, "name-must-not-be-empty") %>',
+				type: 'danger',
+			});
+
+			return;
+		}
 
 		Liferay.Util.fetch(
 			'/o/headless-admin-list-type/v1.0/list-type-definitions/<%= listTypeDefinition.getListTypeDefinitionId() %>',
@@ -115,7 +132,7 @@ ViewListTypeEntriesDisplayContext viewListTypeEntriesDisplayContext = (ViewListT
 					name_i18n: localizedNames,
 				}),
 				headers: new Headers({
-					Accept: 'application/json',
+					'Accept': 'application/json',
 					'Content-Type': 'application/json',
 				}),
 				method: 'PUT',

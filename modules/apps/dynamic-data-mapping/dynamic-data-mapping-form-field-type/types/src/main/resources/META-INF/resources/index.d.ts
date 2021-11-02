@@ -16,6 +16,11 @@ export {FieldBase as ReactFieldBase} from './FieldBase/ReactFieldBase.es';
 export {default as FieldBase} from './FieldBase/FieldBase.es';
 declare global {
 	type Direction = 'ltr' | 'rtl';
+	type FieldChangeEventHandler<T = any> = (event: {
+		target: {
+			value: T;
+		};
+	}) => void;
 	type Locale =
 		| 'ar_SA'
 		| 'ca_ES'
@@ -32,6 +37,7 @@ declare global {
 		| 'zh_CN';
 	type LocalizedTextKey =
 		| 'choose-an-option'
+		| 'decimal-places'
 		| 'decimal-separator'
 		| 'input-mask-append-placeholder'
 		| 'prefix'

@@ -47,7 +47,15 @@ public class RemoteAppEntryUpgradeProcess extends UpgradeProcess {
 
 		alter(
 			RemoteAppEntryTable.class,
-			new AlterColumnName("url", "iFrameURL VARCHAR(1024) null"));
+			new AlterColumnName("url", "iFrameURL STRING null"));
+
+		if (!hasColumn("RemoteAppEntry", "instanceable")) {
+			alter(
+				RemoteAppEntryTable.class,
+				new AlterTableAddColumn("instanceable", "BOOLEAN"));
+
+			runSQL("update RemoteAppEntry set instanceable = [$TRUE$]");
+		}
 
 		if (!hasColumn("RemoteAppEntry", "portletCategoryName")) {
 			alter(
@@ -57,6 +65,12 @@ public class RemoteAppEntryUpgradeProcess extends UpgradeProcess {
 			runSQL(
 				"update RemoteAppEntry set portletCategoryName = " +
 					"'category.remote-apps'");
+		}
+
+		if (!hasColumn("RemoteAppEntry", "properties")) {
+			alter(
+				RemoteAppEntryTable.class,
+				new AlterTableAddColumn("properties", "TEXT"));
 		}
 
 		if (!hasColumn("RemoteAppEntry", "type_")) {

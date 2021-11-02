@@ -721,10 +721,10 @@ definition {
 				entry = "Web Content Title 1",
 				menuItem = "View Content");
 
-			AssertTextEquals(
-				key_fragmentName = "heading",
-				locator1 = "Fragment#FRAGMENT_BASIC_COMPONENT",
-				value1 = "Web Content Title 1");
+			ContentPages.viewFragmentText(
+				fragmentName = "heading",
+				id = "element-text",
+				text = "Web Content Title 1");
 
 			var n = "1";
 
@@ -744,10 +744,10 @@ definition {
 				selectedName = "Instock",
 				title = "Availability");
 
-			AssertTextEquals(
-				key_fragmentName = "heading",
-				locator1 = "Fragment#FRAGMENT_BASIC_COMPONENT",
-				value1 = "Web Content Title 1");
+			ContentPages.viewFragmentText(
+				fragmentName = "heading",
+				id = "element-text",
+				text = "Web Content Title 1");
 
 			AssertVisible(
 				key_entryContent = "[normalize-space(text())='Web Content Title 3']",
@@ -766,6 +766,8 @@ definition {
 	@description = "This is a test for LPS-113926. The user can filter collection items in Collection Display by keywords."
 	@priority = "5"
 	test FilterResultsOfCollectionDisplayByKeywords {
+		property portal.acceptance = "true";
+
 		task ("Add a web content") {
 			JSONWebcontent.addWebContent(
 				content = "Levis 501",
@@ -774,10 +776,10 @@ definition {
 		}
 
 		task ("Add a blog") {
-			JSONBlog.addEntry(
-				entryContent = "LeBron VIII",
-				entryTitle = "LeBron VIII",
-				groupName = "Test Site Name");
+			HeadlessBlog.addBlogEntry(
+				content = "LeBron VIII",
+				groupName = "Test Site Name",
+				title = "LeBron VIII");
 		}
 
 		task ("Add a document") {
@@ -876,22 +878,16 @@ definition {
 			var n = "1";
 
 			for (var content : list "AirPods,LeBron VIII,Levis 501") {
-				AssertVisible(
-					key_colPosition = "1",
-					key_entryContent = "${content}",
-					key_rowPosition = "${n}",
-					locator1 = "Fragment#CONTENT_DISPLAY_FRAGMENT_CONTENT");
+				ContentPages.viewFragmentTextInCollectionDisplay(
+					row = "${n}",
+					text = "${content}");
 
 				var n = ${n} + 1;
 			}
 
 			Page.searchInCollectionFilter(searchTerm = "Levis");
 
-			AssertVisible(
-				key_colPosition = "1",
-				key_entryContent = "Levis 501",
-				key_rowPosition = "1",
-				locator1 = "Fragment#CONTENT_DISPLAY_FRAGMENT_CONTENT");
+			ContentPages.viewFragmentTextInCollectionDisplay(text = "Levis 501");
 
 			IFrame.closeFrame();
 
@@ -906,22 +902,16 @@ definition {
 			var n = "1";
 
 			for (var content : list "AirPods,LeBron VIII,Levis 501") {
-				AssertVisible(
-					key_colPosition = "1",
-					key_entryContent = "${content}",
-					key_rowPosition = "${n}",
-					locator1 = "Fragment#CONTENT_DISPLAY_FRAGMENT_CONTENT");
+				ContentPages.viewFragmentTextInCollectionDisplay(
+					row = "${n}",
+					text = "${content}");
 
 				var n = ${n} + 1;
 			}
 
 			Page.searchInCollectionFilter(searchTerm = "LeBron");
 
-			AssertVisible(
-				key_colPosition = "1",
-				key_entryContent = "LeBron VIII",
-				key_rowPosition = "1",
-				locator1 = "Fragment#CONTENT_DISPLAY_FRAGMENT_CONTENT");
+			ContentPages.viewFragmentTextInCollectionDisplay(text = "LeBron VIII");
 		}
 	}
 
@@ -936,10 +926,10 @@ definition {
 		}
 
 		task ("Add a blog") {
-			JSONBlog.addEntry(
-				entryContent = "LeBron VIII",
-				entryTitle = "LeBron VIII",
-				groupName = "Test Site Name");
+			HeadlessBlog.addBlogEntry(
+				content = "LeBron VIII",
+				groupName = "Test Site Name",
+				title = "LeBron VIII");
 		}
 
 		task ("Add a document") {
@@ -1027,22 +1017,16 @@ definition {
 			var n = "1";
 
 			for (var content : list "AirPods,LeBron VIII,Levis 501") {
-				AssertVisible(
-					key_colPosition = "1",
-					key_entryContent = "${content}",
-					key_rowPosition = "${n}",
-					locator1 = "Fragment#CONTENT_DISPLAY_FRAGMENT_CONTENT");
+				ContentPages.viewFragmentTextInCollectionDisplay(
+					row = "${n}",
+					text = "${content}");
 
 				var n = ${n} + 1;
 			}
 
 			Page.searchInCollectionFilter(searchTerm = "Levis");
 
-			AssertVisible(
-				key_colPosition = "1",
-				key_entryContent = "Levis 501",
-				key_rowPosition = "1",
-				locator1 = "Fragment#CONTENT_DISPLAY_FRAGMENT_CONTENT");
+			ContentPages.viewFragmentTextInCollectionDisplay(text = "Levis 501");
 
 			Page.searchInCollectionFilter(
 				index = "2",
@@ -1051,11 +1035,9 @@ definition {
 			var n = "1";
 
 			for (var content : list "AirPods,Levis 501") {
-				AssertVisible(
-					key_colPosition = "1",
-					key_entryContent = "${content}",
-					key_rowPosition = "${n}",
-					locator1 = "Fragment#CONTENT_DISPLAY_FRAGMENT_CONTENT");
+				ContentPages.viewFragmentTextInCollectionDisplay(
+					row = "${n}",
+					text = "${content}");
 
 				var n = ${n} + 1;
 			}
@@ -1078,22 +1060,16 @@ definition {
 			var n = "1";
 
 			for (var content : list "AirPods,LeBron VIII,Levis 501") {
-				AssertVisible(
-					key_colPosition = "1",
-					key_entryContent = "${content}",
-					key_rowPosition = "${n}",
-					locator1 = "Fragment#CONTENT_DISPLAY_FRAGMENT_CONTENT");
+				ContentPages.viewFragmentTextInCollectionDisplay(
+					row = "${n}",
+					text = "${content}");
 
 				var n = ${n} + 1;
 			}
 
 			Page.searchInCollectionFilter(searchTerm = "VIII");
 
-			AssertVisible(
-				key_colPosition = "1",
-				key_entryContent = "LeBron VIII",
-				key_rowPosition = "1",
-				locator1 = "Fragment#CONTENT_DISPLAY_FRAGMENT_CONTENT");
+			ContentPages.viewFragmentTextInCollectionDisplay(text = "LeBron VIII");
 
 			Page.searchInCollectionFilter(
 				index = "2",
@@ -1102,11 +1078,9 @@ definition {
 			var n = "1";
 
 			for (var content : list "LeBron VIII,Levis 501") {
-				AssertVisible(
-					key_colPosition = "1",
-					key_entryContent = "${content}",
-					key_rowPosition = "${n}",
-					locator1 = "Fragment#CONTENT_DISPLAY_FRAGMENT_CONTENT");
+				ContentPages.viewFragmentTextInCollectionDisplay(
+					row = "${n}",
+					text = "${content}");
 
 				var n = ${n} + 1;
 			}
@@ -1162,19 +1136,19 @@ definition {
 		}
 
 		task ("Add a blogs entry with Category A") {
-			JSONBlog.addEntry(
+			HeadlessBlog.addBlogEntry(
 				assetCategoryIds = "${categoryAId}",
-				entryContent = "Blogs Entry Content With Category A",
-				entryTitle = "Blogs Entry Title With Category A",
-				groupName = "Test Site Name");
+				content = "Blogs Entry Content With Category A",
+				groupName = "Test Site Name",
+				title = "Blogs Entry Title With Category A");
 		}
 
 		task ("Add a blogs entry with Both Categories") {
-			JSONBlog.addEntry(
+			HeadlessBlog.addBlogEntry(
 				assetCategoryIds = "${categoryAId},${categoryBId}",
-				entryContent = "Blogs Entry Content With Both Categories",
-				entryTitle = "Blogs Entry Title With Both Categories",
-				groupName = "Test Site Name");
+				content = "Blogs Entry Content With Both Categories",
+				groupName = "Test Site Name",
+				title = "Blogs Entry Title With Both Categories");
 		}
 
 		task ("Add a document with Category A") {
@@ -1476,18 +1450,18 @@ definition {
 		}
 
 		task ("Add a blogs entry without category") {
-			JSONBlog.addEntry(
-				entryContent = "Blogs Entry Content",
-				entryTitle = "Blogs Entry Title",
-				groupName = "Test Site Name");
+			HeadlessBlog.addBlogEntry(
+				content = "Blogs Entry Content",
+				groupName = "Test Site Name",
+				title = "Blogs Entry Title");
 		}
 
 		task ("Add a blogs entry with Subcategory B") {
-			JSONBlog.addEntry(
+			HeadlessBlog.addBlogEntry(
 				assetCategoryIds = "${subcategoryBId}",
-				entryContent = "Blogs Entry Content With Subcategory",
-				entryTitle = "Blogs Entry Title With Subcategory",
-				groupName = "Test Site Name");
+				content = "Blogs Entry Content With Subcategory",
+				groupName = "Test Site Name",
+				title = "Blogs Entry Title With Subcategory");
 		}
 
 		task ("Add a document without category") {
@@ -1565,8 +1539,9 @@ definition {
 
 		task ("View the category name is shown in Collection Filter") {
 			AssertTextEquals.assertPartialText(
+				index = "1",
 				key_fragmentName = "Collection Filter",
-				locator1 = "Fragment#FRAGMENT_BODY",
+				locator1 = "Fragment#FRAGMENT_CONTENT",
 				value1 = "Category Name");
 		}
 
@@ -1801,18 +1776,18 @@ definition {
 		}
 
 		task ("Add a blogs entry without category") {
-			JSONBlog.addEntry(
-				entryContent = "Blogs Entry Content",
-				entryTitle = "Blogs Entry Title",
-				groupName = "Test Site Name");
+			HeadlessBlog.addBlogEntry(
+				content = "Blogs Entry Content",
+				groupName = "Test Site Name",
+				title = "Blogs Entry Title");
 		}
 
 		task ("Add a blogs entry with category") {
-			JSONBlog.addEntry(
+			HeadlessBlog.addBlogEntry(
 				assetCategoryIds = "${categoryId}",
-				entryContent = "Blogs Entry Content With Category",
-				entryTitle = "Blogs Entry Title With Category",
-				groupName = "Test Site Name");
+				content = "Blogs Entry Content With Category",
+				groupName = "Test Site Name",
+				title = "Blogs Entry Title With Category");
 		}
 
 		task ("Add a document without category") {
@@ -1877,8 +1852,9 @@ definition {
 
 		task ("View the vocabulary name shown in Collection Filter") {
 			AssertTextEquals.assertPartialText(
+				index = "1",
 				key_fragmentName = "Collection Filter",
-				locator1 = "Fragment#FRAGMENT_BODY",
+				locator1 = "Fragment#FRAGMENT_CONTENT",
 				value1 = "Vocabulary Name");
 		}
 
@@ -2027,19 +2003,19 @@ definition {
 		}
 
 		task ("Add a blogs entry with Category A") {
-			JSONBlog.addEntry(
+			HeadlessBlog.addBlogEntry(
 				assetCategoryIds = "${categoryAId}",
-				entryContent = "Blogs Entry Content With Category A",
-				entryTitle = "Blogs Entry Title With Category A",
-				groupName = "Test Site Name");
+				content = "Blogs Entry Content With Category A",
+				groupName = "Test Site Name",
+				title = "Blogs Entry Title With Category A");
 		}
 
 		task ("Add a blogs entry with Both Categories") {
-			JSONBlog.addEntry(
+			HeadlessBlog.addBlogEntry(
 				assetCategoryIds = "${categoryAId},${categoryBId}",
-				entryContent = "Blogs Entry Content With Both Categories",
-				entryTitle = "Blogs Entry Title With Both Categories",
-				groupName = "Test Site Name");
+				content = "Blogs Entry Content With Both Categories",
+				groupName = "Test Site Name",
+				title = "Blogs Entry Title With Both Categories");
 		}
 
 		task ("Add a document with Category A") {
@@ -2355,18 +2331,18 @@ definition {
 		}
 
 		task ("Add a blogs entry without category") {
-			JSONBlog.addEntry(
-				entryContent = "Blogs Entry Content",
-				entryTitle = "Blogs Entry Title",
-				groupName = "Test Site Name");
+			HeadlessBlog.addBlogEntry(
+				content = "Blogs Entry Content",
+				groupName = "Test Site Name",
+				title = "Blogs Entry Title");
 		}
 
 		task ("Add a blogs entry with Category B") {
-			JSONBlog.addEntry(
+			HeadlessBlog.addBlogEntry(
 				assetCategoryIds = "${categoryBId}",
-				entryContent = "Blogs Entry Content With Category",
-				entryTitle = "Blogs Entry Title With Category",
-				groupName = "Test Site Name");
+				content = "Blogs Entry Content With Category",
+				groupName = "Test Site Name",
+				title = "Blogs Entry Title With Category");
 		}
 
 		task ("Add a document without category") {
@@ -2454,8 +2430,9 @@ definition {
 
 		task ("Assert Vocabulary Name is shown in Collection Filter") {
 			AssertTextEquals.assertPartialText(
+				index = "1",
 				key_fragmentName = "Collection Filter",
-				locator1 = "Fragment#FRAGMENT_BODY",
+				locator1 = "Fragment#FRAGMENT_CONTENT",
 				value1 = "Vocabulary Name");
 		}
 
@@ -2682,18 +2659,18 @@ definition {
 		}
 
 		task ("Add a blogs entry without category") {
-			JSONBlog.addEntry(
-				entryContent = "Blogs Entry Content",
-				entryTitle = "Blogs Entry Title",
-				groupName = "Test Site Name");
+			HeadlessBlog.addBlogEntry(
+				content = "Blogs Entry Content",
+				groupName = "Test Site Name",
+				title = "Blogs Entry Title");
 		}
 
 		task ("Add a blogs entry with category") {
-			JSONBlog.addEntry(
+			HeadlessBlog.addBlogEntry(
 				assetCategoryIds = "${categoryId}",
-				entryContent = "Blogs Entry Content With Category",
-				entryTitle = "Blogs Entry Title With Category",
-				groupName = "Test Site Name");
+				content = "Blogs Entry Content With Category",
+				groupName = "Test Site Name",
+				title = "Blogs Entry Title With Category");
 		}
 
 		task ("Add a document without category") {
@@ -2782,8 +2759,9 @@ definition {
 
 		task ("Assert Vocabulary Name is shown in Collection Filter") {
 			AssertTextEquals.assertPartialText(
+				index = "1",
 				key_fragmentName = "Collection Filter",
-				locator1 = "Fragment#FRAGMENT_BODY",
+				locator1 = "Fragment#FRAGMENT_CONTENT",
 				value1 = "Vocabulary Name");
 		}
 
@@ -2925,19 +2903,19 @@ definition {
 		}
 
 		task ("Add a blogs entry with category") {
-			JSONBlog.addEntry(
+			HeadlessBlog.addBlogEntry(
 				assetCategoryIds = "${categoryId}",
-				entryContent = "Blogs Entry Content With Category",
-				entryTitle = "Blogs Entry Title With Category",
-				groupName = "Test Site Name");
+				content = "Blogs Entry Content With Category",
+				groupName = "Test Site Name",
+				title = "Blogs Entry Title With Category");
 		}
 
 		task ("Add a blogs entry with subcategory") {
-			JSONBlog.addEntry(
+			HeadlessBlog.addBlogEntry(
 				assetCategoryIds = "${subcategoryId}",
-				entryContent = "Blogs Entry Content With Subcategory",
-				entryTitle = "Blogs Entry Title With Subcategory",
-				groupName = "Test Site Name");
+				content = "Blogs Entry Content With Subcategory",
+				groupName = "Test Site Name",
+				title = "Blogs Entry Title With Subcategory");
 		}
 
 		task ("Add a document with category") {
@@ -3029,8 +3007,9 @@ definition {
 
 		task ("Assert Category Name is shown in Collection Filter") {
 			AssertTextEquals.assertPartialText(
+				index = "1",
 				key_fragmentName = "Collection Filter",
-				locator1 = "Fragment#FRAGMENT_BODY",
+				locator1 = "Fragment#FRAGMENT_CONTENT",
 				value1 = "Category Name");
 		}
 
@@ -3151,10 +3130,10 @@ definition {
 
 		task ("Add three blogs entries") {
 			for (var style : list "X,Y,S") {
-				JSONBlog.addEntry(
-					entryContent = "Model ${style}",
-					entryTitle = "Model ${style}",
-					groupName = "Test Site Name");
+				HeadlessBlog.addBlogEntry(
+					content = "Model ${style}",
+					groupName = "Test Site Name",
+					title = "Model ${style}");
 			}
 		}
 
@@ -3591,7 +3570,7 @@ definition {
 		task ("View the source label of second Collection Filter is not shown") {
 			AssertElementPresent(
 				key_columnNumber = "2",
-				key_elementHeader = "//div[.//button[contains(@class,'dropdown-toggle')]]//p[contains(@class,'font-weight-semi-bold')][normalize-space(text())='Pure Color'][contains(@class,'sr-only')]",
+				key_elementHeader = "//div[.//button[contains(@class,'dropdown-toggle')]]//label[normalize-space(text())='Pure Color'][contains(@class,'sr-only')]",
 				key_position = "1",
 				locator1 = "PageEditor#GRID_COLUMN_NESTED_ELEMENT");
 		}
@@ -3607,7 +3586,7 @@ definition {
 		task ("View the source label of the second Collection Filter is Pure Color") {
 			AssertElementPresent(
 				key_columnNumber = "2",
-				key_elementHeader = "//div[.//button[contains(@class,'dropdown-toggle')]]//p[contains(@class,'font-weight-semi-bold')][normalize-space(text())='Pure Color'][not(contains(@class,'sr-only'))]",
+				key_elementHeader = "//div[.//button[contains(@class,'dropdown-toggle')]]//label[normalize-space(text())='Pure Color'][not(contains(@class,'sr-only'))]",
 				key_position = "1",
 				locator1 = "PageEditor#GRID_COLUMN_NESTED_ELEMENT");
 		}
@@ -3623,7 +3602,7 @@ definition {
 		task ("View the source label of the second Collection Filter is T-shirt Color") {
 			AssertElementPresent(
 				key_columnNumber = "2",
-				key_elementHeader = "//div[.//button[contains(@class,'dropdown-toggle')]]//p[contains(@class,'font-weight-semi-bold')][normalize-space(text())='T-shirt Color'][not(contains(@class,'sr-only'))]",
+				key_elementHeader = "//div[.//button[contains(@class,'dropdown-toggle')]]//label[normalize-space(text())='T-shirt Color'][not(contains(@class,'sr-only'))]",
 				key_position = "1",
 				locator1 = "PageEditor#GRID_COLUMN_NESTED_ELEMENT");
 		}

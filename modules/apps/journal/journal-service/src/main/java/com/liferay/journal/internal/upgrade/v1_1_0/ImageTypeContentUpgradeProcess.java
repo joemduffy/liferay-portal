@@ -25,22 +25,10 @@ import com.liferay.portal.kernel.model.Image;
 import com.liferay.portal.kernel.portletfilerepository.PortletFileRepository;
 import com.liferay.portal.kernel.repository.model.FileEntry;
 import com.liferay.portal.kernel.service.ImageLocalService;
-import com.liferay.portal.kernel.upgrade.BaseUpgradeCallable;
-import com.liferay.portal.kernel.upgrade.UpgradeException;
 import com.liferay.portal.kernel.upgrade.UpgradeProcess;
-import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.LoggingTimer;
 import com.liferay.portal.kernel.util.MimeTypesUtil;
 import com.liferay.portal.kernel.util.PortalUtil;
-
-import java.sql.ResultSet;
-import java.sql.Statement;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 
 /**
  * @author Eudaldo Alonso
@@ -60,12 +48,8 @@ public class ImageTypeContentUpgradeProcess extends UpgradeProcess {
 	protected void copyJournalArticleImagesToJournalRepository()
 		throws Exception {
 
-		List<SaveImageFileEntryUpgradeCallable>
-			saveImageFileEntryUpgradeCallables = new ArrayList<>();
-
-		try (LoggingTimer loggingTimer = new LoggingTimer();
-			Statement statement = connection.createStatement();
-			ResultSet resultSet1 = statement.executeQuery(
+		try (LoggingTimer loggingTimer = new LoggingTimer()) {
+			processConcurrently(
 				StringBundler.concat(
 					"select JournalArticleImage.articleImageId, ",
 					"JournalArticleImage.groupId, ",
@@ -75,46 +59,64 @@ public class ImageTypeContentUpgradeProcess extends UpgradeProcess {
 					"(JournalArticle.groupId = JournalArticleImage.groupId ",
 					"and JournalArticle.articleId = ",
 					"JournalArticleImage.articleId and JournalArticle.version ",
-					"= JournalArticleImage.version)"))) {
+					"= JournalArticleImage.version)"),
+				resultSet -> new Object[] {
+					resultSet.getLong(1), resultSet.getLong(2),
+					resultSet.getLong(3), resultSet.getLong(4),
+					resultSet.getLong(5)
+				},
+				values -> {
+					long articleImageId = (Long)values[0];
+					long groupId = (Long)values[1];
+					long companyId = (Long)values[2];
+					long resourcePrimKey = (Long)values[3];
 
-			while (resultSet1.next()) {
-				long articleImageId = resultSet1.getLong(1);
-				long groupId = resultSet1.getLong(2);
-				long companyId = resultSet1.getLong(3);
-				long resourcePrimKey = resultSet1.getLong(4);
+					long userId = PortalUtil.getValidUserId(
+						companyId, (Long)values[4]);
 
-				long userId = PortalUtil.getValidUserId(
-					companyId, resultSet1.getLong(5));
+					long folderId =
+						_journalArticleImageUpgradeHelper.getFolderId(
+							userId, groupId, resourcePrimKey);
 
-				long folderId = _journalArticleImageUpgradeHelper.getFolderId(
-					userId, groupId, resourcePrimKey);
+					String fileName = String.valueOf(articleImageId);
 
-				SaveImageFileEntryUpgradeCallable
-					saveImageFileEntryUpgradeCallable =
-						new SaveImageFileEntryUpgradeCallable(
-							articleImageId, folderId, groupId, resourcePrimKey,
-							userId);
+					FileEntry fileEntry =
+						_portletFileRepository.fetchPortletFileEntry(
+							groupId, folderId, fileName);
 
-				saveImageFileEntryUpgradeCallables.add(
-					saveImageFileEntryUpgradeCallable);
-			}
+					if (fileEntry != null) {
+						return;
+					}
 
-			ExecutorService executorService = Executors.newWorkStealingPool();
+					try {
+						Image image = _imageLocalService.getImage(
+							articleImageId);
 
-			List<Future<Boolean>> futures = executorService.invokeAll(
-				saveImageFileEntryUpgradeCallables);
+						if (image == null) {
+							return;
+						}
 
-			executorService.shutdown();
+						String mimeType = MimeTypesUtil.getContentType(
+							fileName + StringPool.PERIOD + image.getType());
 
-			for (Future<Boolean> future : futures) {
-				boolean success = GetterUtil.get(future.get(), true);
+						_portletFileRepository.addPortletFileEntry(
+							groupId, userId, JournalArticle.class.getName(),
+							resourcePrimKey, JournalConstants.SERVICE_NAME,
+							folderId, image.getTextObj(), fileName, mimeType,
+							false);
 
-				if (!success) {
-					throw new UpgradeException(
-						"Unable to copy journal article images to the file " +
-							"repository");
-				}
-			}
+						_imageLocalService.deleteImage(image.getImageId());
+					}
+					catch (Exception exception) {
+						_log.error(
+							"Unable to add the journal article image " +
+								fileName + " into the file repository",
+							exception);
+
+						throw exception;
+					}
+				},
+				"Unable to copy journal article images to the file repository");
 		}
 	}
 
@@ -139,67 +141,5 @@ public class ImageTypeContentUpgradeProcess extends UpgradeProcess {
 	private final JournalArticleImageUpgradeHelper
 		_journalArticleImageUpgradeHelper;
 	private final PortletFileRepository _portletFileRepository;
-
-	private class SaveImageFileEntryUpgradeCallable
-		extends BaseUpgradeCallable<Boolean> {
-
-		public SaveImageFileEntryUpgradeCallable(
-			long articleImageId, long folderId, long groupId,
-			long resourcePrimaryKey, long userId) {
-
-			_articleImageId = articleImageId;
-			_folderId = folderId;
-			_groupId = groupId;
-			_resourcePrimaryKey = resourcePrimaryKey;
-			_userId = userId;
-		}
-
-		@Override
-		protected Boolean doCall() throws Exception {
-			String fileName = String.valueOf(_articleImageId);
-
-			FileEntry fileEntry = _portletFileRepository.fetchPortletFileEntry(
-				_groupId, _folderId, fileName);
-
-			if (fileEntry != null) {
-				return null;
-			}
-
-			try {
-				Image image = _imageLocalService.getImage(_articleImageId);
-
-				if (image == null) {
-					return null;
-				}
-
-				String mimeType = MimeTypesUtil.getContentType(
-					fileName + StringPool.PERIOD + image.getType());
-
-				_portletFileRepository.addPortletFileEntry(
-					_groupId, _userId, JournalArticle.class.getName(),
-					_resourcePrimaryKey, JournalConstants.SERVICE_NAME,
-					_folderId, image.getTextObj(), fileName, mimeType, false);
-
-				_imageLocalService.deleteImage(image.getImageId());
-			}
-			catch (Exception exception) {
-				_log.error(
-					"Unable to add the journal article image " + fileName +
-						" into the file repository",
-					exception);
-
-				return false;
-			}
-
-			return true;
-		}
-
-		private final long _articleImageId;
-		private final long _folderId;
-		private final long _groupId;
-		private final long _resourcePrimaryKey;
-		private final long _userId;
-
-	}
 
 }

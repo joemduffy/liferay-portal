@@ -360,13 +360,13 @@ public class MethodCallsOrderCheck extends BaseFileCheck {
 		content = _sortChainedMethodCalls(
 			content, "put", 2, "ConcurrentHashMapBuilder", "HashMapBuilder",
 			"HashMapDictionaryBuilder", "JSONObject", "JSONUtil", "SoyContext",
-			"TreeMapBuilder");
+			"TreeMapBuilder", "UnicodePropertiesBuilder");
 		content = _sortChainedMethodCalls(
 			content, "setParameter", 2, "PortletURLBuilder");
 
 		content = _sortMethodCallsByMethodName(
-			content, "DropdownItem", "LabelItem", "NavigationItem",
-			"SearchContext", "ServiceContext");
+			content, "DDMFormFieldRenderingContext", "DropdownItem",
+			"LabelItem", "NavigationItem", "SearchContext", "ServiceContext");
 
 		content = _sortMethodCallsByParameter(
 			content, "add", "ConcurrentSkipListSet", "HashSet", "TreeSet");

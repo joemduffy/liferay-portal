@@ -23,11 +23,12 @@ import {OPEN_SIDE_PANEL} from '../../utils/eventsDefinitions';
 import {logError} from '../../utils/logError';
 import {getOpenedSidePanel} from '../../utils/sidePanels';
 
-function submit({action, data, formId, formRef}) {
+function submit({action, data, formId, formName, formRef, namespace}) {
 	let form = formRef.current;
 
-	if (!form && formId) {
-		form = document.getElementById(formId);
+	if (!form && (formId || (formName && namespace))) {
+		const namespacedId = formId || `${namespace}${formName}`;
+		form = document.getElementById(namespacedId);
 	}
 
 	if (form) {
@@ -68,8 +69,10 @@ function BulkActions({
 	function handleActionClick(
 		actionDefinition,
 		formId,
+		formName,
 		formRef,
 		loadData,
+		namespace,
 		sidePanelId
 	) {
 		const {data, href, slug, target} = actionDefinition;
@@ -103,7 +106,9 @@ function BulkActions({
 					}`]: selectedItemsValue.join(','),
 				},
 				formId,
+				formName,
 				formRef,
+				namespace,
 			});
 		}
 	}
@@ -138,7 +143,14 @@ function BulkActions({
 
 	return selectedItemsValue.length ? (
 		<DataSetDisplayContext.Consumer>
-			{({formId, formRef, loadData, sidePanelId}) => (
+			{({
+				formId,
+				formName,
+				formRef,
+				loadData,
+				namespace,
+				sidePanelId,
+			}) => (
 				<nav className="management-bar management-bar-primary navbar navbar-expand-md pb-2 pt-2 subnav-tbar">
 					<div
 						className={classNames(
@@ -177,8 +189,10 @@ function BulkActions({
 										handleActionClick(
 											actionDefinition,
 											formId,
+											formName,
 											formRef,
 											loadData,
+											namespace,
 											sidePanelId
 										)
 									}

@@ -71,8 +71,9 @@ public class RemoteAppEntryServiceSoap {
 			addCustomElementRemoteAppEntry(
 				String customElementCSSURLs,
 				String customElementHTMLElementName, String customElementURLs,
-				String[] nameMapLanguageIds, String[] nameMapValues,
-				String portletCategoryName)
+				boolean instanceable, String[] nameMapLanguageIds,
+				String[] nameMapValues, String portletCategoryName,
+				String properties)
 		throws RemoteException {
 
 		try {
@@ -82,7 +83,8 @@ public class RemoteAppEntryServiceSoap {
 			com.liferay.remote.app.model.RemoteAppEntry returnValue =
 				RemoteAppEntryServiceUtil.addCustomElementRemoteAppEntry(
 					customElementCSSURLs, customElementHTMLElementName,
-					customElementURLs, nameMap, portletCategoryName);
+					customElementURLs, instanceable, nameMap,
+					portletCategoryName, properties);
 
 			return com.liferay.remote.app.model.RemoteAppEntrySoap.toSoapModel(
 				returnValue);
@@ -96,8 +98,9 @@ public class RemoteAppEntryServiceSoap {
 
 	public static com.liferay.remote.app.model.RemoteAppEntrySoap
 			addIFrameRemoteAppEntry(
-				String iFrameURL, String[] nameMapLanguageIds,
-				String[] nameMapValues, String portletCategoryName)
+				String iFrameURL, boolean instanceable,
+				String[] nameMapLanguageIds, String[] nameMapValues,
+				String portletCategoryName, String properties)
 		throws RemoteException {
 
 		try {
@@ -106,7 +109,8 @@ public class RemoteAppEntryServiceSoap {
 
 			com.liferay.remote.app.model.RemoteAppEntry returnValue =
 				RemoteAppEntryServiceUtil.addIFrameRemoteAppEntry(
-					iFrameURL, nameMap, portletCategoryName);
+					iFrameURL, instanceable, nameMap, portletCategoryName,
+					properties);
 
 			return com.liferay.remote.app.model.RemoteAppEntrySoap.toSoapModel(
 				returnValue);
@@ -160,7 +164,7 @@ public class RemoteAppEntryServiceSoap {
 				long remoteAppEntryId, String customElementCSSURLs,
 				String customElementHTMLElementName, String customElementURLs,
 				String[] nameMapLanguageIds, String[] nameMapValues,
-				String portletCategoryName)
+				String portletCategoryName, String properties)
 		throws RemoteException {
 
 		try {
@@ -171,7 +175,7 @@ public class RemoteAppEntryServiceSoap {
 				RemoteAppEntryServiceUtil.updateCustomElementRemoteAppEntry(
 					remoteAppEntryId, customElementCSSURLs,
 					customElementHTMLElementName, customElementURLs, nameMap,
-					portletCategoryName);
+					portletCategoryName, properties);
 
 			return com.liferay.remote.app.model.RemoteAppEntrySoap.toSoapModel(
 				returnValue);
@@ -187,7 +191,7 @@ public class RemoteAppEntryServiceSoap {
 			updateIFrameRemoteAppEntry(
 				long remoteAppEntryId, String iFrameURL,
 				String[] nameMapLanguageIds, String[] nameMapValues,
-				String portletCategoryName)
+				String portletCategoryName, String properties)
 		throws RemoteException {
 
 		try {
@@ -196,7 +200,8 @@ public class RemoteAppEntryServiceSoap {
 
 			com.liferay.remote.app.model.RemoteAppEntry returnValue =
 				RemoteAppEntryServiceUtil.updateIFrameRemoteAppEntry(
-					remoteAppEntryId, iFrameURL, nameMap, portletCategoryName);
+					remoteAppEntryId, iFrameURL, nameMap, portletCategoryName,
+					properties);
 
 			return com.liferay.remote.app.model.RemoteAppEntrySoap.toSoapModel(
 				returnValue);

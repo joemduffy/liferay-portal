@@ -12,18 +12,13 @@
 <tbody>
 <!-- ASSETS PAGE -->
 <tr>
-	<td>ASSETS_TABLE</td>
-	<td>//div[contains(@class,'table-title')][normalize-space()='${key_assetName}']</td>
-	<td></td>
-</tr>
-<tr>
 	<td>ASSETS_INFO</td>
 	<td>xpath=(//td[contains(@class,'name-cell')][.//*[text()='${key_assetName}']]//following-sibling::td[not(contains(@class,'actions'))])[${index}]</td>
 	<td></td>
 </tr>
 <tr>
 	<td>METRIC_VALUE</td>
-	<td>//span[@class='title'and text()='${key_metricTitle}']/..//div[@class='metric-value']</td>
+	<td>//span[@class='title'and text()='${key_metricTitle}']/..//div[text()='${key_metricValue}']</td>
 	<td></td>
 </tr>
 <tr>

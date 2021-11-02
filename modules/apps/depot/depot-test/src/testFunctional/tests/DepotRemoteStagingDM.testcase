@@ -59,9 +59,9 @@ definition {
 
 	@description = "This ensures that the image in depot can be removed and republished in Blogs cover image when enabling remote staging."
 	@priority = "5"
-	@refactorneeded
-	test DeleteBlogImageInDepot {
-		property test.name.skip.portal.instance = "DepotRemoteStagingDM#DeleteBlogImageInDepot";
+	@refactordone
+	test CanDeleteBlogCoverImage {
+		property test.name.skip.portal.instance = "DepotRemoteStagingDM#CanDeleteBlogCoverImage";
 
 		JSONDocument.addFileWithUploadedFile(
 			dmDocumentDescription = "DM Document Description",
@@ -84,11 +84,14 @@ definition {
 			imageFileName = "Document_2.jpg",
 			siteURLKey = "site-name");
 
+		JSONLayout.addWidgetToPublicLayout(
+			groupName = "Site Name",
+			layoutName = "Test Page",
+			widgetName = "Blogs");
+
 		Navigator.openSitePage(
 			pageName = "Test Page",
 			siteName = "Site Name");
-
-		Portlet.addPG(portletName = "Blogs");
 
 		Staging.gotoPublishToLive();
 
@@ -106,9 +109,7 @@ definition {
 			pageName = "Test Page",
 			siteName = "Remote Site");
 
-		AssertVisible(
-			key_uploadFileName = "Document_2.jpg",
-			locator1 = "BlogsEntry#ENTRY_COVER_IMAGE");
+		BlogsEntry.viewCoverImage(uploadFileName = "Document_2.jpg");
 
 		User.loginPG(
 			nodePort = "8080",
@@ -139,9 +140,7 @@ definition {
 			pageName = "Test Page",
 			siteName = "Site Name");
 
-		AssertVisible(
-			key_uploadFileName = "Document_2.jpg",
-			locator1 = "BlogsEntry#ENTRY_COVER_IMAGE");
+		BlogsEntry.viewCoverImage(uploadFileName = "Document_2.jpg");
 
 		Staging.gotoPublishToLive();
 
@@ -159,16 +158,14 @@ definition {
 			pageName = "Test Page",
 			siteName = "Remote Site");
 
-		AssertVisible(
-			key_uploadFileName = "Document_2.jpg",
-			locator1 = "BlogsEntry#ENTRY_COVER_IMAGE");
+		BlogsEntry.viewCoverImage(uploadFileName = "Document_2.jpg");
 	}
 
 	@description = "This ensures that the image in depot can be removed and republished in Blogs inline image when enabling remote staging."
 	@priority = "5"
-	@refactorneeded
-	test DeleteBlogInlineImageInDepot {
-		property test.name.skip.portal.instance = "DepotRemoteStagingDM#DeleteBlogInlineImageInDepot";
+	@refactordone
+	test CanDeleteBlogInlineImage {
+		property test.name.skip.portal.instance = "DepotRemoteStagingDM#CanDeleteBlogInlineImage";
 
 		JSONDocument.addFileWithUploadedFile(
 			dmDocumentDescription = "DM Document Description",
@@ -195,11 +192,14 @@ definition {
 
 		PortletEntry.publish();
 
+		JSONLayout.addWidgetToPublicLayout(
+			groupName = "Site Name",
+			layoutName = "Test Page",
+			widgetName = "Blogs");
+
 		Navigator.openSitePage(
 			pageName = "Test Page",
 			siteName = "Site Name");
-
-		Portlet.addPG(portletName = "Blogs");
 
 		Staging.gotoPublishToLive();
 
@@ -212,18 +212,13 @@ definition {
 			specificURL = "http://localhost:9080",
 			userEmailAddress = "test@liferay.com");
 
-		Navigator.openSitePage(
+		BlogsNavigator.openToBlogEntry(
 			baseURL = "http://localhost:9080",
-			pageName = "Test Page",
-			siteName = "Remote Site");
+			entryTitle = "Blogs Entry Title",
+			layoutName = "Test Page",
+			siteURLKey = "remote-site");
 
-		BlogsNavigator.gotoEntryPG(
-			entryContent = "Blogs Entry Content",
-			entryTitle = "Blogs Entry Title");
-
-		AssertVisible(
-			key_uploadFileName = "Document_2.jpg",
-			locator1 = "BlogsEntry#CONTENT_INLINE_IMAGE");
+		BlogsEntry.viewInlineImage(uploadFileName = "Document_2.jpg");
 
 		User.loginPG(
 			nodePort = "8080",
@@ -246,19 +241,73 @@ definition {
 
 		Staging.publishToLive(remoteStaging = "true");
 
-		Navigator.openSitePage(
-			pageName = "Test Page",
-			siteName = "Site Name");
+		BlogsNavigator.openToBlogEntry(
+			entryTitle = "Blogs Entry Title",
+			layoutName = "Test Page",
+			siteURLKey = "site-name");
 
-		Pause(locator1 = "3000");
+		BlogsEntry.viewInlineImage(uploadFileName = "Document_2.jpg");
 
-		BlogsNavigator.gotoEntryPG(
+		Staging.gotoPublishToLive();
+
+		Staging.publishToLive(remoteStaging = "true");
+
+		User.logoutPG();
+
+		User.firstLoginUI(
+			password = "test",
+			specificURL = "http://localhost:9080",
+			userEmailAddress = "test@liferay.com");
+
+		BlogsNavigator.openToBlogEntry(
+			baseURL = "http://localhost:9080",
+			entryTitle = "Blogs Entry Title",
+			layoutName = "Test Page",
+			siteURLKey = "remote-site");
+
+		BlogsEntry.viewInlineImage(uploadFileName = "Document_2.jpg");
+	}
+
+	@description = "This ensures that the blog small image from a depot can be removed and republished when enabling remote staging."
+	@priority = "5"
+	@refactordone
+	test CanDeleteBlogSmallImage {
+		property test.name.skip.portal.instance = "DepotRemoteStagingDM#CanDeleteBlogSmallImage";
+
+		JSONDocument.addFileWithUploadedFile(
+			dmDocumentDescription = "DM Document Description",
+			dmDocumentTitle = "Document_1.jpg",
+			groupName = "Test Depot Name",
+			mimeType = "image/jpeg",
+			sourceFileName = "Document_1.jpg");
+
+		DepotNavigator.openDepotDocumentsAndMediaAdmin(depotName = "Test Depot Name");
+
+		DepotNavigator.switchStagingStatus(stagingItem = "Publish to Live");
+
+		Staging.publishToLive(remoteStaging = "true");
+
+		BlogsNavigator.openToAddEntry(siteURLKey = "site-name");
+
+		BlogsEntry.addEntryContent(
 			entryContent = "Blogs Entry Content",
 			entryTitle = "Blogs Entry Title");
 
-		AssertVisible(
-			key_uploadFileName = "Document_2.jpg",
-			locator1 = "BlogsEntry#CONTENT_INLINE_IMAGE");
+		BlogsEntry.addSmallImage(
+			depotName = "Test Depot Name",
+			imageFileName = "Document_1.jpg",
+			navTab = "Documents and Media");
+
+		PortletEntry.publish();
+
+		JSONLayout.addWidgetToPublicLayout(
+			groupName = "Site Name",
+			layoutName = "Test Page",
+			widgetName = "Blogs");
+
+		Navigator.openSitePage(
+			pageName = "Test Page",
+			siteName = "Site Name");
 
 		Staging.gotoPublishToLive();
 
@@ -276,20 +325,161 @@ definition {
 			pageName = "Test Page",
 			siteName = "Remote Site");
 
-		BlogsNavigator.gotoEntryPG(
-			entryContent = "Blogs Entry Content",
-			entryTitle = "Blogs Entry Title");
+		BlogsEntry.viewSmallImage(uploadFileName = "Document_1.jpg");
 
-		AssertVisible(
-			key_uploadFileName = "Document_2.jpg",
-			locator1 = "BlogsEntry#CONTENT_INLINE_IMAGE");
+		User.loginPG(
+			nodePort = "8080",
+			password = "test",
+			userEmailAddress = "test@liferay.com");
+
+		DepotNavigator.openDepotDocumentsAndMediaAdmin(depotName = "Test Depot Name");
+
+		DMDocument.deleteCP(dmDocumentTitle = "Document_1.jpg");
+
+		DepotNavigator.openDepotRecycleBinAdmin(depotName = "Test Depot Name");
+
+		RecycleBin.deleteCP(
+			assetName = "Document_1.jpg",
+			assetType = "Document");
+
+		DepotNavigator.openDepotRecycleBinAdmin(depotName = "Test Depot Name");
+
+		DepotNavigator.switchStagingStatus(stagingItem = "Publish to Live");
+
+		Staging.publishToLive(remoteStaging = "true");
+
+		Navigator.openSitePage(
+			pageName = "Test Page",
+			siteName = "Site Name");
+
+		BlogsEntry.viewSmallImage(uploadFileName = "Document_1.jpg");
+
+		Staging.gotoPublishToLive();
+
+		Staging.publishToLive(remoteStaging = "true");
+
+		User.logoutPG();
+
+		User.firstLoginUI(
+			password = "test",
+			specificURL = "http://localhost:9080",
+			userEmailAddress = "test@liferay.com");
+
+		Navigator.openSitePage(
+			baseURL = "http://localhost:9080",
+			pageName = "Test Page",
+			siteName = "Remote Site");
+
+		BlogsEntry.viewSmallImage(uploadFileName = "Document_1.jpg");
+	}
+
+	@description = "This ensures that image in depot can be removed and republished in AP through widget config manual selection when enabling remote staging."
+	@priority = "5"
+	@refactordone
+	test CanDeleteDMImage {
+		property portal.acceptance = "true";
+		property test.name.skip.portal.instance = "DepotRemoteStagingDM#CanDeleteDMImage";
+
+		JSONDocument.addFileWithUploadedFile(
+			dmDocumentDescription = "DM Document Description",
+			dmDocumentTitle = "Document_2.jpg",
+			groupName = "Test Depot Name",
+			mimeType = "image/jpeg",
+			sourceFileName = "Document_2.jpg");
+
+		DepotNavigator.openDepotDocumentsAndMediaAdmin(depotName = "Test Depot Name");
+
+		DepotNavigator.switchStagingStatus(stagingItem = "Publish to Live");
+
+		Staging.publishToLive(remoteStaging = "true");
+
+		JSONLayout.addWidgetToPublicLayout(
+			groupName = "Site Name",
+			layoutName = "Test Page",
+			widgetName = "Asset Publisher");
+
+		Navigator.openSitePage(
+			pageName = "Test Page",
+			siteName = "Site Name");
+
+		AssetPublisherPortlet.configureManualAssetSelectionPG(
+			assetTitle = "Document_2.jpg",
+			assetType = "Basic Document",
+			depotName = "Test Depot Name");
+
+		Navigator.openSitePage(
+			pageName = "Test Page",
+			siteName = "Site Name");
+
+		AssetPublisherPortlet.viewAssetPG(assetTitle = "Document_2.jpg");
+
+		Staging.gotoPublishToLive();
+
+		Staging.publishToLive(remoteStaging = "true");
+
+		User.logoutPG();
+
+		User.firstLoginUI(
+			password = "test",
+			specificURL = "http://localhost:9080",
+			userEmailAddress = "test@liferay.com");
+
+		Navigator.openSitePage(
+			baseURL = "http://localhost:9080",
+			pageName = "Test Page",
+			siteName = "Remote Site");
+
+		AssetPublisherPortlet.viewAssetPG(assetTitle = "Document_2.jpg");
+
+		User.loginPG(
+			nodePort = "8080",
+			password = "test",
+			userEmailAddress = "test@liferay.com");
+
+		DepotNavigator.openDepotDocumentsAndMediaAdmin(depotName = "Test Depot Name");
+
+		DMDocument.deleteCP(dmDocumentTitle = "Document_2.jpg");
+
+		DepotNavigator.openDepotRecycleBinAdmin(depotName = "Test Depot Name");
+
+		RecycleBin.deleteCP(
+			assetName = "Document_2.jpg",
+			assetType = "Document");
+
+		DepotNavigator.switchStagingStatus(stagingItem = "Publish to Live");
+
+		Staging.publishToLive(remoteStaging = "true");
+
+		Navigator.openSitePage(
+			pageName = "Test Page",
+			siteName = "Site Name");
+
+		AssetPublisherPortlet.viewAssetNotPresentPG(assetTitle = "Document_2.jpg");
+
+		Staging.gotoPublishToLive();
+
+		Staging.publishToLive(remoteStaging = "true");
+
+		User.logoutPG();
+
+		User.firstLoginUI(
+			password = "test",
+			specificURL = "http://localhost:9080",
+			userEmailAddress = "test@liferay.com");
+
+		Navigator.openSitePage(
+			baseURL = "http://localhost:9080",
+			pageName = "Test Page",
+			siteName = "Remote Site");
+
+		AssetPublisherPortlet.viewAssetNotPresentPG(assetTitle = "Document_2.jpg");
 	}
 
 	@description = "This ensures that a document in depot can be removed and republished in AP through widget config manual selection when enabling remote staging."
 	@priority = "5"
-	@refactorneeded
-	test DeleteDocumentInDepot {
-		property test.name.skip.portal.instance = "DepotRemoteStagingDM#DeleteDocumentInDepot";
+	@refactordone
+	test CanDeleteDocument {
+		property test.name.skip.portal.instance = "DepotRemoteStagingDM#CanDeleteDocument";
 
 		JSONDocument.addFileWithUploadedFile(
 			dmDocumentDescription = "DM Document Description",
@@ -304,11 +494,14 @@ definition {
 
 		Staging.publishToLive(remoteStaging = "true");
 
+		JSONLayout.addWidgetToPublicLayout(
+			groupName = "Site Name",
+			layoutName = "Test Page",
+			widgetName = "Asset Publisher");
+
 		Navigator.openSitePage(
 			pageName = "Test Page",
 			siteName = "Site Name");
-
-		Portlet.addPG(portletName = "Asset Publisher");
 
 		AssetPublisherPortlet.configureManualAssetSelectionPG(
 			assetTitle = "Document_1.doc",
@@ -319,9 +512,7 @@ definition {
 			pageName = "Test Page",
 			siteName = "Site Name");
 
-		AssertVisible(
-			key_assetTitle = "Document_1.doc",
-			locator1 = "AP#ASSET_ABSTRACT_TITLE");
+		AssetPublisherPortlet.viewAssetPG(assetTitle = "Document_1.doc");
 
 		Staging.gotoPublishToLive();
 
@@ -339,9 +530,7 @@ definition {
 			pageName = "Test Page",
 			siteName = "Remote Site");
 
-		AssertVisible(
-			key_assetTitle = "Document_1.doc",
-			locator1 = "AP#ASSET_ABSTRACT_TITLE");
+		AssetPublisherPortlet.viewAssetPG(assetTitle = "Document_1.doc");
 
 		User.loginPG(
 			nodePort = "8080",
@@ -366,9 +555,7 @@ definition {
 			pageName = "Test Page",
 			siteName = "Site Name");
 
-		AssertElementNotPresent(
-			key_assetTitle = "Document_1.doc",
-			locator1 = "AP#ASSET_ABSTRACT_TITLE");
+		AssetPublisherPortlet.viewAssetNotPresentPG(assetTitle = "Document_1.doc");
 
 		Staging.gotoPublishToLive();
 
@@ -386,16 +573,14 @@ definition {
 			pageName = "Test Page",
 			siteName = "Remote Site");
 
-		AssertElementNotPresent(
-			key_assetTitle = "Document_1.doc",
-			locator1 = "AP#ASSET_ABSTRACT_TITLE");
+		AssetPublisherPortlet.viewAssetNotPresentPG(assetTitle = "Document_1.doc");
 	}
 
 	@description = "This ensures that custom field in document from depot can be deleted and republished in the site when enabling remote staging."
 	@priority = "5"
-	@refactorneeded
-	test DeleteDocumentWithCustomField {
-		property test.name.skip.portal.instance = "DepotRemoteStagingDM#DeleteDocumentWithCustomField";
+	@refactordone
+	test CanDeleteDocumentWithCustomField {
+		property test.name.skip.portal.instance = "DepotRemoteStagingDM#CanDeleteDocumentWithCustomField";
 
 		ApplicationsMenu.gotoPortlet(
 			category = "Configuration",
@@ -446,11 +631,14 @@ definition {
 
 		Staging.publishToLive(remoteStaging = "true");
 
+		JSONLayout.addWidgetToPublicLayout(
+			groupName = "Site Name",
+			layoutName = "Test Page",
+			widgetName = "Asset Publisher");
+
 		Navigator.openSitePage(
 			pageName = "Test Page",
 			siteName = "Site Name");
-
-		Portlet.addPG(portletName = "Asset Publisher");
 
 		AssetPublisherPortlet.configureManualAssetSelectionPG(
 			assetTitle = "DM Document Title",
@@ -502,9 +690,7 @@ definition {
 			pageName = "Test Page",
 			siteName = "Site Name");
 
-		AssertElementNotPresent(
-			key_assetTitle = "DM Document Title",
-			locator1 = "AP#ASSET_ABSTRACT_TITLE");
+		AssetPublisherPortlet.viewAssetNotPresentPG(assetTitle = "DM Document Title");
 
 		Staging.gotoPublishToLive();
 
@@ -522,124 +708,14 @@ definition {
 			pageName = "Test Page",
 			siteName = "Remote Site");
 
-		AssertElementNotPresent(
-			key_assetTitle = "DM Document Title",
-			locator1 = "AP#ASSET_ABSTRACT_TITLE");
-	}
-
-	@description = "This ensures that image in depot can be removed and republished in AP through widget config manual selection when enabling remote staging."
-	@priority = "5"
-	@refactorneeded
-	test DeleteImageInDepot {
-		property portal.acceptance = "quarantine";
-		property portal.upstream = "quarantine";
-		property test.name.skip.portal.instance = "DepotRemoteStagingDM#DeleteImageInDepot";
-
-		JSONDocument.addFileWithUploadedFile(
-			dmDocumentDescription = "DM Document Description",
-			dmDocumentTitle = "Document_2.jpg",
-			groupName = "Test Depot Name",
-			mimeType = "image/jpeg",
-			sourceFileName = "Document_2.jpg");
-
-		DepotNavigator.openDepotDocumentsAndMediaAdmin(depotName = "Test Depot Name");
-
-		DepotNavigator.switchStagingStatus(stagingItem = "Publish to Live");
-
-		Staging.publishToLive(remoteStaging = "true");
-
-		Navigator.openSitePage(
-			pageName = "Test Page",
-			siteName = "Site Name");
-
-		Portlet.addPG(portletName = "Asset Publisher");
-
-		AssetPublisherPortlet.configureManualAssetSelectionPG(
-			assetTitle = "Document_2.jpg",
-			assetType = "Basic Document",
-			depotName = "Test Depot Name");
-
-		Navigator.openSitePage(
-			pageName = "Test Page",
-			siteName = "Site Name");
-
-		AssertVisible(
-			key_assetTitle = "Document_2.jpg",
-			locator1 = "AP#ASSET_ABSTRACT_TITLE");
-
-		Staging.gotoPublishToLive();
-
-		Staging.publishToLive(remoteStaging = "true");
-
-		User.logoutPG();
-
-		User.firstLoginUI(
-			password = "test",
-			specificURL = "http://localhost:9080",
-			userEmailAddress = "test@liferay.com");
-
-		Navigator.openSitePage(
-			baseURL = "http://localhost:9080",
-			pageName = "Test Page",
-			siteName = "Remote Site");
-
-		AssertVisible(
-			key_assetTitle = "Document_2.jpg",
-			locator1 = "AP#ASSET_ABSTRACT_TITLE");
-
-		User.loginPG(
-			nodePort = "8080",
-			password = "test",
-			userEmailAddress = "test@liferay.com");
-
-		DepotNavigator.openDepotDocumentsAndMediaAdmin(depotName = "Test Depot Name");
-
-		DMDocument.deleteCP(dmDocumentTitle = "Document_2.jpg");
-
-		DepotNavigator.openDepotRecycleBinAdmin(depotName = "Test Depot Name");
-
-		RecycleBin.deleteCP(
-			assetName = "Document_2.jpg",
-			assetType = "Document");
-
-		DepotNavigator.switchStagingStatus(stagingItem = "Publish to Live");
-
-		Staging.publishToLive(remoteStaging = "true");
-
-		Navigator.openSitePage(
-			pageName = "Test Page",
-			siteName = "Site Name");
-
-		AssertTextNotPresent(
-			locator1 = "AP#ASSET_ABSTRACT_TITLE",
-			value1 = "Document_2.jpg");
-
-		Staging.gotoPublishToLive();
-
-		Staging.publishToLive(remoteStaging = "true");
-
-		User.logoutPG();
-
-		User.firstLoginUI(
-			password = "test",
-			specificURL = "http://localhost:9080",
-			userEmailAddress = "test@liferay.com");
-
-		Navigator.openSitePage(
-			baseURL = "http://localhost:9080",
-			pageName = "Test Page",
-			siteName = "Remote Site");
-
-		AssertTextNotPresent(
-			locator1 = "AP#ASSET_ABSTRACT_TITLE",
-			value1 = "Document_2.jpg");
+		AssetPublisherPortlet.viewAssetNotPresentPG(assetTitle = "DM Document Title");
 	}
 
 	@description = "This ensures that the image in depot can be removed and republished in open graph when enabling remote staging."
 	@priority = "5"
-	@refactorneeded
-	test DeleteOpenGraphImageInDepot {
-		property test.name.skip.portal.instance = "DepotRemoteStagingDM#DeleteOpenGraphImageInDepot";
+	@refactordone
+	test CanDeleteOpenGraphImage {
+		property test.name.skip.portal.instance = "DepotRemoteStagingDM#CanDeleteOpenGraphImage";
 
 		JSONDocument.addFileWithUploadedFile(
 			dmDocumentDescription = "DM Document Description",
@@ -654,24 +730,18 @@ definition {
 
 		Staging.publishToLive(remoteStaging = "true");
 
-		Site.openSiteSettingsAdmin(siteURLKey = "site-name");
-
-		Click(
-			key_itemName = "Pages",
-			locator1 = "ListGroupItem#ITEM_TEXT");
-
-		Navigator.gotoNavTab(navTab = "Open Graph");
+		Navigator.openToGroupPagesPortlet(
+			groupName = "Site Name",
+			layoutName = "Test Page",
+			portlet = "Open Graph",
+			siteURLKey = "site-name");
 
 		OpenGraph.configureOpenGraph(
 			customImage = "true",
 			depotName = "Test Depot Name",
 			uploadFileName = "Document_2.jpg");
 
-		Pause(locator1 = "1000");
-
-		AssertVisible(
-			key_imageName = "Document_2.jpg",
-			locator1 = "SitePagesEditPage#PREVIEW_IMAGE");
+		OpenGraph.viewPreviewImage(imageName = "Document_2.jpg");
 
 		Navigator.openSitePage(
 			pageName = "Test Page",
@@ -688,24 +758,21 @@ definition {
 			specificURL = "http://localhost:9080",
 			userEmailAddress = "test@liferay.com");
 
-		Navigator.openSitePage(
+		Navigator.openToGroupPagesPortlet(
 			baseURL = "http://localhost:9080",
-			pageName = "Test Page",
-			siteName = "Remote Site");
+			portlet = "Open Graph",
+			remoteStaging = "true",
+			siteURLKey = "remote-site");
 
-		ProductMenu.gotoPortlet(
-			category = "Configuration",
-			portlet = "Site Settings");
+		OpenGraph.viewPreviewImage(imageName = "Document_2.jpg");
 
-		Click(
-			key_itemName = "Pages",
-			locator1 = "ListGroupItem#ITEM_TEXT");
+		var groupID = Depot.getGroupID(depotName = "Remote Depot");
 
-		Navigator.gotoNavTab(navTab = "Open Graph");
+		User.logoutPG();
 
-		AssertVisible(
-			key_imageName = "Document_2.jpg",
-			locator1 = "SitePagesEditPage#PREVIEW_IMAGE");
+		Navigator.openSpecificURL(url = "http://localhost:9080/web/remote-site/test-page");
+
+		OpenGraph.viewOpenGraphProperties(ogPropertyList = '''"og:image" content="http://localhost:9080/documents/${groupID}/0/Document_2.jpg''');
 
 		User.loginPG(
 			nodePort = "8080",
@@ -728,17 +795,13 @@ definition {
 
 		Staging.publishToLive(remoteStaging = "true");
 
-		Site.openSiteSettingsAdmin(siteURLKey = "site-name");
+		Navigator.openToGroupPagesPortlet(
+			groupName = "Site Name",
+			layoutName = "Test Page",
+			portlet = "Open Graph",
+			siteURLKey = "site-name");
 
-		Click(
-			key_itemName = "Pages",
-			locator1 = "ListGroupItem#ITEM_TEXT");
-
-		Navigator.gotoNavTab(navTab = "Open Graph");
-
-		AssertElementNotPresent(
-			key_imageName = "Document_2.jpg",
-			locator1 = "SitePagesEditPage#PREVIEW_IMAGE");
+		OpenGraph.viewNoPreviewImage(imageName = "Document_2.jpg");
 
 		Navigator.openSitePage(
 			pageName = "Test Page",
@@ -755,31 +818,28 @@ definition {
 			specificURL = "http://localhost:9080",
 			userEmailAddress = "test@liferay.com");
 
-		Navigator.openSitePage(
+		Navigator.openToGroupPagesPortlet(
 			baseURL = "http://localhost:9080",
-			pageName = "Test Page",
-			siteName = "Remote Site");
+			portlet = "Open Graph",
+			remoteStaging = "true",
+			siteURLKey = "remote-site");
 
-		ProductMenu.gotoPortlet(
-			category = "Configuration",
-			portlet = "Site Settings");
+		OpenGraph.viewNoPreviewImage(imageName = "Document_2.jpg");
 
-		Click(
-			key_itemName = "Pages",
-			locator1 = "ListGroupItem#ITEM_TEXT");
+		var groupID = Depot.getGroupID(depotName = "Remote Depot");
 
-		Navigator.gotoNavTab(navTab = "Open Graph");
+		User.logoutPG();
 
-		AssertElementNotPresent(
-			key_imageName = "Document_2.jpg",
-			locator1 = "SitePagesEditPage#PREVIEW_IMAGE");
+		Navigator.openSpecificURL(url = "http://localhost:9080/web/remote-site/test-page");
+
+		OpenGraph.viewNoOpenGraphProperties(ogPropertyList = '''og:image" content="http://localhost:9080/documents/${groupID}/0/Document_2.jpg"''');
 	}
 
 	@description = "This ensures that video shortcut in depot can be deleted and republished in Blogs when enabling remote staging."
 	@priority = "4"
-	@refactorneeded
-	test DeleteVideoShortcutInDepot {
-		property test.name.skip.portal.instance = "DepotRemoteStagingDM#DeleteVideoShortcutInDepot";
+	@refactordone
+	test CanDeleteVideoShortcut {
+		property test.name.skip.portal.instance = "DepotRemoteStagingDM#CanDeleteVideoShortcut";
 
 		DepotNavigator.openDepotDocumentsAndMediaAdmin(depotName = "Test Depot Name");
 
@@ -791,11 +851,14 @@ definition {
 
 		Staging.publishToLive(remoteStaging = "true");
 
+		JSONLayout.addWidgetToPublicLayout(
+			groupName = "Site Name",
+			layoutName = "Test Page",
+			widgetName = "Blogs");
+
 		Navigator.openSitePage(
 			pageName = "Test Page",
 			siteName = "Site Name");
-
-		Portlet.addPG(portletName = "Blogs");
 
 		Blogs.addEntry(
 			depotName = "Test Depot Name",
@@ -805,13 +868,10 @@ definition {
 			navTab = "Documents and Media",
 			videoShortcutTitle = "Test YouTube Video");
 
-		Navigator.openSitePage(
-			pageName = "Test Page",
-			siteName = "Site Name");
-
-		BlogsNavigator.gotoEntryPG(
-			entryContent = "video",
-			entryTitle = "Blogs Entry Title");
+		BlogsNavigator.openToBlogEntry(
+			entryTitle = "Blogs Entry Title",
+			layoutName = "Test Page",
+			siteURLKey = "site-name");
 
 		BlogsEntry.viewEntryPG(
 			embedVideo = "true",
@@ -829,14 +889,11 @@ definition {
 			specificURL = "http://localhost:9080",
 			userEmailAddress = "test@liferay.com");
 
-		Navigator.openSitePage(
+		BlogsNavigator.openToBlogEntry(
 			baseURL = "http://localhost:9080",
-			pageName = "Test Page",
-			siteName = "Remote Site");
-
-		BlogsNavigator.gotoEntryPG(
-			entryContent = "video",
-			entryTitle = "Blogs Entry Title");
+			entryTitle = "Blogs Entry Title",
+			layoutName = "Test Page",
+			siteURLKey = "remote-site");
 
 		BlogsEntry.viewEntryPG(
 			embedVideo = "true",
@@ -862,13 +919,10 @@ definition {
 
 		Staging.publishToLive(remoteStaging = "true");
 
-		Navigator.openSitePage(
-			pageName = "Test Page",
-			siteName = "Site Name");
-
-		BlogsNavigator.gotoEntryPG(
-			entryContent = "video",
-			entryTitle = "Blogs Entry Title");
+		BlogsNavigator.openToBlogEntry(
+			entryTitle = "Blogs Entry Title",
+			layoutName = "Test Page",
+			siteURLKey = "site-name");
 
 		BlogsEntry.viewEntryPG(
 			embedVideo = "true",
@@ -886,14 +940,11 @@ definition {
 			specificURL = "http://localhost:9080",
 			userEmailAddress = "test@liferay.com");
 
-		Navigator.openSitePage(
+		BlogsNavigator.openToBlogEntry(
 			baseURL = "http://localhost:9080",
-			pageName = "Test Page",
-			siteName = "Remote Site");
-
-		BlogsNavigator.gotoEntryPG(
-			entryContent = "video",
-			entryTitle = "Blogs Entry Title");
+			entryTitle = "Blogs Entry Title",
+			layoutName = "Test Page",
+			siteURLKey = "remote-site");
 
 		BlogsEntry.viewEntryPG(
 			embedVideo = "true",
@@ -903,9 +954,9 @@ definition {
 
 	@description = "This ensures that the image in depot can be removed and republished in web content when enabling remote staging."
 	@priority = "5"
-	@refactorneeded
-	test DeleteWebContentImageInDepot {
-		property test.name.skip.portal.instance = "DepotRemoteStagingDM#DeleteWebContentImageInDepot";
+	@refactordone
+	test CanDeleteWCImage {
+		property test.name.skip.portal.instance = "DepotRemoteStagingDM#CanDeleteWCImage";
 
 		JSONDocument.addFileWithUploadedFile(
 			dmDocumentDescription = "DM Document Description",
@@ -946,11 +997,14 @@ definition {
 
 		PortletEntry.publish();
 
+		JSONLayout.addWidgetToPublicLayout(
+			groupName = "Site Name",
+			layoutName = "Test Page",
+			widgetName = "Web Content Display");
+
 		Navigator.openSitePage(
 			pageName = "Test Page",
 			siteName = "Site Name");
-
-		Portlet.addPG(portletName = "Web Content Display");
 
 		WebContentDisplayPortlet.selectWebContent(webContentTitle = "Web Content Title");
 
@@ -1024,9 +1078,9 @@ definition {
 
 	@description = "This ensures that the blog image from a depot can be edited and republished when enabling remote staging."
 	@priority = "5"
-	@refactorneeded
-	test EditBlogImage {
-		property test.name.skip.portal.instance = "DepotRemoteStagingDM#EditBlogImage";
+	@refactordone
+	test CanEditBlogCoverImage {
+		property test.name.skip.portal.instance = "DepotRemoteStagingDM#CanEditBlogCoverImage";
 
 		for (var num : list "1,2") {
 			JSONDocument.addFileWithUploadedFile(
@@ -1051,15 +1105,19 @@ definition {
 			imageFileName = "Document_2.jpg",
 			siteURLKey = "site-name");
 
+		JSONLayout.addWidgetToPublicLayout(
+			groupName = "Site Name",
+			layoutName = "Test Page",
+			widgetName = "Blogs");
+
 		Navigator.openSitePage(
 			pageName = "Test Page",
 			siteName = "Site Name");
 
-		Portlet.addPG(portletName = "Blogs");
-
-		AssertVisible(
-			key_uploadFileName = "Document_2.jpg",
-			locator1 = "BlogsEntry#ENTRY_COVER_IMAGE");
+		BlogsEntry.viewEntryPG(
+			entryContent = "Blogs Entry Content",
+			entryTitle = "Blogs Entry Title",
+			uploadFileName = "Document_2.jpg");
 
 		Staging.gotoPublishToLive();
 
@@ -1077,9 +1135,7 @@ definition {
 			pageName = "Test Page",
 			siteName = "Remote Site");
 
-		AssertVisible(
-			key_uploadFileName = "Document_2.jpg",
-			locator1 = "BlogsEntry#ENTRY_COVER_IMAGE");
+		BlogsEntry.viewCoverImage(uploadFileName = "Document_2.jpg");
 
 		User.loginPG(
 			nodePort = "8080",
@@ -1109,9 +1165,7 @@ definition {
 			pageName = "Test Page",
 			siteName = "Site Name");
 
-		AssertVisible(
-			key_uploadFileName = "Document_1.jpg",
-			locator1 = "BlogsEntry#ENTRY_COVER_IMAGE");
+		BlogsEntry.viewCoverImage(uploadFileName = "Document_1.jpg");
 
 		Staging.gotoPublishToLive();
 
@@ -1129,16 +1183,14 @@ definition {
 			pageName = "Test Page",
 			siteName = "Remote Site");
 
-		AssertVisible(
-			key_uploadFileName = "Document_1.jpg",
-			locator1 = "BlogsEntry#ENTRY_COVER_IMAGE");
+		BlogsEntry.viewCoverImage(uploadFileName = "Document_1.jpg");
 	}
 
 	@description = "This ensures that the blog inline image from a depot can be edited and republished when enabling remote staging."
 	@priority = "5"
-	@refactorneeded
-	test EditBlogInlineImage {
-		property test.name.skip.portal.instance = "DepotRemoteStagingDM#EditBlogInlineImage";
+	@refactordone
+	test CanEditBlogInlineImage {
+		property test.name.skip.portal.instance = "DepotRemoteStagingDM#CanEditBlogInlineImage";
 
 		for (var num : list "1,2") {
 			JSONDocument.addFileWithUploadedFile(
@@ -1155,11 +1207,14 @@ definition {
 
 		Staging.publishToLive(remoteStaging = "true");
 
+		JSONLayout.addWidgetToPublicLayout(
+			groupName = "Site Name",
+			layoutName = "Test Page",
+			widgetName = "Blogs");
+
 		Navigator.openSitePage(
 			pageName = "Test Page",
 			siteName = "Site Name");
-
-		Portlet.addPG(portletName = "Blogs");
 
 		BlogsNavigator.openToAddEntry(siteURLKey = "site-name");
 
@@ -1173,17 +1228,12 @@ definition {
 
 		PortletEntry.publish();
 
-		Navigator.openSitePage(
-			pageName = "Test Page",
-			siteName = "Site Name");
+		BlogsNavigator.openToBlogEntry(
+			entryTitle = "Blogs Entry Title",
+			layoutName = "Test Page",
+			siteURLKey = "site-name");
 
-		BlogsNavigator.gotoEntryPG(
-			entryContent = "Blogs Entry Content",
-			entryTitle = "Blogs Entry Title");
-
-		AssertVisible(
-			key_uploadFileName = "Document_2.jpg",
-			locator1 = "BlogsEntry#CONTENT_INLINE_IMAGE");
+		BlogsEntry.viewInlineImage(uploadFileName = "Document_2.jpg");
 
 		Staging.gotoPublishToLive();
 
@@ -1196,20 +1246,13 @@ definition {
 			specificURL = "http://localhost:9080",
 			userEmailAddress = "test@liferay.com");
 
-		Navigator.openSitePage(
+		BlogsNavigator.openToBlogEntry(
 			baseURL = "http://localhost:9080",
-			pageName = "Test Page",
-			siteName = "Remote Site");
+			entryTitle = "Blogs Entry Title",
+			layoutName = "Test Page",
+			siteURLKey = "remote-site");
 
-		Pause(locator1 = "3000");
-
-		BlogsNavigator.gotoEntryPG(
-			entryContent = "Blogs Entry Content",
-			entryTitle = "Blogs Entry Title");
-
-		AssertVisible(
-			key_uploadFileName = "Document_2.jpg",
-			locator1 = "BlogsEntry#CONTENT_INLINE_IMAGE");
+		BlogsEntry.viewInlineImage(uploadFileName = "Document_2.jpg");
 
 		User.loginPG(
 			nodePort = "8080",
@@ -1235,17 +1278,12 @@ definition {
 
 		Button.clickPublish();
 
-		Navigator.openSitePage(
-			pageName = "Test Page",
-			siteName = "Site Name");
+		BlogsNavigator.openToBlogEntry(
+			entryTitle = "Blogs Entry Title",
+			layoutName = "Test Page",
+			siteURLKey = "site-name");
 
-		BlogsNavigator.gotoEntryPG(
-			entryContent = "Blogs Entry Content",
-			entryTitle = "Blogs Entry Title");
-
-		AssertVisible(
-			key_uploadFileName = "Document_1.jpg",
-			locator1 = "BlogsEntry#CONTENT_INLINE_IMAGE");
+		BlogsEntry.viewInlineImage(uploadFileName = "Document_1.jpg");
 
 		Staging.gotoPublishToLive();
 
@@ -1258,25 +1296,20 @@ definition {
 			specificURL = "http://localhost:9080",
 			userEmailAddress = "test@liferay.com");
 
-		Navigator.openSitePage(
+		BlogsNavigator.openToBlogEntry(
 			baseURL = "http://localhost:9080",
-			pageName = "Test Page",
-			siteName = "Remote Site");
+			entryTitle = "Blogs Entry Title",
+			layoutName = "Test Page",
+			siteURLKey = "remote-site");
 
-		BlogsNavigator.gotoEntryPG(
-			entryContent = "Blogs Entry Content",
-			entryTitle = "Blogs Entry Title");
-
-		AssertVisible(
-			key_uploadFileName = "Document_1.jpg",
-			locator1 = "BlogsEntry#CONTENT_INLINE_IMAGE");
+		BlogsEntry.viewInlineImage(uploadFileName = "Document_1.jpg");
 	}
 
 	@description = "This ensures that the blog small image from a depot can be edited and republished when enabling remote staging."
 	@priority = "5"
-	@refactorneeded
-	test EditBlogSmallImage {
-		property test.name.skip.portal.instance = "DepotRemoteStagingDM#EditBlogSmallImage";
+	@refactordone
+	test CanEditBlogSmallImage {
+		property test.name.skip.portal.instance = "DepotRemoteStagingDM#CanEditBlogSmallImage";
 
 		for (var num : list "1,2") {
 			JSONDocument.addFileWithUploadedFile(
@@ -1306,11 +1339,14 @@ definition {
 
 		PortletEntry.publish();
 
+		JSONLayout.addWidgetToPublicLayout(
+			groupName = "Site Name",
+			layoutName = "Test Page",
+			widgetName = "Blogs");
+
 		Navigator.openSitePage(
 			pageName = "Test Page",
 			siteName = "Site Name");
-
-		Portlet.addPG(portletName = "Blogs");
 
 		Staging.gotoPublishToLive();
 
@@ -1328,9 +1364,7 @@ definition {
 			pageName = "Test Page",
 			siteName = "Remote Site");
 
-		AssertVisible(
-			key_imageFileName = "Document_1.jpg",
-			locator1 = "BlogsEntry#CONTENT_SMALL_IMAGE");
+		BlogsEntry.viewSmallImage(uploadFileName = "Document_1.jpg");
 
 		User.loginPG(
 			nodePort = "8080",
@@ -1367,23 +1401,21 @@ definition {
 			pageName = "Test Page",
 			siteName = "Remote Site");
 
-		AssertVisible(
-			key_imageFileName = "Document_2.jpg",
-			locator1 = "BlogsEntry#CONTENT_SMALL_IMAGE");
+		BlogsEntry.viewSmallImage(uploadFileName = "Document_2.jpg");
 	}
 
-	@description = "This ensures that document in depot can be replaced and republished in AP through widget config manual selection when enabling remote staging."
+	@description = "This ensures that an image in depot can be replaced and republished in AP through widget config manual selection when enabling remote staging."
 	@priority = "5"
-	@refactorneeded
-	test EditDocumentInDepot {
-		property test.name.skip.portal.instance = "DepotRemoteStagingDM#EditDocumentInDepot";
+	@refactordone
+	test CanEditDMImage {
+		property test.name.skip.portal.instance = "DepotRemoteStagingDM#CanEditDMImage";
 
 		JSONDocument.addFileWithUploadedFile(
 			dmDocumentDescription = "DM Document Description",
-			dmDocumentTitle = "Document_2.doc",
+			dmDocumentTitle = "Document_2.jpg",
 			groupName = "Test Depot Name",
-			mimeType = "application/msword",
-			sourceFileName = "Document_2.doc");
+			mimeType = "image/jpeg",
+			sourceFileName = "Document_2.jpg");
 
 		DepotNavigator.openDepotDocumentsAndMediaAdmin(depotName = "Test Depot Name");
 
@@ -1391,14 +1423,17 @@ definition {
 
 		Staging.publishToLive(remoteStaging = "true");
 
+		JSONLayout.addWidgetToPublicLayout(
+			groupName = "Site Name",
+			layoutName = "Test Page",
+			widgetName = "Asset Publisher");
+
 		Navigator.openSitePage(
 			pageName = "Test Page",
 			siteName = "Site Name");
 
-		Portlet.addPG(portletName = "Asset Publisher");
-
 		AssetPublisherPortlet.configureManualAssetSelectionPG(
-			assetTitle = "Document_2.doc",
+			assetTitle = "Document_2.jpg",
 			assetType = "Basic Document",
 			depotName = "Test Depot Name");
 
@@ -1406,9 +1441,7 @@ definition {
 			pageName = "Test Page",
 			siteName = "Site Name");
 
-		AssertVisible(
-			key_assetTitle = "Document_2.doc",
-			locator1 = "AP#ASSET_ABSTRACT_TITLE");
+		AssetPublisherPortlet.viewAssetPG(assetTitle = "Document_2.jpg");
 
 		Staging.gotoPublishToLive();
 
@@ -1426,9 +1459,105 @@ definition {
 			pageName = "Test Page",
 			siteName = "Remote Site");
 
-		AssertVisible(
-			key_assetTitle = "Document_2.doc",
-			locator1 = "AP#ASSET_ABSTRACT_TITLE");
+		AssetPublisherPortlet.viewAssetPG(assetTitle = "Document_2.jpg");
+
+		User.loginPG(
+			nodePort = "8080",
+			password = "test",
+			userEmailAddress = "test@liferay.com");
+
+		DepotNavigator.openDepotDocumentsAndMediaAdmin(depotName = "Test Depot Name");
+
+		DMDocument.editCP(
+			dmDocumentFileEdit = "Document_1.jpg",
+			dmDocumentTitle = "Document_2.jpg",
+			dmDocumentTitleEdit = "Document_1.jpg");
+
+		DepotNavigator.switchStagingStatus(stagingItem = "Publish to Live");
+
+		Staging.publishToLive(remoteStaging = "true");
+
+		Navigator.openSitePage(
+			pageName = "Test Page",
+			siteName = "Site Name");
+
+		AssetPublisherPortlet.viewAssetPG(assetTitle = "Document_1.jpg");
+
+		Staging.gotoPublishToLive();
+
+		Staging.publishToLive(remoteStaging = "true");
+
+		User.logoutPG();
+
+		User.firstLoginUI(
+			password = "test",
+			specificURL = "http://localhost:9080",
+			userEmailAddress = "test@liferay.com");
+
+		Navigator.openSitePage(
+			baseURL = "http://localhost:9080",
+			pageName = "Test Page",
+			siteName = "Remote Site");
+
+		AssetPublisherPortlet.viewAssetPG(assetTitle = "Document_1.jpg");
+	}
+
+	@description = "This ensures that document in depot can be replaced and republished in AP through widget config manual selection when enabling remote staging."
+	@priority = "5"
+	@refactordone
+	test CanEditDocument {
+		property test.name.skip.portal.instance = "DepotRemoteStagingDM#CanEditDocument";
+
+		JSONDocument.addFileWithUploadedFile(
+			dmDocumentDescription = "DM Document Description",
+			dmDocumentTitle = "Document_2.doc",
+			groupName = "Test Depot Name",
+			mimeType = "application/msword",
+			sourceFileName = "Document_2.doc");
+
+		DepotNavigator.openDepotDocumentsAndMediaAdmin(depotName = "Test Depot Name");
+
+		DepotNavigator.switchStagingStatus(stagingItem = "Publish to Live");
+
+		Staging.publishToLive(remoteStaging = "true");
+
+		JSONLayout.addWidgetToPublicLayout(
+			groupName = "Site Name",
+			layoutName = "Test Page",
+			widgetName = "Asset Publisher");
+
+		Navigator.openSitePage(
+			pageName = "Test Page",
+			siteName = "Site Name");
+
+		AssetPublisherPortlet.configureManualAssetSelectionPG(
+			assetTitle = "Document_2.doc",
+			assetType = "Basic Document",
+			depotName = "Test Depot Name");
+
+		Navigator.openSitePage(
+			pageName = "Test Page",
+			siteName = "Site Name");
+
+		AssetPublisherPortlet.viewAssetPG(assetTitle = "Document_2.doc");
+
+		Staging.gotoPublishToLive();
+
+		Staging.publishToLive(remoteStaging = "true");
+
+		User.logoutPG();
+
+		User.firstLoginUI(
+			password = "test",
+			specificURL = "http://localhost:9080",
+			userEmailAddress = "test@liferay.com");
+
+		Navigator.openSitePage(
+			baseURL = "http://localhost:9080",
+			pageName = "Test Page",
+			siteName = "Remote Site");
+
+		AssetPublisherPortlet.viewAssetPG(assetTitle = "Document_2.doc");
 
 		User.loginPG(
 			nodePort = "8080",
@@ -1450,9 +1579,7 @@ definition {
 			pageName = "Test Page",
 			siteName = "Site Name");
 
-		AssertVisible(
-			key_assetTitle = "Document_3.doc",
-			locator1 = "AP#ASSET_ABSTRACT_TITLE");
+		AssetPublisherPortlet.viewAssetPG(assetTitle = "Document_3.doc");
 
 		Staging.gotoPublishToLive();
 
@@ -1470,16 +1597,14 @@ definition {
 			pageName = "Test Page",
 			siteName = "Remote Site");
 
-		AssertVisible(
-			key_assetTitle = "Document_3.doc",
-			locator1 = "AP#ASSET_ABSTRACT_TITLE");
+		AssetPublisherPortlet.viewAssetPG(assetTitle = "Document_3.doc");
 	}
 
 	@description = "This ensures that the custom field in document from depot can be edited and republished in the site when enabling remote staging."
 	@priority = "5"
-	@refactorneeded
-	test EditDocumentWithCustomField {
-		property test.name.skip.portal.instance = "DepotRemoteStagingDM#EditDocumentWithCustomField";
+	@refactordone
+	test CanEditDocumentWithCustomField {
+		property test.name.skip.portal.instance = "DepotRemoteStagingDM#CanEditDocumentWithCustomField";
 
 		ApplicationsMenu.gotoPortlet(
 			category = "Configuration",
@@ -1530,11 +1655,14 @@ definition {
 
 		Staging.publishToLive(remoteStaging = "true");
 
+		JSONLayout.addWidgetToPublicLayout(
+			groupName = "Site Name",
+			layoutName = "Test Page",
+			widgetName = "Asset Publisher");
+
 		Navigator.openSitePage(
 			pageName = "Test Page",
 			siteName = "Site Name");
-
-		Portlet.addPG(portletName = "Asset Publisher");
 
 		AssetPublisherPortlet.configureManualAssetSelectionPG(
 			assetTitle = "DM Document Title",
@@ -1619,114 +1747,11 @@ definition {
 			dmDocumentTitle = "DM Document Title Edit");
 	}
 
-	@description = "This ensures that an image in depot can be replaced and republished in AP through widget config manual selection when enabling remote staging."
-	@priority = "5"
-	@refactorneeded
-	test EditImageInDepot {
-		property test.name.skip.portal.instance = "DepotRemoteStagingDM#EditImageInDepot";
-
-		JSONDocument.addFileWithUploadedFile(
-			dmDocumentDescription = "DM Document Description",
-			dmDocumentTitle = "Document_2.jpg",
-			groupName = "Test Depot Name",
-			mimeType = "image/jpeg",
-			sourceFileName = "Document_2.jpg");
-
-		DepotNavigator.openDepotDocumentsAndMediaAdmin(depotName = "Test Depot Name");
-
-		DepotNavigator.switchStagingStatus(stagingItem = "Publish to Live");
-
-		Staging.publishToLive(remoteStaging = "true");
-
-		Navigator.openSitePage(
-			pageName = "Test Page",
-			siteName = "Site Name");
-
-		Portlet.addPG(portletName = "Asset Publisher");
-
-		AssetPublisherPortlet.configureManualAssetSelectionPG(
-			assetTitle = "Document_2.jpg",
-			assetType = "Basic Document",
-			depotName = "Test Depot Name");
-
-		Navigator.openSitePage(
-			pageName = "Test Page",
-			siteName = "Site Name");
-
-		AssertVisible(
-			key_assetTitle = "Document_2.jpg",
-			locator1 = "AP#ASSET_ABSTRACT_TITLE");
-
-		Staging.gotoPublishToLive();
-
-		Staging.publishToLive(remoteStaging = "true");
-
-		User.logoutPG();
-
-		User.firstLoginUI(
-			password = "test",
-			specificURL = "http://localhost:9080",
-			userEmailAddress = "test@liferay.com");
-
-		Navigator.openSitePage(
-			baseURL = "http://localhost:9080",
-			pageName = "Test Page",
-			siteName = "Remote Site");
-
-		AssertVisible(
-			key_assetTitle = "Document_2.jpg",
-			locator1 = "AP#ASSET_ABSTRACT_TITLE");
-
-		User.loginPG(
-			nodePort = "8080",
-			password = "test",
-			userEmailAddress = "test@liferay.com");
-
-		DepotNavigator.openDepotDocumentsAndMediaAdmin(depotName = "Test Depot Name");
-
-		DMDocument.editCP(
-			dmDocumentFileEdit = "Document_1.jpg",
-			dmDocumentTitle = "Document_2.jpg",
-			dmDocumentTitleEdit = "Document_1.jpg");
-
-		DepotNavigator.switchStagingStatus(stagingItem = "Publish to Live");
-
-		Staging.publishToLive(remoteStaging = "true");
-
-		Navigator.openSitePage(
-			pageName = "Test Page",
-			siteName = "Site Name");
-
-		AssertVisible(
-			key_assetTitle = "Document_1.jpg",
-			locator1 = "AP#ASSET_ABSTRACT_TITLE");
-
-		Staging.gotoPublishToLive();
-
-		Staging.publishToLive(remoteStaging = "true");
-
-		User.logoutPG();
-
-		User.firstLoginUI(
-			password = "test",
-			specificURL = "http://localhost:9080",
-			userEmailAddress = "test@liferay.com");
-
-		Navigator.openSitePage(
-			baseURL = "http://localhost:9080",
-			pageName = "Test Page",
-			siteName = "Remote Site");
-
-		AssertVisible(
-			key_assetTitle = "Document_1.jpg",
-			locator1 = "AP#ASSET_ABSTRACT_TITLE");
-	}
-
 	@description = "This ensures that an edited internal video in depot can be republished on a connected staging site with enabling FFmpeg."
 	@priority = "4"
-	@refactorneeded
-	test EditInternalVideoInDepot {
-		property test.name.skip.portal.instance = "DepotRemoteStagingDM#EditInternalVideoInDepot";
+	@refactordone
+	test CanEditInternalVideo {
+		property test.name.skip.portal.instance = "DepotRemoteStagingDM#CanEditInternalVideo";
 
 		DMNavigator.openToConfigInSystemSettings(portlet = "FFMPEG Video Converter");
 
@@ -1767,11 +1792,14 @@ definition {
 
 		Staging.publishToLive(remoteStaging = "true");
 
+		JSONLayout.addWidgetToPublicLayout(
+			groupName = "Site Name",
+			layoutName = "Test Page",
+			widgetName = "Asset Publisher");
+
 		Navigator.openSitePage(
 			pageName = "Test Page",
 			siteName = "Site Name");
-
-		Portlet.addPG(portletName = "Asset Publisher");
 
 		AssetPublisherPortlet.configureManualAssetSelectionPG(
 			assetTitle = "DM Video Title In Depot",
@@ -1788,9 +1816,7 @@ definition {
 			Refresh();
 		}
 
-		AssertVisible(
-			key_thumbnailName = "Document_1.mp4",
-			locator1 = "AP#ASSET_ABSTRACT_DETAIL_EXTERNAL_VIDEO_THUMBNAIL");
+		AssetPublisherPortlet.viewVideoThumbnail(thumbnailName = "Document_1.mp4");
 
 		Staging.gotoPublishToLive();
 
@@ -1814,9 +1840,7 @@ definition {
 			Refresh();
 		}
 
-		AssertVisible(
-			key_thumbnailName = "Document_1.mp4",
-			locator1 = "AP#ASSET_ABSTRACT_DETAIL_EXTERNAL_VIDEO_THUMBNAIL");
+		AssetPublisherPortlet.viewVideoThumbnail(thumbnailName = "Document_1.mp4");
 
 		User.loginPG(
 			nodePort = "8080",
@@ -1845,9 +1869,7 @@ definition {
 			Refresh();
 		}
 
-		AssertVisible(
-			key_thumbnailName = "Document_2.mp4",
-			locator1 = "AP#ASSET_ABSTRACT_DETAIL_EXTERNAL_VIDEO_THUMBNAIL");
+		AssetPublisherPortlet.viewVideoThumbnail(thumbnailName = "Document_2.mp4");
 
 		Staging.gotoPublishToLive();
 
@@ -1871,16 +1893,14 @@ definition {
 			Refresh();
 		}
 
-		AssertVisible(
-			key_thumbnailName = "Document_2.mp4",
-			locator1 = "AP#ASSET_ABSTRACT_DETAIL_EXTERNAL_VIDEO_THUMBNAIL");
+		AssetPublisherPortlet.viewVideoThumbnail(thumbnailName = "Document_2.mp4");
 	}
 
 	@description = "This ensures that the open graph image from a depot can be edited and republished when enabling remote staging."
 	@priority = "5"
-	@refactorneeded
-	test EditOpenGraphImage {
-		property test.name.skip.portal.instance = "DepotRemoteStagingDM#EditOpenGraphImage";
+	@refactordone
+	test CanEditOpenGraphImage {
+		property test.name.skip.portal.instance = "DepotRemoteStagingDM#CanEditOpenGraphImage";
 
 		for (var num : list "1,2") {
 			JSONDocument.addFileWithUploadedFile(
@@ -1897,24 +1917,18 @@ definition {
 
 		Staging.publishToLive(remoteStaging = "true");
 
-		Site.openSiteSettingsAdmin(siteURLKey = "site-name");
-
-		Click(
-			key_itemName = "Pages",
-			locator1 = "ListGroupItem#ITEM_TEXT");
-
-		Navigator.gotoNavTab(navTab = "Open Graph");
+		Navigator.openToGroupPagesPortlet(
+			groupName = "Site Name",
+			layoutName = "Test Page",
+			portlet = "Open Graph",
+			siteURLKey = "site-name");
 
 		OpenGraph.configureOpenGraph(
 			customImage = "true",
 			depotName = "Test Depot Name",
 			uploadFileName = "Document_1.jpg");
 
-		Pause(locator1 = "1000");
-
-		AssertVisible(
-			key_imageName = "Document_1.jpg",
-			locator1 = "SitePagesEditPage#PREVIEW_IMAGE");
+		OpenGraph.viewPreviewImage(imageName = "Document_1.jpg");
 
 		Navigator.openSitePage(
 			pageName = "Test Page",
@@ -1931,37 +1945,32 @@ definition {
 			specificURL = "http://localhost:9080",
 			userEmailAddress = "test@liferay.com");
 
-		Navigator.openSitePage(
+		Navigator.openToGroupPagesPortlet(
 			baseURL = "http://localhost:9080",
-			pageName = "Test Page",
-			siteName = "Remote Site");
+			portlet = "Open Graph",
+			remoteStaging = "true",
+			siteURLKey = "remote-site");
 
-		ProductMenu.gotoPortlet(
-			category = "Configuration",
-			portlet = "Site Settings");
+		OpenGraph.viewPreviewImage(imageName = "Document_1.jpg");
 
-		Click(
-			key_itemName = "Pages",
-			locator1 = "ListGroupItem#ITEM_TEXT");
+		var groupID = Depot.getGroupID(depotName = "Remote Depot");
 
-		Navigator.gotoNavTab(navTab = "Open Graph");
+		User.logoutPG();
 
-		AssertVisible(
-			key_imageName = "Document_1.jpg",
-			locator1 = "SitePagesEditPage#PREVIEW_IMAGE");
+		Navigator.openSpecificURL(url = "http://localhost:9080/web/remote-site/test-page");
+
+		OpenGraph.viewOpenGraphProperties(ogPropertyList = '''"og:image" content="http://localhost:9080/documents/${groupID}/0/Document_1.jpg''');
 
 		User.loginPG(
 			nodePort = "8080",
 			password = "test",
 			userEmailAddress = "test@liferay.com");
 
-		Site.openSiteSettingsAdmin(siteURLKey = "site-name");
-
-		Click(
-			key_itemName = "Pages",
-			locator1 = "ListGroupItem#ITEM_TEXT");
-
-		Navigator.gotoNavTab(navTab = "Open Graph");
+		Navigator.openToGroupPagesPortlet(
+			groupName = "Site Name",
+			layoutName = "Test Page",
+			portlet = "Open Graph",
+			siteURLKey = "site-name");
 
 		OpenGraph.configureOpenGraph(
 			customImage = "true",
@@ -1969,11 +1978,7 @@ definition {
 			navTab = "Documents and Media",
 			uploadFileName = "Document_2.jpg");
 
-		Pause(locator1 = "1000");
-
-		AssertVisible(
-			key_imageName = "Document_2.jpg",
-			locator1 = "SitePagesEditPage#PREVIEW_IMAGE");
+		OpenGraph.viewPreviewImage(imageName = "Document_2.jpg");
 
 		Navigator.openSitePage(
 			pageName = "Test Page",
@@ -1990,31 +1995,28 @@ definition {
 			specificURL = "http://localhost:9080",
 			userEmailAddress = "test@liferay.com");
 
-		Navigator.openSitePage(
+		Navigator.openToGroupPagesPortlet(
 			baseURL = "http://localhost:9080",
-			pageName = "Test Page",
-			siteName = "Remote Site");
+			portlet = "Open Graph",
+			remoteStaging = "true",
+			siteURLKey = "remote-site");
 
-		ProductMenu.gotoPortlet(
-			category = "Configuration",
-			portlet = "Site Settings");
+		OpenGraph.viewPreviewImage(imageName = "Document_2.jpg");
 
-		Click(
-			key_itemName = "Pages",
-			locator1 = "ListGroupItem#ITEM_TEXT");
+		var groupID = Depot.getGroupID(depotName = "Remote Depot");
 
-		Navigator.gotoNavTab(navTab = "Open Graph");
+		User.logoutPG();
 
-		AssertVisible(
-			key_imageName = "Document_2.jpg",
-			locator1 = "SitePagesEditPage#PREVIEW_IMAGE");
+		Navigator.openSpecificURL(url = "http://localhost:9080/web/remote-site/test-page");
+
+		OpenGraph.viewOpenGraphProperties(ogPropertyList = '''"og:image" content="http://localhost:9080/documents/${groupID}/0/Document_2.jpg''');
 	}
 
 	@description = "This ensures that the image in depot can be replaced and republished in web content when enabling remote staging."
 	@priority = "5"
-	@refactorneeded
-	test EditWebContentImage {
-		property test.name.skip.portal.instance = "DepotRemoteStagingDM#EditWebContentImage";
+	@refactordone
+	test CanEditWCImage {
+		property test.name.skip.portal.instance = "DepotRemoteStagingDM#CanEditWCImage";
 
 		for (var num : list "1,2") {
 			JSONDocument.addFileWithUploadedFile(
@@ -2057,11 +2059,14 @@ definition {
 
 		PortletEntry.publish();
 
+		JSONLayout.addWidgetToPublicLayout(
+			groupName = "Site Name",
+			layoutName = "Test Page",
+			widgetName = "Web Content Display");
+
 		Navigator.openSitePage(
 			pageName = "Test Page",
 			siteName = "Site Name");
-
-		Portlet.addPG(portletName = "Web Content Display");
 
 		WebContentDisplayPortlet.selectWebContent(webContentTitle = "Web Content Title");
 
@@ -2134,11 +2139,176 @@ definition {
 			key_image = "Document_2.jpg");
 	}
 
+	@description = "This ensures that a document pending review cannot be searched for in a staged site when enabling remote staging."
+	@priority = "5"
+	@refactordone
+	test CanNotSearchForPendingDocument {
+		property test.name.skip.portal.instance = "DepotRemoteStagingDM#CanNotSearchForPendingDocument";
+
+		JSONFolder.addFolder(
+			dmFolderDescription = "DM Folder Description",
+			dmFolderName = "DM Folder Name",
+			groupName = "Test Depot Name");
+
+		DepotNavigator.openDepotDocumentsAndMediaAdmin(depotName = "Test Depot Name");
+
+		DMFolder.configureWorkflowCP(
+			dmFolderName = "DM Folder Name",
+			workflowDefinition = "Single Approver",
+			workflowRestriction = "Default Workflow");
+
+		DMNavigator.gotoFolder(dmFolderName = "DM Folder Name");
+
+		DMDocument.addWithWorkflowCP(
+			dmDocumentDescription = "DM Document Description",
+			dmDocumentFile = "Document_1.doc",
+			dmDocumentTitle = "DM Document Title");
+
+		DepotNavigator.switchStagingStatus(stagingItem = "Publish to Live");
+
+		Staging.publishToLive(remoteStaging = "true");
+
+		Navigator.openSitePage(
+			pageName = "Test Page",
+			siteName = "Site Name");
+
+		SearchPortlets.addWidgets(searchPortletList = "Search Results,Search Bar");
+
+		SearchPortlets.searchWidget(searchTerm = "DM Document Title");
+
+		SearchResultPortlet.viewSearchResultNotPresent(
+			searchAssetTitle = "DM Document Title",
+			searchAssetType = "Document");
+	}
+
+	@description = "This ensures that an unavailable structure from a depot can not be viewed in the staged site when enabling remote staging."
+	@priority = "5"
+	@refactordone
+	test CanNotSelectUnavailableStructure {
+		property test.name.skip.portal.instance = "DepotRemoteStagingDM#CanNotSelectUnavailableStructure";
+
+		DepotNavigator.openDepotDocumentsAndMediaAdmin(depotName = "Test Depot Name");
+
+		DMNavigator.gotoDocumentType();
+
+		DMDocumentType.add(
+			dmDocumentTypeDescription = "DM Document Type Description",
+			dmDocumentTypeFieldNames = "Text",
+			dmDocumentTypeName = "DM Document Type Depot");
+
+		DepotNavigator.switchStagingStatus(stagingItem = "Publish to Live");
+
+		Staging.publishToLive(remoteStaging = "true");
+
+		DMNavigator.openDocumentsAndMediaAdmin(siteURLKey = "site-name");
+
+		LexiconEntry.gotoAdd();
+
+		AssertElementNotPresent(
+			key_menuItem = "DM Document Type Depot",
+			locator1 = "MenuItem#ANY_MENU_ITEM");
+	}
+
+	@description = "This ensures that a depot image cannot be found from the disconnected remote staging site."
+	@priority = "4"
+	@refactordone
+	test CanNotViewImageFromDisconnectedSite {
+		property test.name.skip.portal.instance = "DepotRemoteStagingDM#CanNotViewImageFromDisconnectedSite";
+
+		Navigator.openSitePage(
+			pageName = "Test Page",
+			siteName = "Site Name");
+
+		Portlet.addPG(portletName = "Asset Publisher");
+
+		AssetPublisherPortlet.configureManualAssetSelectionPG(depotName = "Test Depot Name");
+
+		JSONDocument.addFileWithUploadedFile(
+			dmDocumentDescription = "DM Document Description",
+			dmDocumentTitle = "Document_2.jpg",
+			groupName = "Test Depot Name",
+			mimeType = "image/jpeg",
+			sourceFileName = "Document_2.jpg");
+
+		JSONDepot.disconnectSite(groupName = "Site Name");
+
+		DepotNavigator.openDepotDocumentsAndMediaAdmin(depotName = "Test Depot Name");
+
+		DepotNavigator.switchStagingStatus(stagingItem = "Publish to Live");
+
+		Staging.publishToLive(remoteStaging = "true");
+
+		Navigator.openSitePage(
+			pageName = "Test Page",
+			siteName = "Site Name");
+
+		AssetPublisherPortlet.configureManualAssetSelectionPG(
+			depotName = "Test Depot Name",
+			noConnectedDepot = "true");
+
+		BlogsNavigator.openToAddEntry(siteURLKey = "site-name");
+
+		BlogsNavigator.gotoSelectFile();
+
+		ItemSelector.configureFilterViaSelectFile(
+			filterBy = "Everywhere",
+			navTab = "Documents and Media");
+
+		AssertElementNotPresent(
+			key_card = "Document_2.jpg",
+			locator1 = "Card#CARD_TITLE");
+	}
+
+	@description = "This ensures that a pending image in depot cannot be found in remote staging site."
+	@priority = "5"
+	@refactordone
+	test CanNotViewPendingImage {
+		property test.name.skip.portal.instance = "DepotRemoteStagingDM#CanNotViewPendingImage";
+
+		JSONFolder.addFolder(
+			dmFolderDescription = "DM Folder Description",
+			dmFolderName = "DM Folder Name",
+			groupName = "Test Depot Name");
+
+		DepotNavigator.openDepotDocumentsAndMediaAdmin(depotName = "Test Depot Name");
+
+		DMFolder.configureWorkflowCP(
+			dmFolderName = "DM Folder Name",
+			workflowDefinition = "Single Approver",
+			workflowRestriction = "Default Workflow");
+
+		DMNavigator.gotoFolder(dmFolderName = "DM Folder Name");
+
+		DMDocument.addWithWorkflowCP(
+			dmDocumentFile = "Document_1.jpg",
+			dmDocumentTitle = "Document_1.jpg");
+
+		DepotNavigator.switchStagingStatus(stagingItem = "Publish to Live");
+
+		Staging.publishToLive(remoteStaging = "true");
+
+		BlogsNavigator.openToAddEntry(siteURLKey = "site-name");
+
+		BlogsNavigator.gotoSelectFile();
+
+		ItemSelector.configureFilterViaSelectFile(
+			filterBy = "Everywhere",
+			navTab = "Documents and Media");
+
+		AssertElementPresent(
+			key_card = "DM Folder Name",
+			locator1 = "Card#CARD_TITLE");
+
+		AssertElementNotPresent(
+			key_card = "Document_1.jpg",
+			locator1 = "Card#CARD_TITLE");
+	}
+
 	@description = "This ensures that a document using a custom document type from a depot can be published in the staging site when enabling remote staging."
 	@priority = "5"
-	@refactorneeded
-	test PublishDMWithDocumentType {
-		property test.name.skip.portal.instance = "DepotRemoteStagingDM#PublishDMWithDocumentType";
+	@refactordone
+	test CanPublishDMWithDocumentType {
+		property test.name.skip.portal.instance = "DepotRemoteStagingDM#CanPublishDMWithDocumentType";
 
 		DepotNavigator.openDepotDocumentsAndMediaAdmin(depotName = "Test Depot Name");
 
@@ -2204,11 +2374,11 @@ definition {
 
 	@description = "This ensures that a folder with a document in depot can be published in AP through widget config manual selection when enabling remote staging."
 	@priority = "5"
-	@refactorneeded
-	test PublishDocumentFolder {
-		property test.name.skip.portal.instance = "DepotRemoteStagingDM#PublishDocumentFolder";
+	@refactordone
+	test CanPublishDocumentFolder {
+		property test.name.skip.portal.instance = "DepotRemoteStagingDM#CanPublishDocumentFolder";
 
-		JSONDocument.addFolder(
+		JSONFolder.addFolder(
 			dmFolderDescription = "DM Folder Description",
 			dmFolderName = "DM Folder Name",
 			groupName = "Test Depot Name");
@@ -2227,13 +2397,14 @@ definition {
 
 		Staging.publishToLive(remoteStaging = "true");
 
-		DMNavigator.openDocumentsAndMediaAdmin(siteURLKey = "site-name");
+		JSONLayout.addWidgetToPublicLayout(
+			groupName = "Site Name",
+			layoutName = "Test Page",
+			widgetName = "Asset Publisher");
 
 		Navigator.openSitePage(
 			pageName = "Test Page",
 			siteName = "Site Name");
-
-		Portlet.addPG(portletName = "Asset Publisher");
 
 		AssetPublisherPortlet.configureManualAssetSelectionPG(
 			assetTitle = "DM Folder Name",
@@ -2271,9 +2442,9 @@ definition {
 
 	@description = "This ensures that the shortcut to an image in the depot can be added and published in the staging site when enabling remote staging."
 	@priority = "5"
-	@refactorneeded
-	test PublishImageShortcut {
-		property test.name.skip.portal.instance = "DepotRemoteStagingDM#PublishImageShortcut";
+	@refactordone
+	test CanPublishImageShortcut {
+		property test.name.skip.portal.instance = "DepotRemoteStagingDM#CanPublishImageShortcut";
 
 		JSONDocument.addFileWithUploadedFile(
 			dmDocumentDescription = "DM Document Description",
@@ -2320,18 +2491,16 @@ definition {
 
 		DMNavigator.gotoDocumentCP(dmDocumentTitle = "Document_1.jpg");
 
-		DMDocument.viewCP(dmDocumentTitle = "Document_1.jpg");
-
-		AssertVisible(
-			key_dmDocumentFileName = "Document_1.jpg",
-			locator1 = "DocumentsAndMediaDocument#DOCUMENT_DETAILS_IMAGE_PREVIEW");
+		DMDocument.viewCP(
+			dmDocumentTitle = "Document_1.jpg",
+			previewImage = "Document_1.jpg");
 	}
 
 	@description = "This ensures that an image with custom field in depot can be published in remote staging site."
 	@priority = "5"
-	@refactorneeded
-	test PublishImageWithCustomField {
-		property test.name.skip.portal.instance = "DepotRemoteStagingDM#PublishImageWithCustomField";
+	@refactordone
+	test CanPublishImageWithCustomField {
+		property test.name.skip.portal.instance = "DepotRemoteStagingDM#CanPublishImageWithCustomField";
 
 		ApplicationsMenu.gotoPortlet(
 			category = "Configuration",
@@ -2382,11 +2551,14 @@ definition {
 
 		Staging.publishToLive(remoteStaging = "true");
 
+		JSONLayout.addWidgetToPublicLayout(
+			groupName = "Site Name",
+			layoutName = "Test Page",
+			widgetName = "Asset Publisher");
+
 		Navigator.openSitePage(
 			pageName = "Test Page",
 			siteName = "Site Name");
-
-		Portlet.addPG(portletName = "Asset Publisher");
 
 		AssetPublisherPortlet.configureManualAssetSelectionPG(
 			assetTitle = "Document_2.jpg",
@@ -2413,16 +2585,14 @@ definition {
 			pageName = "Test Page",
 			siteName = "Remote Site");
 
-		AssertVisible(
-			key_assetTitle = "Document_2.jpg",
-			locator1 = "AP#ASSET_ABSTRACT_TITLE");
+		AssetPublisherPortlet.viewAssetPG(assetTitle = "Document_2.jpg");
 	}
 
 	@description = "This ensures that the latest version of an image in a depot can be published in remote staging site."
 	@priority = "5"
-	@refactorneeded
-	test PublishImageWithLatestVersion {
-		property test.name.skip.portal.instance = "DepotRemoteStagingDM#PublishImageWithLatestVersion";
+	@refactordone
+	test CanPublishImageWithLatestVersion {
+		property test.name.skip.portal.instance = "DepotRemoteStagingDM#CanPublishImageWithLatestVersion";
 
 		JSONDocument.addFileWithUploadedFile(
 			dmDocumentDescription = "DM Document Description",
@@ -2449,11 +2619,14 @@ definition {
 
 		Staging.publishToLive(remoteStaging = "true");
 
+		JSONLayout.addWidgetToPublicLayout(
+			groupName = "Site Name",
+			layoutName = "Test Page",
+			widgetName = "Asset Publisher");
+
 		Navigator.openSitePage(
 			pageName = "Test Page",
 			siteName = "Site Name");
-
-		Portlet.addPG(portletName = "Asset Publisher");
 
 		AssetPublisherPortlet.configureManualAssetSelectionPG(
 			assetTitle = "Document_2.jpg",
@@ -2494,9 +2667,7 @@ definition {
 			pageName = "Test Page",
 			siteName = "Remote Site");
 
-		AssertVisible(
-			key_assetTitle = "Document_2.jpg",
-			locator1 = "AP#ASSET_ABSTRACT_TITLE");
+		AssetPublisherPortlet.viewAssetPG(assetTitle = "Document_2.jpg");
 
 		AssertTextEquals.assertPartialText(
 			key_assetTitle = "Document_2.jpg",
@@ -2506,9 +2677,9 @@ definition {
 
 	@description = "This ensures that the latest version of an image in a depot can be published in blogs when remote staging is enabled."
 	@priority = "5"
-	@refactorneeded
-	test PublishImageWithLatestVersionInBlogs {
-		property test.name.skip.portal.instance = "DepotRemoteStagingDM#PublishImageWithLatestVersionInBlogs";
+	@refactordone
+	test CanPublishImageWithLatestVersionInBlogs {
+		property test.name.skip.portal.instance = "DepotRemoteStagingDM#CanPublishImageWithLatestVersionInBlogs";
 
 		JSONDocument.addFileWithUploadedFile(
 			dmDocumentDescription = "DM Document Description",
@@ -2543,11 +2714,14 @@ definition {
 			imageFileName = "Document_2.jpg",
 			siteURLKey = "site-name");
 
+		JSONLayout.addWidgetToPublicLayout(
+			groupName = "Site Name",
+			layoutName = "Test Page",
+			widgetName = "Blogs");
+
 		Navigator.openSitePage(
 			pageName = "Test Page",
 			siteName = "Site Name");
-
-		Portlet.addPG(portletName = "Blogs");
 
 		Staging.gotoPublishToLive();
 
@@ -2565,16 +2739,14 @@ definition {
 			pageName = "Test Page",
 			siteName = "Remote Site");
 
-		AssertVisible(
-			key_uploadFileName = "Document_2.jpg",
-			locator1 = "BlogsEntry#ENTRY_COVER_IMAGE");
+		BlogsEntry.viewCoverImage(uploadFileName = "Document_2.jpg");
 	}
 
 	@description = "This test covers LPS-124892. It ensures that the thumbnail of a video shortcut in depot can be published through AP when enabling remote staging."
 	@priority = "3"
-	@refactorneeded
-	test PublishVideoShortcutThumbnail {
-		property test.name.skip.portal.instance = "DepotRemoteStagingDM#PublishVideoShortcutThumbnail";
+	@refactordone
+	test CanPublishVideoShortcutThumbnail {
+		property test.name.skip.portal.instance = "DepotRemoteStagingDM#CanPublishVideoShortcutThumbnail";
 
 		DepotNavigator.openDepotDocumentsAndMediaAdmin(depotName = "Test Depot Name");
 
@@ -2586,11 +2758,14 @@ definition {
 
 		Staging.publishToLive(remoteStaging = "true");
 
+		JSONLayout.addWidgetToPublicLayout(
+			groupName = "Site Name",
+			layoutName = "Test Page",
+			widgetName = "Asset Publisher");
+
 		Navigator.openSitePage(
 			pageName = "Test Page",
 			siteName = "Site Name");
-
-		Portlet.addPG(portletName = "Asset Publisher");
 
 		AssetPublisherPortlet.configureManualAssetSelectionPG(
 			assetTitle = "Test YouTube Video Name",
@@ -2601,9 +2776,7 @@ definition {
 			pageName = "Test Page",
 			siteName = "Site Name");
 
-		AssertVisible(
-			key_thumbnailName = "https://i.ytimg.com",
-			locator1 = "AP#ASSET_ABSTRACT_DETAIL_EXTERNAL_VIDEO_THUMBNAIL");
+		AssetPublisherPortlet.viewVideoThumbnail(thumbnailName = "https://i.ytimg.com");
 
 		Navigator.openSitePage(
 			pageName = "Test Page",
@@ -2625,182 +2798,16 @@ definition {
 			pageName = "Test Page",
 			siteName = "Remote Site");
 
-		AssertVisible(
-			key_thumbnailName = "https://i.ytimg.com",
-			locator1 = "AP#ASSET_ABSTRACT_DETAIL_EXTERNAL_VIDEO_THUMBNAIL");
-	}
-
-	@description = "This ensures that the blog small image from a depot can be removed and republished when enabling remote staging."
-	@priority = "5"
-	@refactorneeded
-	test RemoveBlogSmallImage {
-		property test.name.skip.portal.instance = "DepotRemoteStagingDM#RemoveBlogSmallImage";
-
-		JSONDocument.addFileWithUploadedFile(
-			dmDocumentDescription = "DM Document Description",
-			dmDocumentTitle = "Document_1.jpg",
-			groupName = "Test Depot Name",
-			mimeType = "image/jpeg",
-			sourceFileName = "Document_1.jpg");
-
-		DepotNavigator.openDepotDocumentsAndMediaAdmin(depotName = "Test Depot Name");
-
-		DepotNavigator.switchStagingStatus(stagingItem = "Publish to Live");
-
-		Staging.publishToLive(remoteStaging = "true");
-
-		BlogsNavigator.openToAddEntry(siteURLKey = "site-name");
-
-		BlogsEntry.addEntryContent(
-			entryContent = "Blogs Entry Content",
-			entryTitle = "Blogs Entry Title");
-
-		BlogsEntry.addSmallImage(
-			depotName = "Test Depot Name",
-			imageFileName = "Document_1.jpg",
-			navTab = "Documents and Media");
-
-		PortletEntry.publish();
-
-		Navigator.openSitePage(
-			pageName = "Test Page",
-			siteName = "Site Name");
-
-		Portlet.addPG(portletName = "Blogs");
-
-		Staging.gotoPublishToLive();
-
-		Staging.publishToLive(remoteStaging = "true");
-
-		User.logoutPG();
-
-		User.firstLoginUI(
-			password = "test",
-			specificURL = "http://localhost:9080",
-			userEmailAddress = "test@liferay.com");
-
-		Navigator.openSitePage(
-			baseURL = "http://localhost:9080",
-			pageName = "Test Page",
-			siteName = "Remote Site");
-
-		AssertVisible(
-			key_imageFileName = "Document_1.jpg",
-			locator1 = "BlogsEntry#CONTENT_SMALL_IMAGE");
-
-		User.loginPG(
-			nodePort = "8080",
-			password = "test",
-			userEmailAddress = "test@liferay.com");
-
-		Navigator.openSitePage(
-			pageName = "Test Page",
-			siteName = "Site Name");
-
-		BlogsNavigator.gotoEditPG(entryTitle = "Blogs Entry Title");
-
-		BlogsEntry.removeSmallImage(uploadFileName = "Document_1.jpg");
-
-		PortletEntry.publish();
-
-		Staging.gotoPublishToLive();
-
-		Staging.publishToLive(remoteStaging = "true");
-
-		User.logoutPG();
-
-		User.firstLoginUI(
-			password = "test",
-			specificURL = "http://localhost:9080",
-			userEmailAddress = "test@liferay.com");
-
-		Navigator.openSitePage(
-			baseURL = "http://localhost:9080",
-			pageName = "Test Page",
-			siteName = "Remote Site");
-
-		AssertElementNotPresent(
-			key_imageFileName = "Document_1.jpg",
-			locator1 = "BlogsEntry#CONTENT_SMALL_IMAGE");
-	}
-
-	@description = "This ensures that a document pending review cannot be searched for in a staged site when enabling remote staging."
-	@priority = "5"
-	@refactorneeded
-	test SearchForPendingDocument {
-		property test.name.skip.portal.instance = "DepotRemoteStagingDM#SearchForPendingDocument";
-
-		JSONDocument.addFolder(
-			dmFolderDescription = "DM Folder Description",
-			dmFolderName = "DM Folder Name",
-			groupName = "Test Depot Name");
-
-		DepotNavigator.openDepotDocumentsAndMediaAdmin(depotName = "Test Depot Name");
-
-		DMFolder.configureWorkflowCP(
-			dmFolderName = "DM Folder Name",
-			workflowDefinition = "Single Approver",
-			workflowRestriction = "Default Workflow");
-
-		DMNavigator.gotoFolder(dmFolderName = "DM Folder Name");
-
-		DMDocument.addWithWorkflowCP(
-			dmDocumentDescription = "DM Document Description",
-			dmDocumentFile = "Document_1.doc",
-			dmDocumentTitle = "DM Document Title");
-
-		DepotNavigator.switchStagingStatus(stagingItem = "Publish to Live");
-
-		Staging.publishToLive(remoteStaging = "true");
-
-		Navigator.openSitePage(
-			pageName = "Test Page",
-			siteName = "Site Name");
-
-		SearchPortlets.addWidgets(searchPortletList = "Search Results,Search Bar");
-
-		SearchPortlets.searchWidget(searchTerm = "DM Document Title");
-
-		SearchResultPortlet.viewSearchResultNotPresent(
-			searchAssetTitle = "DM Document Title",
-			searchAssetType = "Document");
-	}
-
-	@description = "This ensures that an unavailable structure from a depot can not be viewed in the staged site when enabling remote staging."
-	@priority = "5"
-	@refactorneeded
-	test SelectUnavailableStructure {
-		property test.name.skip.portal.instance = "DepotRemoteStagingDM#SelectUnavailableStructure";
-
-		DepotNavigator.openDepotDocumentsAndMediaAdmin(depotName = "Test Depot Name");
-
-		DMNavigator.gotoDocumentType();
-
-		DMDocumentType.add(
-			dmDocumentTypeDescription = "DM Document Type Description",
-			dmDocumentTypeFieldNames = "Text",
-			dmDocumentTypeName = "DM Document Type Depot");
-
-		DepotNavigator.switchStagingStatus(stagingItem = "Publish to Live");
-
-		Staging.publishToLive(remoteStaging = "true");
-
-		DMNavigator.openDocumentsAndMediaAdmin(siteURLKey = "site-name");
-
-		LexiconEntry.gotoAdd();
-
-		AssertElementNotPresent(
-			key_menuItem = "DM Document Type Depot",
-			locator1 = "MenuItem#ANY_MENU_ITEM");
+		AssetPublisherPortlet.viewVideoThumbnail(thumbnailName = "https://i.ytimg.com");
 	}
 
 	@description = "This ensures that a document can be accessed in a staged site through the item selector after it has been approved when enabling remote staging."
 	@priority = "5"
-	@refactorneeded
-	test ViewApprovedDocument {
-		property test.name.skip.portal.instance = "DepotRemoteStagingDM#ViewApprovedDocument";
+	@refactordone
+	test CanViewApprovedDocument {
+		property test.name.skip.portal.instance = "DepotRemoteStagingDM#CanViewApprovedDocument";
 
-		JSONDocument.addFolder(
+		JSONFolder.addFolder(
 			dmFolderDescription = "DM Folder Description",
 			dmFolderName = "DM Folder Name",
 			groupName = "Test Depot Name");
@@ -2825,11 +2832,14 @@ definition {
 
 		Staging.publishToLive(remoteStaging = "true");
 
+		JSONLayout.addWidgetToPublicLayout(
+			groupName = "Site Name",
+			layoutName = "Test Page",
+			widgetName = "Asset Publisher");
+
 		Navigator.openSitePage(
 			pageName = "Test Page",
 			siteName = "Site Name");
-
-		Portlet.addPG(portletName = "Asset Publisher");
 
 		AssetPublisherPortlet.configureManualAssetSelectionPG(
 			assetTitle = "DM Document Title",
@@ -2877,9 +2887,9 @@ definition {
 
 	@description = "This ensures that a depot image can be displayed in the Blog's item selector after scoped everywhere filter when enabling remote staging."
 	@priority = "5"
-	@refactorneeded
-	test ViewImageAfterScopedFilter {
-		property test.name.skip.portal.instance = "DepotRemoteStagingDM#ViewImageAfterScopedFilter";
+	@refactordone
+	test CanViewImageAfterScopedFilter {
+		property test.name.skip.portal.instance = "DepotRemoteStagingDM#CanViewImageAfterScopedFilter";
 
 		JSONDocument.addFileWithUploadedFile(
 			dmDocumentDescription = "DM Document Description",
@@ -2901,101 +2911,6 @@ definition {
 		ItemSelector.viewEverywhereFilterResults(
 			imageFileName = "Document_2.jpg",
 			navTab = "Documents and Media");
-	}
-
-	@description = "This ensures that a depot image cannot be found from the disconnected remote staging site."
-	@priority = "4"
-	@refactorneeded
-	test ViewImageFromDisconnectedSite {
-		property test.name.skip.portal.instance = "DepotRemoteStagingDM#ViewImageFromDisconnectedSite";
-
-		Navigator.openSitePage(
-			pageName = "Test Page",
-			siteName = "Site Name");
-
-		Portlet.addPG(portletName = "Asset Publisher");
-
-		AssetPublisherPortlet.configureManualAssetSelectionPG(depotName = "Test Depot Name");
-
-		JSONDocument.addFileWithUploadedFile(
-			dmDocumentDescription = "DM Document Description",
-			dmDocumentTitle = "Document_2.jpg",
-			groupName = "Test Depot Name",
-			mimeType = "image/jpeg",
-			sourceFileName = "Document_2.jpg");
-
-		JSONDepot.disconnectSite(groupName = "Site Name");
-
-		DepotNavigator.openDepotDocumentsAndMediaAdmin(depotName = "Test Depot Name");
-
-		DepotNavigator.switchStagingStatus(stagingItem = "Publish to Live");
-
-		Staging.publishToLive(remoteStaging = "true");
-
-		Navigator.openSitePage(
-			pageName = "Test Page",
-			siteName = "Site Name");
-
-		AssetPublisherPortlet.configureManualAssetSelectionPG(
-			depotName = "Test Depot Name",
-			noConnectedDepot = "true");
-
-		BlogsNavigator.openToAddEntry(siteURLKey = "site-name");
-
-		BlogsNavigator.gotoSelectFile();
-
-		ItemSelector.configureFilterViaSelectFile(
-			filterBy = "Everywhere",
-			navTab = "Documents and Media");
-
-		AssertElementNotPresent(
-			key_card = "Document_2.jpg",
-			locator1 = "Card#CARD_TITLE");
-	}
-
-	@description = "This ensures that a pending image in depot cannot be found in remote staging site."
-	@priority = "5"
-	@refactorneeded
-	test ViewPendingImage {
-		property test.name.skip.portal.instance = "DepotRemoteStagingDM#ViewPendingImage";
-
-		JSONDocument.addFolder(
-			dmFolderDescription = "DM Folder Description",
-			dmFolderName = "DM Folder Name",
-			groupName = "Test Depot Name");
-
-		DepotNavigator.openDepotDocumentsAndMediaAdmin(depotName = "Test Depot Name");
-
-		DMFolder.configureWorkflowCP(
-			dmFolderName = "DM Folder Name",
-			workflowDefinition = "Single Approver",
-			workflowRestriction = "Default Workflow");
-
-		DMNavigator.gotoFolder(dmFolderName = "DM Folder Name");
-
-		DMDocument.addWithWorkflowCP(
-			dmDocumentFile = "Document_1.jpg",
-			dmDocumentTitle = "Document_1.jpg");
-
-		DepotNavigator.switchStagingStatus(stagingItem = "Publish to Live");
-
-		Staging.publishToLive(remoteStaging = "true");
-
-		BlogsNavigator.openToAddEntry(siteURLKey = "site-name");
-
-		BlogsNavigator.gotoSelectFile();
-
-		ItemSelector.configureFilterViaSelectFile(
-			filterBy = "Everywhere",
-			navTab = "Documents and Media");
-
-		AssertElementPresent(
-			key_card = "DM Folder Name",
-			locator1 = "Card#CARD_TITLE");
-
-		AssertElementNotPresent(
-			key_card = "Document_1.jpg",
-			locator1 = "Card#CARD_TITLE");
 	}
 
 }

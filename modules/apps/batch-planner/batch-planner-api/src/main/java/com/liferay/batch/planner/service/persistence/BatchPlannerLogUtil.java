@@ -25,10 +25,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.osgi.framework.Bundle;
-import org.osgi.framework.FrameworkUtil;
-import org.osgi.util.tracker.ServiceTracker;
-
 /**
  * The persistence utility for the batch planner log service. This utility wraps <code>com.liferay.batch.planner.service.persistence.impl.BatchPlannerLogPersistenceImpl</code> and provides direct access to the database for CRUD operations. This utility should only be used by the service layer, as it must operate within a transaction. Never access this utility in a JSP, controller, model, or other front-end class.
  *
@@ -124,169 +120,227 @@ public class BatchPlannerLogUtil {
 	}
 
 	/**
-	 * Returns all the batch planner logs where batchPlannerPlanId = &#63;.
+	 * Returns all the batch planner logs where companyId = &#63;.
 	 *
-	 * @param batchPlannerPlanId the batch planner plan ID
+	 * @param companyId the company ID
 	 * @return the matching batch planner logs
 	 */
-	public static List<BatchPlannerLog> findByBatchPlannerPlanId(
-		long batchPlannerPlanId) {
-
-		return getPersistence().findByBatchPlannerPlanId(batchPlannerPlanId);
+	public static List<BatchPlannerLog> findByCompanyId(long companyId) {
+		return getPersistence().findByCompanyId(companyId);
 	}
 
 	/**
-	 * Returns a range of all the batch planner logs where batchPlannerPlanId = &#63;.
+	 * Returns a range of all the batch planner logs where companyId = &#63;.
 	 *
 	 * <p>
 	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>BatchPlannerLogModelImpl</code>.
 	 * </p>
 	 *
-	 * @param batchPlannerPlanId the batch planner plan ID
+	 * @param companyId the company ID
 	 * @param start the lower bound of the range of batch planner logs
 	 * @param end the upper bound of the range of batch planner logs (not inclusive)
 	 * @return the range of matching batch planner logs
 	 */
-	public static List<BatchPlannerLog> findByBatchPlannerPlanId(
-		long batchPlannerPlanId, int start, int end) {
+	public static List<BatchPlannerLog> findByCompanyId(
+		long companyId, int start, int end) {
 
-		return getPersistence().findByBatchPlannerPlanId(
-			batchPlannerPlanId, start, end);
+		return getPersistence().findByCompanyId(companyId, start, end);
 	}
 
 	/**
-	 * Returns an ordered range of all the batch planner logs where batchPlannerPlanId = &#63;.
+	 * Returns an ordered range of all the batch planner logs where companyId = &#63;.
 	 *
 	 * <p>
 	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>BatchPlannerLogModelImpl</code>.
 	 * </p>
 	 *
-	 * @param batchPlannerPlanId the batch planner plan ID
+	 * @param companyId the company ID
 	 * @param start the lower bound of the range of batch planner logs
 	 * @param end the upper bound of the range of batch planner logs (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
 	 * @return the ordered range of matching batch planner logs
 	 */
-	public static List<BatchPlannerLog> findByBatchPlannerPlanId(
-		long batchPlannerPlanId, int start, int end,
+	public static List<BatchPlannerLog> findByCompanyId(
+		long companyId, int start, int end,
 		OrderByComparator<BatchPlannerLog> orderByComparator) {
 
-		return getPersistence().findByBatchPlannerPlanId(
-			batchPlannerPlanId, start, end, orderByComparator);
+		return getPersistence().findByCompanyId(
+			companyId, start, end, orderByComparator);
 	}
 
 	/**
-	 * Returns an ordered range of all the batch planner logs where batchPlannerPlanId = &#63;.
+	 * Returns an ordered range of all the batch planner logs where companyId = &#63;.
 	 *
 	 * <p>
 	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>BatchPlannerLogModelImpl</code>.
 	 * </p>
 	 *
-	 * @param batchPlannerPlanId the batch planner plan ID
+	 * @param companyId the company ID
 	 * @param start the lower bound of the range of batch planner logs
 	 * @param end the upper bound of the range of batch planner logs (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
 	 * @param useFinderCache whether to use the finder cache
 	 * @return the ordered range of matching batch planner logs
 	 */
-	public static List<BatchPlannerLog> findByBatchPlannerPlanId(
-		long batchPlannerPlanId, int start, int end,
+	public static List<BatchPlannerLog> findByCompanyId(
+		long companyId, int start, int end,
 		OrderByComparator<BatchPlannerLog> orderByComparator,
 		boolean useFinderCache) {
 
-		return getPersistence().findByBatchPlannerPlanId(
-			batchPlannerPlanId, start, end, orderByComparator, useFinderCache);
+		return getPersistence().findByCompanyId(
+			companyId, start, end, orderByComparator, useFinderCache);
 	}
 
 	/**
-	 * Returns the first batch planner log in the ordered set where batchPlannerPlanId = &#63;.
+	 * Returns the first batch planner log in the ordered set where companyId = &#63;.
 	 *
-	 * @param batchPlannerPlanId the batch planner plan ID
+	 * @param companyId the company ID
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the first matching batch planner log
 	 * @throws NoSuchLogException if a matching batch planner log could not be found
 	 */
-	public static BatchPlannerLog findByBatchPlannerPlanId_First(
-			long batchPlannerPlanId,
+	public static BatchPlannerLog findByCompanyId_First(
+			long companyId,
 			OrderByComparator<BatchPlannerLog> orderByComparator)
 		throws com.liferay.batch.planner.exception.NoSuchLogException {
 
-		return getPersistence().findByBatchPlannerPlanId_First(
-			batchPlannerPlanId, orderByComparator);
+		return getPersistence().findByCompanyId_First(
+			companyId, orderByComparator);
 	}
 
 	/**
-	 * Returns the first batch planner log in the ordered set where batchPlannerPlanId = &#63;.
+	 * Returns the first batch planner log in the ordered set where companyId = &#63;.
 	 *
-	 * @param batchPlannerPlanId the batch planner plan ID
+	 * @param companyId the company ID
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the first matching batch planner log, or <code>null</code> if a matching batch planner log could not be found
 	 */
-	public static BatchPlannerLog fetchByBatchPlannerPlanId_First(
-		long batchPlannerPlanId,
-		OrderByComparator<BatchPlannerLog> orderByComparator) {
+	public static BatchPlannerLog fetchByCompanyId_First(
+		long companyId, OrderByComparator<BatchPlannerLog> orderByComparator) {
 
-		return getPersistence().fetchByBatchPlannerPlanId_First(
-			batchPlannerPlanId, orderByComparator);
+		return getPersistence().fetchByCompanyId_First(
+			companyId, orderByComparator);
 	}
 
 	/**
-	 * Returns the last batch planner log in the ordered set where batchPlannerPlanId = &#63;.
+	 * Returns the last batch planner log in the ordered set where companyId = &#63;.
 	 *
-	 * @param batchPlannerPlanId the batch planner plan ID
+	 * @param companyId the company ID
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the last matching batch planner log
 	 * @throws NoSuchLogException if a matching batch planner log could not be found
 	 */
-	public static BatchPlannerLog findByBatchPlannerPlanId_Last(
-			long batchPlannerPlanId,
+	public static BatchPlannerLog findByCompanyId_Last(
+			long companyId,
 			OrderByComparator<BatchPlannerLog> orderByComparator)
 		throws com.liferay.batch.planner.exception.NoSuchLogException {
 
-		return getPersistence().findByBatchPlannerPlanId_Last(
-			batchPlannerPlanId, orderByComparator);
+		return getPersistence().findByCompanyId_Last(
+			companyId, orderByComparator);
 	}
 
 	/**
-	 * Returns the last batch planner log in the ordered set where batchPlannerPlanId = &#63;.
+	 * Returns the last batch planner log in the ordered set where companyId = &#63;.
 	 *
-	 * @param batchPlannerPlanId the batch planner plan ID
+	 * @param companyId the company ID
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the last matching batch planner log, or <code>null</code> if a matching batch planner log could not be found
 	 */
-	public static BatchPlannerLog fetchByBatchPlannerPlanId_Last(
-		long batchPlannerPlanId,
-		OrderByComparator<BatchPlannerLog> orderByComparator) {
+	public static BatchPlannerLog fetchByCompanyId_Last(
+		long companyId, OrderByComparator<BatchPlannerLog> orderByComparator) {
 
-		return getPersistence().fetchByBatchPlannerPlanId_Last(
-			batchPlannerPlanId, orderByComparator);
+		return getPersistence().fetchByCompanyId_Last(
+			companyId, orderByComparator);
 	}
 
 	/**
-	 * Returns the batch planner logs before and after the current batch planner log in the ordered set where batchPlannerPlanId = &#63;.
+	 * Returns the batch planner logs before and after the current batch planner log in the ordered set where companyId = &#63;.
 	 *
 	 * @param batchPlannerLogId the primary key of the current batch planner log
-	 * @param batchPlannerPlanId the batch planner plan ID
+	 * @param companyId the company ID
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the previous, current, and next batch planner log
 	 * @throws NoSuchLogException if a batch planner log with the primary key could not be found
 	 */
-	public static BatchPlannerLog[] findByBatchPlannerPlanId_PrevAndNext(
-			long batchPlannerLogId, long batchPlannerPlanId,
+	public static BatchPlannerLog[] findByCompanyId_PrevAndNext(
+			long batchPlannerLogId, long companyId,
 			OrderByComparator<BatchPlannerLog> orderByComparator)
 		throws com.liferay.batch.planner.exception.NoSuchLogException {
 
-		return getPersistence().findByBatchPlannerPlanId_PrevAndNext(
-			batchPlannerLogId, batchPlannerPlanId, orderByComparator);
+		return getPersistence().findByCompanyId_PrevAndNext(
+			batchPlannerLogId, companyId, orderByComparator);
 	}
 
 	/**
-	 * Removes all the batch planner logs where batchPlannerPlanId = &#63; from the database.
+	 * Removes all the batch planner logs where companyId = &#63; from the database.
+	 *
+	 * @param companyId the company ID
+	 */
+	public static void removeByCompanyId(long companyId) {
+		getPersistence().removeByCompanyId(companyId);
+	}
+
+	/**
+	 * Returns the number of batch planner logs where companyId = &#63;.
+	 *
+	 * @param companyId the company ID
+	 * @return the number of matching batch planner logs
+	 */
+	public static int countByCompanyId(long companyId) {
+		return getPersistence().countByCompanyId(companyId);
+	}
+
+	/**
+	 * Returns the batch planner log where batchPlannerPlanId = &#63; or throws a <code>NoSuchLogException</code> if it could not be found.
 	 *
 	 * @param batchPlannerPlanId the batch planner plan ID
+	 * @return the matching batch planner log
+	 * @throws NoSuchLogException if a matching batch planner log could not be found
 	 */
-	public static void removeByBatchPlannerPlanId(long batchPlannerPlanId) {
-		getPersistence().removeByBatchPlannerPlanId(batchPlannerPlanId);
+	public static BatchPlannerLog findByBatchPlannerPlanId(
+			long batchPlannerPlanId)
+		throws com.liferay.batch.planner.exception.NoSuchLogException {
+
+		return getPersistence().findByBatchPlannerPlanId(batchPlannerPlanId);
+	}
+
+	/**
+	 * Returns the batch planner log where batchPlannerPlanId = &#63; or returns <code>null</code> if it could not be found. Uses the finder cache.
+	 *
+	 * @param batchPlannerPlanId the batch planner plan ID
+	 * @return the matching batch planner log, or <code>null</code> if a matching batch planner log could not be found
+	 */
+	public static BatchPlannerLog fetchByBatchPlannerPlanId(
+		long batchPlannerPlanId) {
+
+		return getPersistence().fetchByBatchPlannerPlanId(batchPlannerPlanId);
+	}
+
+	/**
+	 * Returns the batch planner log where batchPlannerPlanId = &#63; or returns <code>null</code> if it could not be found, optionally using the finder cache.
+	 *
+	 * @param batchPlannerPlanId the batch planner plan ID
+	 * @param useFinderCache whether to use the finder cache
+	 * @return the matching batch planner log, or <code>null</code> if a matching batch planner log could not be found
+	 */
+	public static BatchPlannerLog fetchByBatchPlannerPlanId(
+		long batchPlannerPlanId, boolean useFinderCache) {
+
+		return getPersistence().fetchByBatchPlannerPlanId(
+			batchPlannerPlanId, useFinderCache);
+	}
+
+	/**
+	 * Removes the batch planner log where batchPlannerPlanId = &#63; from the database.
+	 *
+	 * @param batchPlannerPlanId the batch planner plan ID
+	 * @return the batch planner log that was removed
+	 */
+	public static BatchPlannerLog removeByBatchPlannerPlanId(
+			long batchPlannerPlanId)
+		throws com.liferay.batch.planner.exception.NoSuchLogException {
+
+		return getPersistence().removeByBatchPlannerPlanId(batchPlannerPlanId);
 	}
 
 	/**
@@ -674,27 +728,9 @@ public class BatchPlannerLogUtil {
 	}
 
 	public static BatchPlannerLogPersistence getPersistence() {
-		return _serviceTracker.getService();
+		return _persistence;
 	}
 
-	private static ServiceTracker
-		<BatchPlannerLogPersistence, BatchPlannerLogPersistence>
-			_serviceTracker;
-
-	static {
-		Bundle bundle = FrameworkUtil.getBundle(
-			BatchPlannerLogPersistence.class);
-
-		ServiceTracker<BatchPlannerLogPersistence, BatchPlannerLogPersistence>
-			serviceTracker =
-				new ServiceTracker
-					<BatchPlannerLogPersistence, BatchPlannerLogPersistence>(
-						bundle.getBundleContext(),
-						BatchPlannerLogPersistence.class, null);
-
-		serviceTracker.open();
-
-		_serviceTracker = serviceTracker;
-	}
+	private static volatile BatchPlannerLogPersistence _persistence;
 
 }

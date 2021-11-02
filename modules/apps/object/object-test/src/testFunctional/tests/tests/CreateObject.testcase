@@ -22,6 +22,34 @@ definition {
 		}
 	}
 
+	@description = "LPS-135390 - Verify it is possible to view and access the Object Admin portlet with the Access in Control Panel permission"
+	@ignore = "Test Stub"
+	@priority = "4"
+	test CanAccessObjectAdminWithAccessPermission {
+
+		// TODO LPS-141598 CanAccessObjectAdminWithAccessPermission pending implementation
+
+	}
+
+	@description = "LPS-135397 - Verify if it's possible to add a Block"
+	@ignore = "Test Stub"
+	@priority = "5"
+	test CanAddBlock {
+		property portal.acceptance = "true";
+
+		// TODO LPS-141504 CanAddBlock pending implementation
+
+	}
+
+	@description = "LPS-135397 - Verify if it's possible to add Entries with Custom Layout Created"
+	@ignore = "Test Stub"
+	@priority = "4"
+	test CanAddEntriesWithCustomLayout {
+
+		// TODO LPS-141515 CanAddEntriesWithCustomLayout pending implementation
+
+	}
+
 	@description = "LPS-135635 - Verify it is possible to add a field after the Object is published and submit entries to it"
 	@ignore = "Test Stub"
 	@priority = "5"
@@ -29,6 +57,92 @@ definition {
 		property portal.acceptance = "true";
 
 		// TODO LPS-138853 CanAddFieldAndViewEntriesAfterPublished pending implementation
+
+	}
+
+	@description = "LPS-135397 - Verify if it's possible to add a Field for the Block with one column"
+	@ignore = "Test Stub"
+	@priority = "4"
+	test CanAddFieldForBlockOneColumn {
+
+		// TODO LPS-141506 CanAddFieldForBlockOneColumn pending implementation
+
+	}
+
+	@description = "LPS-135397 - Verify if it's possible to add a Field for the Block with three columns"
+	@ignore = "Test Stub"
+	@priority = "4"
+	test CanAddFieldForBlockThreeColumns {
+
+		// TODO LPS-141508 CanAddFieldForBlockThreeColumns pending implementation
+
+	}
+
+	@description = "LPS-135397 - Verify if it's possible to add a Field for the Block with two columns"
+	@ignore = "Test Stub"
+	@priority = "4"
+	test CanAddFieldForBlockTwoColumns {
+
+		// TODO LPS-141507 CanAddFieldForBlockTwoColumns pending implementation
+
+	}
+
+	@description = "LPS-135397 - Verify if it's possible to add a Tab with Fields Type"
+	@ignore = "Test Stub"
+	@priority = "5"
+	test CanAddFieldTab {
+		property portal.acceptance = "true";
+
+		// TODO LPS-141502 CanAddFieldTab pending implementation
+
+	}
+
+	@description = "LPS-139803 - Verify it is possible to add a Object Entry Title Field"
+	@ignore = "Test Stub"
+	@priority = "5"
+	test CanAddObjectEntryTitleField {
+		property portal.acceptance = "true";
+
+		// TODO LPS-141609 CanAddObjectEntryTitleField pending implementation
+
+	}
+
+	@description = "LPS-135390 - Verify it is possible to add an Object with the Add Object Definition permission"
+	@ignore = "Test Stub"
+	@priority = "4"
+	test CanAddObjectWithAddPermission {
+
+		// TODO LPS-141600 CanAddObjectWithAddPermission pending implementation
+
+	}
+
+	@description = "LPS-135400 - Verify it is possible to add a relation with an entry through the Relationship field"
+	@ignore = "Test Stub"
+	@priority = "5"
+	test CanAddRelationOnRelationshipField {
+		property portal.acceptance = "true";
+
+		// TODO LPS-141652 CanAddRelationOnRelationshipField pending implementation
+
+	}
+
+	@description = "LPS-135400 - Verify it is possible to add many relations through the Relationship tab"
+	@ignore = "Test Stub"
+	@priority = "5"
+	test CanAddRelationOnRelationshipTab {
+		property portal.acceptance = "true";
+
+		// TODO LPS-141653 CanAddRelationOnRelationshipTab pending implementation
+
+	}
+
+	@description = "LPS-135401 - Verify that it is possible to add Relationship tab on both objects"
+	@ignore = "Test Stub"
+	@priority = "5"
+	test CanAddRelationshipTabBothObjectsManyToMany {
+		property portal.acceptance = "true";
+
+		// TODO LPS-141660 CanAddRelationshipTabBothObjectsManyToMany pending implementation
 
 	}
 
@@ -61,7 +175,7 @@ definition {
 
 		ObjectAdmin.openObjectAdmin();
 
-		ObjectPortlet.selectCustomObject(name = "CustomObject");
+		ObjectPortlet.selectCustomObject(label = "Custom Object");
 
 		ObjectAdmin.goToFieldsTab();
 
@@ -77,7 +191,71 @@ definition {
 
 		Button.clickCancel();
 
-		ObjectAdmin.assertObjectFieldNotPresent(fieldName = "customField");
+		ObjectAdmin.assertObjectFieldNotPresent(fieldLabel = "Custom Field");
+	}
+
+	@description = "LPS-135400 - Verify it is possible to cancel the creation of a Relationship"
+	@priority = "4"
+	test CanCancelRelationshipCreation {
+		ObjectAdmin.addObjectViaAPI(
+			labelName = "Custom Object",
+			objectName = "CustomObject",
+			pluralLabelName = "Custom Objects");
+
+		ObjectAdmin.openObjectAdmin();
+
+		ObjectPortlet.selectCustomObject(label = "Custom Object");
+
+		ObjectAdmin.gotoRelationshipsTab();
+
+		LexiconEntry.gotoAdd();
+
+		Type(
+			locator1 = "ObjectAdmin#LABEL_OBJECT_RELATIONSHIP",
+			value1 = "Custom Relationship");
+
+		Click(locator1 = "ObjectAdmin#RELATIONSHIPS_TYPE_FORM");
+
+		Click(
+			key_type = "One to Many",
+			locator1 = "ObjectAdmin#SELECT_RELATIONSHIPS_TYPE_OPTION");
+
+		Select(
+			locator1 = "ObjectAdmin#SELECT_OBJECT_RELATIONSHIP",
+			value1 = "CustomObject");
+
+		Button.clickCancel();
+
+		AssertTextEquals(
+			locator1 = "Message#EMPTY_INFO",
+			value1 = "No items were found.");
+	}
+
+	@description = "LPS-135397 - Verify it is possible to Cancel the update of a Layout"
+	@ignore = "Test Stub"
+	@priority = "4"
+	test CanCancelUpdateLayout {
+
+		// TODO LPS-141519 CanCancelUpdateLayout pending implementation
+
+	}
+
+	@description = "LPS-135551 - Verify it is possible to change the Panel Category Key after publishing the Object"
+	@ignore = "Test Stub"
+	@priority = "4"
+	test CanChangePanelCategoryKeyAfterPublished {
+
+		// TODO LPS-141648 CanChangePanelCategoryKeyAfterPublished pending implementation
+
+	}
+
+	@description = "LPS-135397 - Verify it is possible to collapse and expand a block of fields"
+	@ignore = "Test Stub"
+	@priority = "4"
+	test CanCollapseAndExpandBlock {
+
+		// TODO LPS-141525 CanCollapseAndExpandBlock pending implementation
+
 	}
 
 	@description = "LPS-135549 - Verify it is possible to create a BigDecimal field"
@@ -90,7 +268,7 @@ definition {
 
 		ObjectAdmin.openObjectAdmin();
 
-		ObjectPortlet.selectCustomObject(name = "CustomObject");
+		ObjectPortlet.selectCustomObject(label = "Custom Object");
 
 		ObjectAdmin.goToFieldsTab();
 
@@ -101,7 +279,7 @@ definition {
 		Refresh();
 
 		ObjectAdmin.assertObjectField(
-			fieldName = "customField",
+			fieldLabel = "Custom Field",
 			fieldType = "BigDecimal");
 	}
 
@@ -115,7 +293,7 @@ definition {
 
 		ObjectAdmin.openObjectAdmin();
 
-		ObjectPortlet.selectCustomObject(name = "CustomObject");
+		ObjectPortlet.selectCustomObject(label = "Custom Object");
 
 		ObjectAdmin.goToFieldsTab();
 
@@ -126,7 +304,7 @@ definition {
 		Refresh();
 
 		ObjectAdmin.assertObjectField(
-			fieldName = "customField",
+			fieldLabel = "Custom Field",
 			fieldType = "Boolean");
 	}
 
@@ -143,7 +321,7 @@ definition {
 
 		ObjectAdmin.saveCustomObject();
 
-		CreateObject.assertCustomObject(labelName = "CustomObject");
+		CreateObject.assertCustomObject(labelName = "Custom Object");
 	}
 
 	@description = "LPS-135549 - Verify it is possible to create a Date field"
@@ -156,7 +334,7 @@ definition {
 
 		ObjectAdmin.openObjectAdmin();
 
-		ObjectPortlet.selectCustomObject(name = "CustomObject");
+		ObjectPortlet.selectCustomObject(label = "Custom Object");
 
 		ObjectAdmin.goToFieldsTab();
 
@@ -167,7 +345,7 @@ definition {
 		Refresh();
 
 		ObjectAdmin.assertObjectField(
-			fieldName = "customField",
+			fieldLabel = "Custom Field",
 			fieldType = "Date");
 	}
 
@@ -181,7 +359,7 @@ definition {
 
 		ObjectAdmin.openObjectAdmin();
 
-		ObjectPortlet.selectCustomObject(name = "CustomObject");
+		ObjectPortlet.selectCustomObject(label = "Custom Object");
 
 		ObjectAdmin.goToFieldsTab();
 
@@ -192,7 +370,7 @@ definition {
 		Refresh();
 
 		ObjectAdmin.assertObjectField(
-			fieldName = "customField",
+			fieldLabel = "Custom Field",
 			fieldType = "Double");
 	}
 
@@ -206,7 +384,7 @@ definition {
 
 		ObjectAdmin.openObjectAdmin();
 
-		ObjectPortlet.selectCustomObject(name = "CustomObject");
+		ObjectPortlet.selectCustomObject(label = "Custom Object");
 
 		ObjectAdmin.goToFieldsTab();
 
@@ -217,8 +395,18 @@ definition {
 		Refresh();
 
 		ObjectAdmin.assertObjectField(
-			fieldName = "customField",
+			fieldLabel = "Custom Field",
 			fieldType = "Integer");
+	}
+
+	@description = "LPS-135397 - Verify if it's possible to create a Layout for an Object"
+	@ignore = "Test Stub"
+	@priority = "5"
+	test CanCreateLayout {
+		property portal.acceptance = "true";
+
+		// TODO LPS-141500 CanCreateLayout pending implementation
+
 	}
 
 	@description = "LPS-135549 - Verify it is possible to create a Long field"
@@ -233,7 +421,7 @@ definition {
 
 		ObjectAdmin.openObjectAdmin();
 
-		ObjectPortlet.selectCustomObject(name = "CustomObject");
+		ObjectPortlet.selectCustomObject(label = "Custom Object");
 
 		ObjectAdmin.goToFieldsTab();
 
@@ -242,8 +430,87 @@ definition {
 			fieldType = "Long");
 
 		ObjectAdmin.assertObjectField(
-			fieldName = "customField",
+			fieldLabel = "Custom Field",
 			fieldType = "Long");
+	}
+
+	@description = "LPS-135401 - Verify it is possible to create a Many to Many Relationship"
+	@ignore = "Test Stub"
+	@priority = "5"
+	test CanCreateManyToManyRelationship {
+		property portal.acceptance = "true";
+
+		// TODO LPS-141658 CanCreateManyToManyRelationship pending implementation
+
+	}
+
+	@description = "LPS-135400 - Verify it is possible to create a One to Many Relationship"
+	@priority = "4"
+	test CanCreateOneToManyRelationship {
+		ObjectAdmin.addObjectViaAPI(
+			labelName = "Custom Object A",
+			objectName = "CustomObjectA",
+			pluralLabelName = "Custom Objects");
+
+		ObjectAdmin.addObjectViaAPI(
+			labelName = "Custom Object B",
+			objectName = "CustomObjectB",
+			pluralLabelName = "Custom Objects");
+
+		ObjectAdmin.openObjectAdmin();
+
+		ObjectPortlet.selectCustomObject(label = "Custom Object A");
+
+		ObjectAdmin.gotoRelationshipsTab();
+
+		ObjectAdmin.addObjectRelationshipViaUI(
+			label = "Relationship",
+			object = "CustomObjectB",
+			type = "One to Many");
+
+		AssertElementPresent(
+			key_label = "Relationship",
+			locator1 = "ObjectAdmin#RELATIONSHIP_LABEL");
+	}
+
+	@description = "LPS-136595 - Verify it is possible to create a Picklist field"
+	@priority = "4"
+	test CanCreatePicklistField {
+		Picklist.addPicklistViaAPI(picklistName = "Custom Picklist");
+
+		Picklist.addPicklistItemViaAPI(
+			itemKey = "0",
+			itemName = "Item Test",
+			picklistName = "Custom Picklist");
+
+		ObjectAdmin.addObjectViaAPI(
+			labelName = "Custom Object",
+			objectName = "CustomObject",
+			pluralLabelName = "Custom Objects");
+
+		ObjectAdmin.openObjectAdmin();
+
+		ObjectAdmin.selectKebabMenuOption(kebabOption = "View");
+
+		ObjectAdmin.goToFieldsTab();
+
+		ObjectAdmin.addObjectFieldViaUI(
+			fieldLabel = "Field Picklist",
+			fieldPicklist = "Custom Picklist",
+			fieldType = "Picklist");
+
+		ObjectAdmin.assertObjectField(
+			fieldLabel = "Field Picklist",
+			fieldType = "String");
+	}
+
+	@description = "LPS-135402 - Verify it is possible to create a One to Many Relationship with itself"
+	@ignore = "Test Stub"
+	@priority = "4"
+	test CanCreateSelfOneToManyRelationship {
+
+		// TODO LPS-141655 CanCreateSelfOneToManyRelationship pending implementation
+
 	}
 
 	@description = "LPS-135549 - Verify it is possible to create a String field"
@@ -258,7 +525,7 @@ definition {
 
 		ObjectAdmin.openObjectAdmin();
 
-		ObjectPortlet.selectCustomObject(name = "CustomObject");
+		ObjectPortlet.selectCustomObject(label = "Custom Object");
 
 		ObjectAdmin.goToFieldsTab();
 
@@ -269,8 +536,169 @@ definition {
 		Refresh();
 
 		ObjectAdmin.assertObjectField(
-			fieldName = "customField",
+			fieldLabel = "Custom Field",
 			fieldType = "String");
+	}
+
+	@description = "LPS-137879 - Verify it is not possible to delete a Custom Object field after the Object is published"
+	@ignore = "Test Stub"
+	@priority = "4"
+	test CanDeleteCustomObjectFieldAfterPublished {
+
+		// TODO LPS-141644 CanDeleteCustomObjectFieldAfterPublished pending implementation
+
+	}
+
+	@description = "LPS-137879 - Verify it is possible to delete a Custom Object field before the Object is published"
+	@ignore = "Test Stub"
+	@priority = "4"
+	test CanDeleteCustomObjectFieldBeforePublished {
+
+		// TODO LPS-141643 CanDeleteCustomObjectFieldBeforePublished pending implementation
+
+	}
+
+	@description = "LPS-135397 - Verify if it's possible to delete a Field"
+	@ignore = "Test Stub"
+	@priority = "5"
+	test CanDeleteFieldOnLayout {
+		property portal.acceptance = "true";
+
+		// TODO LPS-141510 CanDeleteFieldOnLayout pending implementation
+
+	}
+
+	@description = "LPS-135397 - Verify if it's possible to delete a Layout for an Object"
+	@ignore = "Test Stub"
+	@priority = "5"
+	test CanDeleteLayout {
+		property portal.acceptance = "true";
+
+		// TODO LPS-141501 CanDeleteLayout pending implementation
+
+	}
+
+	@description = "LPS-135390 - Verify it is possible to delete an Object with the Delete permission"
+	@ignore = "Test Stub"
+	@priority = "4"
+	test CanDeleteObjectWithDeletePermission {
+
+		// TODO LPS-141604 CanDeleteObjectWithDeletePermission pending implementation
+
+	}
+
+	@description = "LPS-135401 - Verify that it is possible to delete a relation with an entry on the Relationship tab"
+	@ignore = "Test Stub"
+	@priority = "5"
+	test CanDeleteRelationOnRelationshipTab {
+		property portal.acceptance = "true";
+
+		// TODO LPS-141661 CanDeleteRelationOnRelationshipTab pending implementation
+
+	}
+
+	@description = "LPS-135400 - Verify it is possible to delete a Relationship"
+	@priority = "5"
+	test CanDeleteRelationship {
+		ObjectAdmin.addObjectViaAPI(
+			labelName = "Custom Object",
+			objectName = "CustomObject",
+			pluralLabelName = "Custom Objects");
+
+		ObjectAdmin.addObjectRelationshipViaAPI(
+			objectName_1 = "CustomObject",
+			objectName_2 = "CustomObject",
+			relationshipLabel = "Relationship",
+			relationshipName = "relationship",
+			relationshipType = "oneToMany");
+
+		ObjectAdmin.openObjectAdmin();
+
+		ObjectAdmin.selectKebabMenuOption(kebabOption = "View");
+
+		ObjectAdmin.gotoRelationshipsTab();
+
+		ObjectAdmin.selectKebabMenuOption(kebabOption = "Delete");
+
+		AssertTextEquals(
+			locator1 = "Message#EMPTY_INFO",
+			value1 = "No items were found.");
+	}
+
+	@description = "LPS-135649 - Verify it is possible to distinguish between Custom Object entries on My Workflow Tasks"
+	@ignore = "Test Stub"
+	@priority = "4"
+	test CanDistinguishBetweenObjectEntriesOnMyWorkflowTasks {
+
+		// TODO LPS-141634 CanDistinguishBetweenObjectEntriesOnMyWorkflowTasks pending implementation
+
+	}
+
+	@description = "LPS-135390 - Verify it is not possible to view and access the Object Admin portlet without the Access in Control Panel permission"
+	@ignore = "Test Stub"
+	@priority = "5"
+	test CannotAccessObjectAdminWithoutAccessPermission {
+		property portal.acceptance = "true";
+
+		// TODO LPS-141597 CannotAccessObjectAdminWithoutAccessPermission pending implementation
+
+	}
+
+	@description = "LPS-135390 - Verify it is not possible to add an Object without the Add Object Definition permission"
+	@ignore = "Test Stub"
+	@priority = "5"
+	test CannotAddObjectWithoutAddPermission {
+		property portal.acceptance = "true";
+
+		// TODO LPS-141599 CannotAddObjectWithoutAddPermission pending implementation
+
+	}
+
+	@description = "LPS-135397 - Verify if it's not possible to add a Tab with Relationship Type in an Object without Relashionsip"
+	@ignore = "Test Stub"
+	@priority = "4"
+	test CannotAddRelationshibTabWithoutRelationship {
+
+		// TODO LPS-141503 CannotAddRelationshibTabWithoutRelationship pending implementation
+
+	}
+
+	@description = "LPS-135397 - Verify that the Relationship tab cannot be added first"
+	@ignore = "Test Stub"
+	@priority = "4"
+	test CannotAddRelationshipTabFirst {
+
+		// TODO LPS-141521 CannotAddRelationshipTabFirst pending implementation
+
+	}
+
+	@description = "LPS-135549 - Verify that it is not possible to create a Field with a duplicated Field Name"
+	@priority = "4"
+	test CannotCreateDuplicatedFieldName {
+		ObjectAdmin.addObjectViaAPI(
+			labelName = "Custom Object",
+			objectName = "CustomObject",
+			pluralLabelName = "Custom Objects");
+
+		ObjectAdmin.addObjectFieldViaAPI(
+			fieldLabelName = "Custom Field",
+			fieldName = "customObjectField",
+			fieldType = "String",
+			isRequired = "false",
+			objectName = "CustomObject");
+
+		ObjectAdmin.openObjectAdmin();
+
+		ObjectPortlet.selectCustomObject(label = "Custom Object");
+
+		ObjectAdmin.goToFieldsTab();
+
+		ObjectAdmin.addObjectFieldViaUI(
+			fieldLabel = "Custom Field",
+			fieldName = "customObjectField",
+			fieldType = "String");
+
+		ObjectAdmin.viewFieldErrorMessage(message = "Duplicate name customObjectField");
 	}
 
 	@description = "LPS-135549 - Verify that it is not possible to create a Object with a duplicated Object Name"
@@ -295,6 +723,84 @@ definition {
 		ObjectAdmin.viewFieldErrorMessage(message = "Duplicate name C_CustomObject");
 	}
 
+	@description = "LPS-135400 - Verify it is not possible to create duplicated Relationship name"
+	@priority = "4"
+	test CannotCreateDuplicatedRelationshipName {
+		ObjectAdmin.addObjectViaAPI(
+			labelName = "Custom Object",
+			objectName = "CustomObject",
+			pluralLabelName = "Custom Objects");
+
+		ObjectAdmin.addObjectRelationshipViaAPI(
+			objectName_1 = "CustomObject",
+			objectName_2 = "CustomObject",
+			relationshipLabel = "Relationship",
+			relationshipName = "relationship",
+			relationshipType = "oneToMany");
+
+		ObjectAdmin.openObjectAdmin();
+
+		ObjectAdmin.selectKebabMenuOption(kebabOption = "View");
+
+		ObjectAdmin.gotoRelationshipsTab();
+
+		ObjectAdmin.addObjectRelationshipViaUI(label = "Relationship");
+
+		AssertTextEquals(
+			locator1 = "Message#ERROR",
+			value1 = "Duplicate name relationship");
+	}
+
+	@description = "LPS-135390 - Verify it is not possible to delete an Object without the Delete permission"
+	@ignore = "Test Stub"
+	@priority = "4"
+	test CannotDeleteObjectWithoutDeletePermission {
+
+		// TODO LPS-141603 CannotDeleteObjectWithoutDeletePermission pending implementation
+
+	}
+
+	@description = "LPS-139160 - Verify it is not possible to delete an Object via API after it was published"
+	@ignore = "Test Stub"
+	@priority = "4"
+	test CannotDeletePublishedObjectViaApi {
+
+		// TODO LPS-141680 CannotDeletePublishedObjectViaApi pending implementation
+
+	}
+
+	@description = "LPS-135400 - Verify it is not possible to delete a Relationship when an Object is published"
+	@priority = "5"
+	test CannotDeleteRelationshipWhenPublished {
+		property portal.acceptance = "true";
+
+		ObjectAdmin.addObjectViaAPI(
+			labelName = "Custom Object",
+			objectName = "CustomObject",
+			pluralLabelName = "Custom Objects");
+
+		ObjectAdmin.addObjectRelationshipViaAPI(
+			objectName_1 = "CustomObject",
+			objectName_2 = "CustomObject",
+			relationshipLabel = "Relationship",
+			relationshipName = "relationship",
+			relationshipType = "oneToMany");
+
+		ObjectAdmin.publishObjectViaAPI(objectName = "CustomObject");
+
+		ObjectAdmin.openObjectAdmin();
+
+		ObjectPortlet.selectCustomObject(label = "Custom Object");
+
+		ObjectAdmin.gotoRelationshipsTab();
+
+		AssertElementNotPresent(locator1 = "ObjectAdmin#KEBAB_MENU");
+
+		AssertElementNotPresent(
+			key_kebabOption = "Delete",
+			locator1 = "ObjectAdmin#KEBAB_MENU_OPTION");
+	}
+
 	@description = "LPS-135549 - Verify it is not possible to leave the Field Name field blank"
 	@priority = "4"
 	test CannotLeaveFieldNameBlank {
@@ -307,7 +813,7 @@ definition {
 
 		ObjectAdmin.openObjectAdmin();
 
-		ObjectPortlet.selectCustomObject(name = "CustomObject");
+		ObjectPortlet.selectCustomObject(label = "Custom Object");
 
 		ObjectAdmin.goToFieldsTab();
 
@@ -331,7 +837,7 @@ definition {
 
 		ObjectAdmin.openObjectAdmin();
 
-		ObjectPortlet.selectCustomObject(name = "CustomObject");
+		ObjectPortlet.selectCustomObject(label = "Custom Object");
 
 		ObjectAdmin.goToFieldsTab();
 
@@ -340,7 +846,7 @@ definition {
 			fieldName = "customField",
 			fieldType = "String");
 
-		ObjectAdmin.viewFieldErrorMessage(message = "Label is null for locale English (United States)");
+		ObjectAdmin.assertLabelFieldRequired();
 	}
 
 	@description = "LPS-135549 - Verify it is not possible to leave the Object Label field blank"
@@ -360,7 +866,7 @@ definition {
 
 		ObjectAdmin.saveCustomObject();
 
-		Alert.viewErrorMessage(errorMessage = "Label is null for locale English (United States)");
+		ObjectAdmin.assertObjectLabelFieldRequired();
 	}
 
 	@description = "LPS-135549 - Verify it is not possible to leave the Object Name field blank"
@@ -369,10 +875,101 @@ definition {
 		ObjectAdmin.openObjectAdmin();
 
 		ObjectAdmin.addNewObject(
-			fieldLabelName = "",
+			fieldLabelName = "Custom Field",
+			fieldName = "",
 			pluralLabelName = "Custom Fields");
 
-		ObjectAdmin.viewFieldErrorMessage(message = "Name is null");
+		ObjectAdmin.saveCustomObject();
+
+		ObjectAdmin.assertObjectNameFieldRequired();
+	}
+
+	@description = "LPS-136595 - Verify it is not possible to leave the Picklist field empty when creating an Object Picklist field"
+	@ignore = "Test Stub"
+	@priority = "4"
+	test CannotLeavePicklistFieldEmpty {
+
+		// TODO LPS-141595 CannotLeavePicklistFieldEmpty pending implementation
+
+	}
+
+	@description = "LPS-135400 - Verify it is not possible to leave the Relationship Name blank"
+	@priority = "4"
+	test CannotLeaveRelationshipNameBlank {
+		ObjectAdmin.addObjectViaAPI(
+			labelName = "Custom Object",
+			objectName = "CustomObject",
+			pluralLabelName = "Custom Objects");
+
+		ObjectAdmin.openObjectAdmin();
+
+		ObjectAdmin.selectKebabMenuOption(kebabOption = "View");
+
+		ObjectAdmin.gotoRelationshipsTab();
+
+		LexiconEntry.gotoAdd();
+
+		Click(locator1 = "ObjectAdmin#RELATIONSHIPS_TYPE_FORM");
+
+		Click(
+			key_type = "One to Many",
+			locator1 = "ObjectAdmin#SELECT_RELATIONSHIPS_TYPE_OPTION");
+
+		Select(
+			locator1 = "ObjectAdmin#SELECT_OBJECT_RELATIONSHIP",
+			value1 = "CustomObject");
+
+		Button.clickSave();
+
+		AssertTextEquals(
+			locator1 = "Message#ERROR",
+			value1 = "Name is null");
+	}
+
+	@description = "LPS-135400 - Verify it is not possible to leave the Relationship Object blank"
+	@priority = "4"
+	test CannotLeaveRelationshipObjectBlank {
+		ObjectAdmin.addObjectViaAPI(
+			labelName = "Custom Object",
+			objectName = "CustomObject",
+			pluralLabelName = "Custom Objects");
+
+		ObjectAdmin.openObjectAdmin();
+
+		ObjectPortlet.selectCustomObject(label = "Custom Object");
+
+		ObjectAdmin.gotoRelationshipsTab();
+
+		ObjectAdmin.addObjectRelationshipViaUI(
+			label = "Custom Relationship",
+			type = "One to Many");
+
+		AssertTextEquals(
+			locator1 = "Message#ERROR",
+			value1 = "No ObjectDefinition exists with the primary key 0");
+	}
+
+	@description = "LPS-135400 - Verify it is not possible to leave the Relationship Type blank"
+	@priority = "4"
+	test CannotLeaveRelationshipTypeBlank {
+		ObjectAdmin.addObjectViaAPI(
+			labelName = "Custom Object",
+			objectName = "CustomObject",
+			pluralLabelName = "Custom Objects");
+
+		ObjectAdmin.openObjectAdmin();
+
+		ObjectAdmin.selectKebabMenuOption(kebabOption = "View");
+
+		ObjectAdmin.gotoRelationshipsTab();
+
+		ObjectAdmin.addObjectRelationshipViaUI(
+			label = "Relationship",
+			object = "CustomObject");
+
+		AssertTextEquals(
+			locator1 = "Message#ERROR",
+			value1 = "Invalid type null");
 	}
 
 	@description = "LPS-135549 - Verify it is not possible to leave the Type field blank"
@@ -387,7 +984,7 @@ definition {
 
 		ObjectAdmin.openObjectAdmin();
 
-		ObjectPortlet.selectCustomObject(name = "CustomObject");
+		ObjectPortlet.selectCustomObject(label = "Custom Object");
 
 		ObjectAdmin.goToFieldsTab();
 
@@ -395,7 +992,16 @@ definition {
 			fieldLabel = "Custom Field",
 			fieldType = "Choose an Option");
 
-		ObjectAdmin.viewFieldErrorMessage(message = "Invalid type null");
+		ObjectAdmin.assertTypeFieldRequired();
+	}
+
+	@description = "LPS-135390 - Verify it is not possible to publish an Object without the Publish Object Definition permission"
+	@ignore = "Test Stub"
+	@priority = "4"
+	test CannotPublishObjectWithouPublishPermission {
+
+		// TODO LPS-141601 CannotPublishObjectWithouPublishPermission pending implementation
+
 	}
 
 	@description = "LPS-135549 - Verify it is not possible to save with the first character of the Object Name in lower case"
@@ -425,7 +1031,7 @@ definition {
 
 		ObjectAdmin.openObjectAdmin();
 
-		ObjectPortlet.selectCustomObject(name = "CustomObject");
+		ObjectPortlet.selectCustomObject(label = "Custom Object");
 
 		ObjectAdmin.goToFieldsTab();
 
@@ -447,7 +1053,7 @@ definition {
 
 		ObjectAdmin.openObjectAdmin();
 
-		ObjectPortlet.selectCustomObject(name = "CustomObject");
+		ObjectPortlet.selectCustomObject(label = "Custom Object");
 
 		ObjectAdmin.goToFieldsTab();
 
@@ -477,13 +1083,121 @@ definition {
 		Alert.viewErrorMessage(errorMessage = "Name must only contain letters and digits");
 	}
 
-	@description = "LPS-135635 - Verify it is not possible to update the Mandatory of a Field after the Object is published"
+	@description = "LPS-135397 - Verify it is not possible to set a layout as default without all the required fields on the first tab"
 	@ignore = "Test Stub"
 	@priority = "4"
+	test CannotSetLayoutDefaultWithoutAllRequiredFieldsOnFirstTab {
+
+		// TODO LPS-141520 CannotSetLayoutDefaultWithoutAllRequiredFieldsOnFirstTab pending implementation
+
+	}
+
+	@description = "LPS-139005 - Verify that is not possible to submit entries in a form with an Object that was inactivated"
+	@priority = "4"
+	test CannotSubmitEntriesInFormAfterObjectInactivated {
+		ObjectAdmin.addObjectViaAPI(
+			labelName = "Custom Object",
+			objectName = "CustomObject",
+			pluralLabelName = "Custom Objects");
+
+		ObjectAdmin.addObjectFieldViaAPI(
+			fieldLabelName = "Custom Field",
+			fieldName = "customObjectField",
+			fieldType = "String",
+			isRequired = "false",
+			objectName = "CustomObject");
+
+		ObjectAdmin.publishObjectViaAPI(objectName = "CustomObject");
+
+		PopulateObjectFormsConfiguration.openForm();
+
+		FormsAdminNavigator.gotoAddForm();
+
+		Form.editName(formName = "Form 1");
+
+		PopulateObjectFormsConfiguration.openFormSettings();
+
+		PopulateObjectFormsConfiguration.selectObject(label = "Object");
+
+		PopulateObjectFormsConfiguration.selectCustomObject(label = "Custom Object");
+
+		Form.gotoAddField(fieldType = "Text");
+
+		PopulateObjectFormsConfiguration.mapFormField(fieldLabelName = "Custom Field");
+
+		Form.publishForm();
+
+		ObjectAdmin.openObjectAdmin();
+
+		ObjectPortlet.selectCustomObject(label = "Custom Object");
+
+		CreateObject.checkToggleInactive();
+
+		CreateObject.saveObject();
+
+		PopulateObjectFormsConfiguration.openForm();
+
+		AssertElementPresent(
+			key_text = "exclamation-full",
+			locator1 = "Icon#ANY");
+
+		MouseOver(
+			key_text = "exclamation-full",
+			locator1 = "Icon#ANY");
+
+		AssertElementPresent(locator1 = "PopulateObjectFormsConfiguration#ALERT_ICON_MESSAGE");
+
+		LexiconEntry.gotoEllipsisMenuItem(menuItem = "Edit");
+
+		FormsAdminNavigator.openPublishURL();
+
+		FormFields.editText(
+			fieldLabel = "Text",
+			fieldName = "Text",
+			fieldValue = "Entry 1");
+
+		AssertClick(
+			locator1 = "Button#MAIN_CONTENT_SUBMIT",
+			value1 = "Submit");
+
+		AssertElementNotPresent(locator1 = "Message#SUCCESS_DISMISSIBLE");
+	}
+
+	@description = "LPS-135400 - Verify it is not possible to submit an entry with a invalid value on the Relationship field"
+	@ignore = "Test Stub"
+	@priority = "4"
+	test CannotSubmitEntryWithInvalidValueOnRelationshipField {
+
+		// TODO LPS-141654 CannotSubmitEntryWithInvalidValueOnRelationshipField pending implementation
+
+	}
+
+	@description = "LPS-135635 - Verify it is not possible to update the Mandatory of a Field after the Object is published"
+	@priority = "4"
 	test CannotUpdateFieldMandatoryAfterPublished {
+		ObjectAdmin.addObjectViaAPI(
+			labelName = "Custom Object",
+			objectName = "CustomObject",
+			pluralLabelName = "Custom Objects");
 
-		// TODO LPS-138857 CannotUpdateFieldMandatoryAfterPublished pending implementation
+		ObjectAdmin.addObjectFieldViaAPI(
+			fieldLabelName = "Custom Field",
+			fieldName = "customObjectField",
+			fieldType = "String",
+			isRequired = "false",
+			objectName = "CustomObject");
 
+		ObjectAdmin.publishObjectViaAPI(objectName = "CustomObject");
+
+		ObjectAdmin.openObjectAdmin();
+
+		ObjectPortlet.selectCustomObject(label = "Custom Object");
+
+		ObjectAdmin.goToFieldsTab();
+
+		ObjectAdmin.goToFieldsDetails(label = "Custom Field");
+
+		AssertElementPresent(locator1 = "ObjectAdmin#OBJECT_FIELDS_MANDATORY_TOGGLE_SWITCH_DISABLED");
 	}
 
 	@description = "LPS-135635 - Verify it is not possible to update the Name of a Field after the Object is published"
@@ -507,11 +1221,11 @@ definition {
 
 		ObjectAdmin.openObjectAdmin();
 
-		ObjectPortlet.selectCustomObject(name = "CustomObject");
+		ObjectPortlet.selectCustomObject(label = "Custom Object");
 
 		ObjectAdmin.goToFieldsTab();
 
-		ObjectAdmin.goToFieldsDetails(fieldName = "customObjectField");
+		ObjectAdmin.goToFieldsDetails(label = "Text");
 
 		CreateObject.assertDisabledFieldName();
 	}
@@ -535,11 +1249,11 @@ definition {
 
 		ObjectAdmin.openObjectAdmin();
 
-		ObjectPortlet.selectCustomObject(name = "CustomObject");
+		ObjectPortlet.selectCustomObject(label = "Custom Object");
 
 		ObjectAdmin.goToFieldsTab();
 
-		ObjectAdmin.goToFieldsDetails(fieldName = "customObjectField");
+		ObjectAdmin.goToFieldsDetails(label = "Text");
 
 		CreateObject.assertDisabledFieldType();
 	}
@@ -558,7 +1272,7 @@ definition {
 
 		ObjectAdmin.openObjectAdmin();
 
-		ObjectPortlet.selectCustomObject(name = "CustomObject");
+		ObjectPortlet.selectCustomObject(label = "Custom Object");
 
 		CreateObject.assertDisabledObjectName();
 	}
@@ -575,9 +1289,18 @@ definition {
 
 		ObjectAdmin.openObjectAdmin();
 
-		ObjectPortlet.selectCustomObject(name = "CustomObject");
+		ObjectPortlet.selectCustomObject(label = "Custom Object");
 
 		AssertElementPresent(locator1 = "CreateObject#VIEW_OBJECT_SCOPE_DISABLED");
+	}
+
+	@description = "LPS-135390 - Verify it is not possible to update an Object without the Update permission"
+	@ignore = "Test Stub"
+	@priority = "4"
+	test CannotUpdateObjectWithUpdatePermission {
+
+		// TODO LPS-141605 CannotUpdateObjectWithUpdatePermission pending implementation
+
 	}
 
 	@description = "LPS-135635 - Verify it is not possible to update the Searchable section after the Object is published"
@@ -599,13 +1322,40 @@ definition {
 
 		ObjectAdmin.openObjectAdmin();
 
-		ObjectPortlet.selectCustomObject(name = "CustomObject");
+		ObjectPortlet.selectCustomObject(label = "Custom Object");
 
 		ObjectAdmin.goToFieldsTab();
 
-		ObjectAdmin.goToFieldsDetails(fieldName = "customObjectField");
+		ObjectAdmin.goToFieldsDetails(label = "Text");
 
 		AssertElementPresent(locator1 = "ObjectAdmin#VIEW_SEARCHABLE_SECTION_DISABLED");
+	}
+
+	@description = "LPS-135649 - Verify that the Object is not displayed on Process Builder settings before Published"
+	@ignore = "Test Stub"
+	@priority = "4"
+	test CannotViewObjectOnProcessBuilderBeforePublished {
+
+		// TODO LPS-141625 CannotViewObjectOnProcessBuilderBeforePublished pending implementation
+
+	}
+
+	@description = "LPS-135649 - Verify that the Object is not not displayed on Workflow settings from Site Menu before Published"
+	@ignore = "Test Stub"
+	@priority = "4"
+	test CannotViewObjectOnWorkflowSettingsSiteMenuBeforePublished {
+
+		// TODO LPS-141626 CannotViewObjectOnWorkflowSettingsSiteMenuBeforePublished pending implementation
+
+	}
+
+	@description = "LPS-135390 - Verify it is not possible to view an Object without the View permission"
+	@ignore = "Test Stub"
+	@priority = "4"
+	test CannotViewObjectWithoutViewPermission {
+
+		// TODO LPS-141607 CannotViewObjectWithoutViewPermission pending implementation
+
 	}
 
 	@description = "LPS-135549 - Verify it is possible to Publish a Custom Object"
@@ -622,7 +1372,7 @@ definition {
 
 		ObjectAdmin.assertObjectStatus(status = "Draft");
 
-		ObjectPortlet.selectCustomObject(name = "CustomObject");
+		ObjectPortlet.selectCustomObject(label = "Custom Object");
 
 		ObjectAdmin.publishObjectViaUI();
 
@@ -631,32 +1381,230 @@ definition {
 		ObjectAdmin.assertObjectStatus(status = "Approved");
 	}
 
-	@description = "LPS-135389 - Verify it is possible to set a different language value for a Field Label"
+	@description = "LPS-135390 - Verify it is possible to publish an Object with the Publish Object Definition permission"
 	@ignore = "Test Stub"
 	@priority = "4"
-	test CanSetDifferentLanguageForFieldLabel {
+	test CanPublishObjectWithPublishPermission {
 
-		// TODO LPS-138862 CanSetDifferentLanguageForFieldLabel pending implementation
+		// TODO LPS-141602 CanPublishObjectWithPublishPermission pending implementation
 
 	}
 
-	@description = "LPS-135389 - Verify it is possible to set a different language value for an Object Label"
+	@description = "LPS-135401 - Verify that it is possible to relate to many other entries on both objects"
 	@ignore = "Test Stub"
+	@priority = "5"
+	test CanRelateManyOtherEntriesBothObjects {
+		property portal.acceptance = "true";
+
+		// TODO LPS-141662 CanRelateManyOtherEntriesBothObjects pending implementation
+
+	}
+
+	@description = "LPS-135551 - Verify it is possible to scope the Object by Company"
+	@ignore = "Test Stub"
+	@priority = "5"
+	test CanScopeObjectByCompany {
+		property portal.acceptance = "true";
+
+		// TODO LPS-141645 CanScopeObjectByCompany pending implementation
+
+	}
+
+	@description = "LPS-135551 - Verify it is possible to scope the Object by Site"
+	@ignore = "Test Stub"
+	@priority = "5"
+	test CanScopeObjectBySite {
+		property portal.acceptance = "true";
+
+		// TODO LPS-141646 CanScopeObjectBySite pending implementation
+
+	}
+
+	@description = "LPS-135400 - It is possible to search for an entry on the Relationship field"
+	@ignore = "Test Stub"
+	@priority = "4"
+	test CanSearchEntryOnRelationshipField {
+
+		// TODO LPS-141651 CanSearchEntryOnRelationshipField pending implementation
+
+	}
+
+	@description = "LPS-135547 - Verify it is possible to search for a Custom Object"
+	@ignore = "Test Stub"
+	@priority = "4"
+	test CanSearchForCustomObject {
+
+		// TODO LPS-141638 CanSearchForCustomObject pending implementation
+
+	}
+
+	@description = "LPS-135547 - Verify it is possible to search for a field from a Custom Object"
+	@ignore = "Test Stub"
+	@priority = "4"
+	test CanSearchForFieldCustomObject {
+
+		// TODO LPS-141641 CanSearchForFieldCustomObject pending implementation
+
+	}
+
+	@description = "LPS-135547 - Verify it is possible to search for a field from a System Object"
+	@ignore = "Test Stub"
+	@priority = "4"
+	test CanSearchForFieldSystemObject {
+
+		// TODO LPS-141642 CanSearchForFieldSystemObject pending implementation
+
+	}
+
+	@description = "LPS-135547 - Verify it is possible to search for a System Object"
+	@ignore = "Test Stub"
+	@priority = "4"
+	test CanSearchForSystemObject {
+
+		// TODO LPS-141639 CanSearchForSystemObject pending implementation
+
+	}
+
+	@description = "LPS-139803 - Verify it is possible to search for the Object Entry Title on the Relationship field"
+	@ignore = "Test Stub"
+	@priority = "4"
+	test CanSearchObjectEntryTitleOnRelationshipField {
+
+		// TODO LPS-141618 CanSearchObjectEntryTitleOnRelationshipField pending implementation
+
+	}
+
+	@description = "LPS-135402 - Verify that it is possible to relate to another entry on the Relationship field for a self-referencing relation"
+	@ignore = "Test Stub"
+	@priority = "4"
+	test CanSelfRelateAnotherEntryOnRelationshipField {
+
+		// TODO LPS-141656 CanSelfRelateAnotherEntryOnRelationshipField pending implementation
+
+	}
+
+	@description = "LPS-135402 - Verify that it is possible to relate to another entry on the Relationship tab for a self-referencing relation"
+	@ignore = "Test Stub"
+	@priority = "4"
+	test CanSelfRelateAnotherEntryOnRelationshipTab {
+
+		// TODO LPS-141657 CanSelfRelateAnotherEntryOnRelationshipTab pending implementation
+
+	}
+
+	@description = "LPS-135397 - Verify if it's possible to set the block as Collapsible"
+	@ignore = "Test Stub"
+	@priority = "4"
+	test CanSetBlockCollapsible {
+
+		// TODO LPS-141505 CanSetBlockCollapsible pending implementation
+
+	}
+
+	@description = "LPS-135389 - Verify it is possible to set a different language value for a Field Label"
+	@ignore = "true"
+	@priority = "4"
+	test CanSetDifferentLanguageForFieldLabel {
+		ObjectAdmin.addObjectViaAPI(
+			labelName = "Custom Object",
+			objectName = "CustomObject",
+			pluralLabelName = "Custom Objects");
+
+		ObjectAdmin.addObjectFieldViaAPI(
+			fieldLabelName = "Custom Field",
+			fieldName = "customObjectField",
+			fieldType = "String",
+			isRequired = "false",
+			objectName = "CustomObject");
+
+		ObjectAdmin.openObjectAdmin();
+
+		ObjectPortlet.selectCustomObject(label = "Custom Object");
+
+		ObjectAdmin.goToFieldsTab();
+
+		ObjectAdmin.goToFieldsDetails(label = "Custom Field");
+
+		ObjectAdmin.changeLabelLanguage(newLanguage = "pt-BR");
+
+		CreateObject.editLabel(labelName = "Campo Customizado");
+
+		Button.clickSave();
+
+		ObjectAdmin.publishObjectViaAPI(objectName = "CustomObject");
+
+		MyAccount.configureDisplaySettingsLanguage(languageName = "português (Brasil)");
+
+		ObjectAdmin.goToCustomObject(objectName = "CustomObject");
+
+		LexiconEntry.gotoAdd();
+
+		ObjectPortlet.assertFieldLabelName(fieldLabelName = "Campo Customizado");
+	}
+
+	@description = "LPS-135389 - Verify it is possible to set a different language value for an Object Label"
 	@priority = "5"
 	test CanSetDifferentLanguageForObjectLabel {
 		property portal.acceptance = "true";
 
-		// TODO LPS-138859 CanSetDifferentLanguageForObjectLabel pending implementation
+		ObjectAdmin.addObjectViaAPI(
+			labelName = "Custom Object",
+			objectName = "CustomObject",
+			pluralLabelName = "Custom Objects");
 
+		ObjectAdmin.openObjectAdmin();
+
+		ObjectPortlet.selectCustomObject(label = "Custom Object");
+
+		ObjectAdmin.changeLabelLanguage(newLanguage = "pt-BR");
+
+		CreateObject.editLabel(labelName = "Objeto Costumizado");
+
+		CreateObject.editPluralLabel(pluralLabelName = "Objetos Costumizados");
+
+		CreateObject.saveObject();
+
+		MyAccount.configureDisplaySettingsLanguage(languageName = "português (Brasil)");
+
+		ObjectAdmin.openObjectAdmin();
+
+		CreateObject.assertCustomObject(labelName = "Objeto Costumizado");
 	}
 
 	@description = "LPS-135389 - Verify it is possible to set a different language value for an Object Plural Label"
-	@ignore = "Test Stub"
 	@priority = "4"
 	test CanSetDifferentLanguageForObjectPluralLabel {
+		ObjectAdmin.addObjectViaAPI(
+			labelName = "Custom Object",
+			objectName = "CustomObject",
+			pluralLabelName = "Custom Objects");
 
-		// TODO LPS-138861 CanSetDifferentLanguageForObjectPluralLabel pending implementation
+		ObjectAdmin.openObjectAdmin();
 
+		ObjectPortlet.selectCustomObject(label = "Custom Object");
+
+		ObjectAdmin.changePluralLabelLanguage(newLanguage = "pt-BR");
+
+		CreateObject.editLabel(labelName = "Objeto Customizado");
+
+		CreateObject.editPluralLabel(pluralLabelName = "Objetos Customizados");
+
+		CreateObject.saveObject();
+
+		ObjectAdmin.publishObjectViaAPI(objectName = "CustomObject");
+
+		MyAccount.configureDisplaySettingsLanguage(languageName = "português (Brasil)");
+
+		Navigator.openURL();
+
+		ApplicationsMenuHelper.openApplicationsMenu();
+
+		ApplicationsMenu.gotoPanel(panel = "Painel de Controle");
+
+		AssertElementPresent(
+			key_category = "Objeto",
+			key_portlet = "Objetos Customizados",
+			locator1 = "ApplicationsMenu#PORTLET");
 	}
 
 	@description = "LPS-135549 - Verify it is possible to set a field as Mandatory"
@@ -669,7 +1617,7 @@ definition {
 
 		ObjectAdmin.openObjectAdmin();
 
-		ObjectPortlet.selectCustomObject(name = "CustomObject");
+		ObjectPortlet.selectCustomObject(label = "Custom Object");
 
 		ObjectAdmin.goToFieldsTab();
 
@@ -678,9 +1626,95 @@ definition {
 			fieldType = "String",
 			isMandatory = "true");
 
-		ObjectAdmin.goToFieldsDetails(fieldName = "customField");
+		ObjectAdmin.goToFieldsDetails(label = "Custom Field");
 
 		CreateObject.assertToggleMandatory();
+	}
+
+	@description = "LPS-139005 - Verify that is possible to submit entries in a form with an Object that was reactivated"
+	@priority = "4"
+	test CanSubmitEntriesOnFormWhenReactivated {
+		ObjectAdmin.addObjectViaAPI(
+			labelName = "Custom Object",
+			objectName = "CustomObject",
+			pluralLabelName = "Custom Objects");
+
+		ObjectAdmin.addObjectFieldViaAPI(
+			fieldLabelName = "Custom Field",
+			fieldName = "customObjectField",
+			fieldType = "String",
+			isRequired = "false",
+			objectName = "CustomObject");
+
+		ObjectAdmin.publishObjectViaAPI(objectName = "CustomObject");
+
+		PopulateObjectFormsConfiguration.openForm();
+
+		FormsAdminNavigator.gotoAddForm();
+
+		Form.editName(formName = "Form 1");
+
+		PopulateObjectFormsConfiguration.openFormSettings();
+
+		PopulateObjectFormsConfiguration.selectObject(label = "Object");
+
+		PopulateObjectFormsConfiguration.selectCustomObject(label = "Custom Object");
+
+		Form.gotoAddField(fieldType = "Text");
+
+		PopulateObjectFormsConfiguration.mapFormField(fieldLabelName = "Custom Field");
+
+		Form.save();
+
+		Form.publishForm();
+
+		ObjectAdmin.openObjectAdmin();
+
+		ObjectPortlet.selectCustomObject(label = "Custom Object");
+
+		CreateObject.checkToggleInactive();
+
+		CreateObject.saveObject();
+
+		CreateObject.checkToggleActive();
+
+		CreateObject.saveObject();
+
+		Navigator.openURL();
+
+		PopulateObjectFormsConfiguration.openForm();
+
+		AssertElementNotPresent(
+			key_text = "exclamation-full",
+			locator1 = "Icon#ANY");
+
+		FormsAdminNavigator.gotoEditFormByName(formName = "Form 1");
+
+		FormsAdminNavigator.openPublishURL();
+
+		FormFields.editText(
+			fieldLabel = "Text",
+			fieldName = "Text",
+			fieldValue = "Entry 1");
+
+		AssertClick(
+			locator1 = "Button#MAIN_CONTENT_SUBMIT",
+			value1 = "Submit");
+
+		Navigator.openURL();
+
+		ObjectAdmin.goToCustomObject(objectName = "CustomObject");
+
+		ObjectPortlet.viewEntry(entry = "Entry 1");
+	}
+
+	@description = "LPS-135397 - Verify if it's possible to update a Custom Layout Created"
+	@ignore = "Test Stub"
+	@priority = "4"
+	test CanUpdateCustomLayout {
+
+		// TODO LPS-141517 CanUpdateCustomLayout pending implementation
+
 	}
 
 	@description = "LPS-135635 - Verify it is possible to update the Label of a Field after the Object is published"
@@ -704,11 +1738,11 @@ definition {
 
 		ObjectAdmin.openObjectAdmin();
 
-		ObjectPortlet.selectCustomObject(name = "CustomObject");
+		ObjectPortlet.selectCustomObject(label = "Custom Object");
 
 		ObjectAdmin.goToFieldsTab();
 
-		ObjectAdmin.goToFieldsDetails(fieldName = "customObjectField");
+		ObjectAdmin.goToFieldsDetails(label = "Text");
 
 		CreateObject.editLabel(labelName = "Text Update");
 
@@ -716,7 +1750,7 @@ definition {
 
 		Refresh();
 
-		ObjectAdmin.goToFieldsDetails(fieldName = "customObjectField");
+		ObjectAdmin.goToFieldsDetails(label = "Text Update");
 
 		CreateObject.assertObjectLabel(labelName = "Text Update");
 	}
@@ -740,11 +1774,11 @@ definition {
 
 		ObjectAdmin.openObjectAdmin();
 
-		ObjectPortlet.selectCustomObject(name = "CustomObject");
+		ObjectPortlet.selectCustomObject(label = "Custom Object");
 
 		ObjectAdmin.goToFieldsTab();
 
-		ObjectAdmin.goToFieldsDetails(fieldName = "customObjectField");
+		ObjectAdmin.goToFieldsDetails(label = "Text");
 
 		CreateObject.editLabel(labelName = "Text Update");
 
@@ -752,7 +1786,7 @@ definition {
 
 		Refresh();
 
-		ObjectAdmin.goToFieldsDetails(fieldName = "customObjectField");
+		ObjectAdmin.goToFieldsDetails(label = "Text Update");
 
 		CreateObject.assertObjectLabel(labelName = "Text Update");
 	}
@@ -774,11 +1808,11 @@ definition {
 
 		ObjectAdmin.openObjectAdmin();
 
-		ObjectPortlet.selectCustomObject(name = "CustomObject");
+		ObjectPortlet.selectCustomObject(label = "Custom Object");
 
 		ObjectAdmin.goToFieldsTab();
 
-		ObjectAdmin.goToFieldsDetails(fieldName = "customObjectField");
+		ObjectAdmin.goToFieldsDetails(label = "Text");
 
 		CreateObject.toggleMandatory();
 
@@ -786,7 +1820,7 @@ definition {
 
 		Refresh();
 
-		ObjectAdmin.goToFieldsDetails(fieldName = "customObjectField");
+		ObjectAdmin.goToFieldsDetails(label = "Text");
 
 		CreateObject.checkToggleMandatory();
 	}
@@ -808,11 +1842,11 @@ definition {
 
 		ObjectAdmin.openObjectAdmin();
 
-		ObjectPortlet.selectCustomObject(name = "CustomObject");
+		ObjectPortlet.selectCustomObject(label = "Custom Object");
 
 		ObjectAdmin.goToFieldsTab();
 
-		ObjectAdmin.goToFieldsDetails(fieldName = "customObjectField");
+		ObjectAdmin.goToFieldsDetails(label = "Text");
 
 		CreateObject.editName(fieldName = "customObjectFieldUpdate");
 
@@ -820,7 +1854,7 @@ definition {
 
 		Refresh();
 
-		ObjectAdmin.goToFieldsDetails(fieldName = "customObjectFieldUpdate");
+		ObjectAdmin.goToFieldsDetails(label = "Text");
 
 		CreateObject.assertFieldName(fieldName = "customObjectFieldUpdate");
 	}
@@ -842,11 +1876,11 @@ definition {
 
 		ObjectAdmin.openObjectAdmin();
 
-		ObjectPortlet.selectCustomObject(name = "CustomObject");
+		ObjectPortlet.selectCustomObject(label = "Custom Object");
 
 		ObjectAdmin.goToFieldsTab();
 
-		ObjectAdmin.goToFieldsDetails(fieldName = "customObjectField");
+		ObjectAdmin.goToFieldsDetails(label = "Text");
 
 		ObjectAdmin.clickFieldsSearchableSectionRadioOption(radioOption = "Text");
 
@@ -854,7 +1888,7 @@ definition {
 
 		Refresh();
 
-		ObjectAdmin.goToFieldsDetails(fieldName = "customObjectField");
+		ObjectAdmin.goToFieldsDetails(label = "Text");
 
 		ObjectAdmin.viewFieldSearchableSectionLanguage();
 	}
@@ -876,11 +1910,11 @@ definition {
 
 		ObjectAdmin.openObjectAdmin();
 
-		ObjectPortlet.selectCustomObject(name = "CustomObject");
+		ObjectPortlet.selectCustomObject(label = "Custom Object");
 
 		ObjectAdmin.goToFieldsTab();
 
-		ObjectAdmin.goToFieldsDetails(fieldName = "customObjectField");
+		ObjectAdmin.goToFieldsDetails(label = "Text");
 
 		CreateObject.editType(fieldType = "Date");
 
@@ -888,7 +1922,7 @@ definition {
 
 		Refresh();
 
-		ObjectAdmin.goToFieldsDetails(fieldName = "customObjectField");
+		ObjectAdmin.goToFieldsDetails(label = "Text");
 
 		CreateObject.assertFieldType(fieldType = "Date");
 	}
@@ -905,7 +1939,7 @@ definition {
 
 		ObjectAdmin.openObjectAdmin();
 
-		CreateObject.viewObject(labelName = "CustomObject");
+		CreateObject.viewObject(labelName = "Custom Object");
 
 		CreateObject.editLabel(labelName = "Update Custom Object");
 
@@ -913,7 +1947,7 @@ definition {
 
 		ObjectAdmin.openObjectAdmin();
 
-		CreateObject.viewObject(labelName = "CustomObject");
+		CreateObject.viewObject(labelName = "Custom Object");
 
 		CreateObject.assertObjectLabel(labelName = "Update Custom Object");
 	}
@@ -930,7 +1964,7 @@ definition {
 
 		ObjectAdmin.openObjectAdmin();
 
-		ObjectPortlet.selectCustomObject(name = "CustomObject");
+		ObjectPortlet.selectCustomObject(label = "Custom Object");
 
 		CreateObject.editLabel(labelName = "Update Custom Object");
 
@@ -938,7 +1972,7 @@ definition {
 
 		ObjectAdmin.openObjectAdmin();
 
-		ObjectPortlet.selectCustomObject(name = "CustomObject");
+		ObjectPortlet.selectCustomObject(label = "Custom Object");
 
 		CreateObject.assertObjectLabel(labelName = "Update Custom Object");
 	}
@@ -953,13 +1987,13 @@ definition {
 
 		ObjectAdmin.openObjectAdmin();
 
-		ObjectPortlet.selectCustomObject(name = "CustomObject");
+		ObjectPortlet.selectCustomObject(label = "Custom Object");
 
 		ObjectAdmin.editCustomObject(fieldName = "CustomObject2");
 
 		Navigator.gotoBack();
 
-		ObjectPortlet.selectCustomObject(name = "CustomObject");
+		ObjectPortlet.selectCustomObject(label = "Custom Object");
 
 		AssertTextEquals(
 			locator1 = "ObjectAdmin#DETAILS_NAME_CUSTOM_OBJECT",
@@ -978,17 +2012,17 @@ definition {
 
 		ObjectAdmin.openObjectAdmin();
 
-		ObjectPortlet.selectCustomObject(name = "CustomObject");
+		ObjectPortlet.selectCustomObject(label = "Custom Object");
 
-		CreateObject.selectPanelCategoryKey(panelCategoryKey = "Control Panel >> Users");
+		CreateObject.selectPanelCategoryKey(panelCategoryKey = "Control Panel > Users");
 
 		CreateObject.saveObject();
 
 		ObjectAdmin.openObjectAdmin();
 
-		ObjectPortlet.selectCustomObject(name = "CustomObject");
+		ObjectPortlet.selectCustomObject(label = "Custom Object");
 
-		CreateObject.assertPanelCategoryKey(panelCategoryKey = "Control Panel >> Users");
+		CreateObject.assertPanelCategoryKey(panelCategoryKey = "Control Panel > Users");
 	}
 
 	@description = "LPS-135635 - Verify it is possible to update the Object panel category key after it is published"
@@ -1005,17 +2039,17 @@ definition {
 
 		ObjectAdmin.openObjectAdmin();
 
-		ObjectPortlet.selectCustomObject(name = "CustomObject");
+		ObjectPortlet.selectCustomObject(label = "Custom Object");
 
-		CreateObject.selectPanelCategoryKey(panelCategoryKey = "Control Panel >> Users");
+		CreateObject.selectPanelCategoryKey(panelCategoryKey = "Control Panel > Users");
 
 		CreateObject.saveObject();
 
 		ObjectAdmin.openObjectAdmin();
 
-		ObjectPortlet.selectCustomObject(name = "CustomObject");
+		ObjectPortlet.selectCustomObject(label = "Custom Object");
 
-		CreateObject.assertPanelCategoryKey(panelCategoryKey = "Control Panel >> Users");
+		CreateObject.assertPanelCategoryKey(panelCategoryKey = "Control Panel > Users");
 	}
 
 	@description = "LPS-135635 - Verify it is possible to update the Object plural label after it is published"
@@ -1030,7 +2064,7 @@ definition {
 
 		ObjectAdmin.openObjectAdmin();
 
-		CreateObject.viewObject(labelName = "CustomObject");
+		CreateObject.viewObject(labelName = "Custom Object");
 
 		CreateObject.editPluralLabel(pluralLabelName = "Update Plural Label Custom Object");
 
@@ -1038,7 +2072,7 @@ definition {
 
 		ObjectAdmin.openObjectAdmin();
 
-		CreateObject.viewObject(labelName = "CustomObject");
+		CreateObject.viewObject(labelName = "Custom Object");
 
 		CreateObject.assertObjectPluralLabel(pluralLabelName = "Update Plural Label Custom Object");
 	}
@@ -1053,7 +2087,7 @@ definition {
 
 		ObjectAdmin.openObjectAdmin();
 
-		ObjectPortlet.selectCustomObject(name = "CustomObject");
+		ObjectPortlet.selectCustomObject(label = "Custom Object");
 
 		CreateObject.editPluralLabel(pluralLabelName = "Update Plural Label Custom Object");
 
@@ -1061,7 +2095,7 @@ definition {
 
 		ObjectAdmin.openObjectAdmin();
 
-		ObjectPortlet.selectCustomObject(name = "CustomObject");
+		ObjectPortlet.selectCustomObject(label = "Custom Object");
 
 		CreateObject.assertObjectPluralLabel(pluralLabelName = "Update Plural Label Custom Object");
 	}
@@ -1078,7 +2112,7 @@ definition {
 
 		ObjectAdmin.openObjectAdmin();
 
-		ObjectPortlet.selectCustomObject(name = "CustomObject");
+		ObjectPortlet.selectCustomObject(label = "Custom Object");
 
 		ObjectAdmin.selectObjectScope(fieldOption = "Site");
 
@@ -1087,6 +2121,127 @@ definition {
 		Navigator.gotoBack();
 
 		ObjectPortlet.viewEntry(entry = "site");
+	}
+
+	@description = "LPS-135390 - Verify it is possible to update an Object with the Update permission"
+	@ignore = "Test Stub"
+	@priority = "4"
+	test CanUpdateObjectWithUpdatePermission {
+
+		// TODO LPS-141606 CanUpdateObjectWithUpdatePermission pending implementation
+
+	}
+
+	@description = "LPS-135400 - Verify it is possible to update a Relationship"
+	@priority = "5"
+	test CanUpdateRelationship {
+		property portal.acceptance = "true";
+
+		ObjectAdmin.addObjectViaAPI(
+			labelName = "Custom Object",
+			objectName = "CustomObject",
+			pluralLabelName = "Custom Objects");
+
+		ObjectAdmin.addObjectRelationshipViaAPI(
+			objectName_1 = "CustomObject",
+			objectName_2 = "CustomObject",
+			relationshipLabel = "Relationship",
+			relationshipName = "relationship",
+			relationshipType = "oneToMany");
+
+		ObjectAdmin.openObjectAdmin();
+
+		ObjectAdmin.selectKebabMenuOption(kebabOption = "View");
+
+		ObjectAdmin.gotoRelationshipsTab();
+
+		ObjectAdmin.selectKebabMenuOption(kebabOption = "View");
+
+		SelectFrame(locator1 = "IFrame#IFRAME");
+
+		CreateObject.editLabel(labelName = "Relationship Updated");
+
+		Button.clickSave();
+
+		Refresh();
+
+		AssertTextEquals(
+			key_label = "Relationship Updated",
+			locator1 = "ObjectAdmin#RELATIONSHIP_LABEL",
+			value1 = "Relationship Updated");
+	}
+
+	@description = "LPS-140342 - Verify it is possible to view and edit its own Object with only the Add Object Definition permission"
+	@ignore = "Test Stub"
+	@priority = "4"
+	test CanViewAndEditObjectWithAddObjectPermission {
+
+		// TODO LPS-141688 CanViewAndEditObjectWithAddObjectPermission pending implementation
+
+	}
+
+	@description = "LPS-135397 - Verify if it's possible to view Entries with Custom Layout Created"
+	@ignore = "Test Stub"
+	@priority = "4"
+	test CanViewEntriesWithCustomLayout {
+
+		// TODO LPS-141516 CanViewEntriesWithCustomLayout pending implementation
+
+	}
+
+	@description = "LPS-135397 - Verify if it's possible to view the Entry with one column"
+	@ignore = "Test Stub"
+	@priority = "4"
+	test CanViewEntryWithOneColumn {
+
+		// TODO LPS-141511 CanViewEntryWithOneColumn pending implementation
+
+	}
+
+	@description = "LPS-135397 - Verify if it's possible to view the Entry with three columns"
+	@ignore = "Test Stub"
+	@priority = "4"
+	test CanViewEntryWithThreeColumns {
+
+		// TODO LPS-141513 CanViewEntryWithThreeColumns pending implementation
+
+	}
+
+	@description = "LPS-135397 - Verify if it's possible to view the Entry with two columns"
+	@ignore = "Test Stub"
+	@priority = "5"
+	test CanViewEntryWithTwoColumns {
+		property portal.acceptance = "true";
+
+		// TODO LPS-141512 CanViewEntryWithTwoColumns pending implementation
+
+	}
+
+	@description = "LPS-135400 - There is an explanation about each Relationship type"
+	@priority = "3"
+	test CanViewExplanationRelationshipTypes {
+		ObjectAdmin.addObjectViaAPI(
+			labelName = "Custom Object",
+			objectName = "CustomObject",
+			pluralLabelName = "Custom Objects");
+
+		ObjectAdmin.openObjectAdmin();
+
+		ObjectAdmin.selectKebabMenuOption(kebabOption = "View");
+
+		ObjectAdmin.gotoRelationshipsTab();
+
+		LexiconEntry.gotoAdd();
+
+		Click(locator1 = "ObjectAdmin#RELATIONSHIPS_TYPE_FORM");
+
+		ObjectAdmin.assertRelationshipsTypeDescription(
+			description = "One object's entry interacts with many others object's entries.",
+			type = "One to Many");
+
+		ObjectAdmin.assertRelationshipsTypeDescription(
+			description = "Multiple object's entries can interact with many others object's entries.",
+			type = "Many to Many");
 	}
 
 	@description = "LPS-135549 - Verify it is possible to view the Details of a Field by clicking on the eye icon"
@@ -1108,7 +2263,7 @@ definition {
 
 		ObjectAdmin.openObjectAdmin();
 
-		ObjectPortlet.selectCustomObject(name = "CustomObject");
+		ObjectPortlet.selectCustomObject(label = "Custom Object");
 
 		ObjectAdmin.goToFieldsTab();
 
@@ -1134,13 +2289,140 @@ definition {
 
 		ObjectAdmin.openObjectAdmin();
 
-		ObjectPortlet.selectCustomObject(name = "CustomObject");
+		ObjectPortlet.selectCustomObject(label = "Custom Object");
 
 		ObjectAdmin.goToFieldsTab();
 
-		ObjectAdmin.goToFieldsDetails(fieldName = "customObjectField");
+		ObjectAdmin.goToFieldsDetails(label = "CustomObject");
 
 		AssertElementPresent(locator1 = "ObjectAdmin#FIELDS_DETAILS_IFRAME");
+	}
+
+	@description = "LPS-139803 - Verify it the Object Entry Title of a BigDecimal type is displayed on the Relationship field when adding an entry"
+	@ignore = "Test Stub"
+	@priority = "4"
+	test CanViewObjectEntryTitleBigDecimalOnRelationshipField {
+
+		// TODO LPS-141611 CanViewObjectEntryTitleBigDecimalOnRelationshipField pending implementation
+
+	}
+
+	@description = "LPS-139803 - Verify it the Object Entry Title of a Boolean type is displayed on the Relationship field when adding an entry"
+	@ignore = "Test Stub"
+	@priority = "4"
+	test CanViewObjectEntryTitleBooleanOnRelationshipField {
+
+		// TODO LPS-141612 CanViewObjectEntryTitleBooleanOnRelationshipField pending implementation
+
+	}
+
+	@description = "LPS-139803 - Verify it the Object Entry Title of a Date type is displayed on the Relationship field when adding an entry"
+	@ignore = "Test Stub"
+	@priority = "4"
+	test CanViewObjectEntryTitleDateOnRelationshipField {
+
+		// TODO LPS-141613 CanViewObjectEntryTitleDateOnRelationshipField pending implementation
+
+	}
+
+	@description = "LPS-139803 - Verify it the Object Entry Title of a Double type is displayed on the Relationship field when adding an entry"
+	@ignore = "Test Stub"
+	@priority = "4"
+	test CanViewObjectEntryTitleDoubleOnRelationshipField {
+
+		// TODO LPS-141614 CanViewObjectEntryTitleDoubleOnRelationshipField pending implementation
+
+	}
+
+	@description = "LPS-139803 - Verify it the Object Entry Title of a Integer type is displayed on the Relationship field when adding an entry"
+	@ignore = "Test Stub"
+	@priority = "4"
+	test CanViewObjectEntryTitleIntegerOnRelationshipField {
+
+		// TODO LPS-141615 CanViewObjectEntryTitleIntegerOnRelationshipField pending implementation
+
+	}
+
+	@description = "LPS-139803 - Verify it the Object Entry Title of a Long type is displayed on the Relationship field when adding an entry"
+	@ignore = "Test Stub"
+	@priority = "4"
+	test CanViewObjectEntryTitleLongOnRelationshipField {
+
+		// TODO LPS-141616 CanViewObjectEntryTitleLongOnRelationshipField pending implementation
+
+	}
+
+	@description = "LPS-139803 - Verify if the Object Entry Title is displayed on a Display Page"
+	@ignore = "Test Stub"
+	@priority = "4"
+	test CanViewObjectEntryTitleOnDisplayPage {
+
+		// TODO LPS-141622 CanViewObjectEntryTitleOnDisplayPage pending implementation
+
+	}
+
+	@description = "LPS-139803 - Verify it the Object Entry Title is displayed on the Item Selector of a fragment on a Display Page"
+	@ignore = "Test Stub"
+	@priority = "4"
+	test CanViewObjectEntryTitleOnItemSelectorFragment {
+
+		// TODO LPS-141621 CanViewObjectEntryTitleOnItemSelectorFragment pending implementation
+
+	}
+
+	@description = "LPS-139803 - Verify it the Object Entry Title is displayed on the Relationship field when viewing an entry"
+	@ignore = "Test Stub"
+	@priority = "4"
+	test CanViewObjectEntryTitleOnRelationshipField {
+
+		// TODO LPS-141619 CanViewObjectEntryTitleOnRelationshipField pending implementation
+
+	}
+
+	@description = "LPS-139803 - Verify it the Object Entry Title is displayed on the Relationship tab"
+	@ignore = "Test Stub"
+	@priority = "4"
+	test CanViewObjectEntryTitleOnRelationshipTab {
+
+		// TODO LPS-141620 CanViewObjectEntryTitleOnRelationshipTab pending implementation
+
+	}
+
+	@description = "LPS-139803 - Verify if the Object Entry Title is displayed for Object entries on workflow pages (My Workflow Tasks, My Submissions, and Submissions)"
+	@ignore = "Test Stub"
+	@priority = "4"
+	test CanViewObjectEntryTitleOnWorkflowPages {
+
+		// TODO LPS-141624 CanViewObjectEntryTitleOnWorkflowPages pending implementation
+
+	}
+
+	@description = "LPS-139803 - Verify it the Object Entry Title of a Picklist type is displayed on the Relationship field when adding an entry"
+	@ignore = "Test Stub"
+	@priority = "4"
+	test CanViewObjectEntryTitlePicklistOnRelationshipField {
+
+		// TODO LPS-141617 CanViewObjectEntryTitlePicklistOnRelationshipField pending implementation
+
+	}
+
+	@description = "LPS-139803 - Verify if the Object Entry Title is displayed when selecting to preview an object entry on a Page Template"
+	@ignore = "Test Stub"
+	@priority = "4"
+	test CanViewObjectEntryTitlePreviewOnPageTemplate {
+
+		// TODO LPS-141623 CanViewObjectEntryTitlePreviewOnPageTemplate pending implementation
+
+	}
+
+	@description = "LPS-139803 - Verify it the Object Entry Title of a String type is displayed on the Relationship field when adding an entry"
+	@ignore = "Test Stub"
+	@priority = "5"
+	test CanViewObjectEntryTitleStringOnRelationshipField {
+		property portal.acceptance = "true";
+
+		// TODO LPS-141610 CanViewObjectEntryTitleStringOnRelationshipField pending implementation
+
 	}
 
 	@description = "LPS-135549 - Verify it is possible to view the Details of an Object by clicking on the eye icon"
@@ -1170,9 +2452,111 @@ definition {
 
 		ObjectAdmin.openObjectAdmin();
 
-		ObjectPortlet.selectCustomObject(name = "CustomObject");
+		ObjectPortlet.selectCustomObject(label = "Custom Object");
 
 		ObjectAdmin.assertObjectDetailsPage();
+	}
+
+	@description = "LPS-135390 - Verify it is possible to view an Object with the View permission"
+	@ignore = "Test Stub"
+	@priority = "4"
+	test CanViewObjectWithViewPermission {
+
+		// TODO LPS-141608 CanViewObjectWithViewPermission pending implementation
+
+	}
+
+	@description = "LPS-135400 - Verify it is possible to view a Relationship"
+	@priority = "5"
+	test CanViewRelationship {
+		property portal.acceptance = "true";
+
+		ObjectAdmin.addObjectViaAPI(
+			labelName = "Custom Object",
+			objectName = "CustomObject",
+			pluralLabelName = "Custom Objects");
+
+		ObjectAdmin.addObjectRelationshipViaAPI(
+			objectName_1 = "CustomObject",
+			objectName_2 = "CustomObject",
+			relationshipLabel = "Relationship",
+			relationshipName = "relationship",
+			relationshipType = "oneToMany");
+
+		ObjectAdmin.openObjectAdmin();
+
+		ObjectAdmin.selectKebabMenuOption(kebabOption = "View");
+
+		ObjectAdmin.gotoRelationshipsTab();
+
+		ObjectAdmin.selectKebabMenuOption(kebabOption = "View");
+
+		ObjectAdmin.viewFieldDetails();
+	}
+
+	@description = "LPS-135397 - Verify if it's possible to view a tab of relationship with entries"
+	@ignore = "Test Stub"
+	@priority = "5"
+	test CanViewRelationshipTab {
+		property portal.acceptance = "true";
+
+		// TODO LPS-141514 CanViewRelationshipTab pending implementation
+
+	}
+
+	@description = "LPS-135401 - Verify if Cascade deletion type of Relationship Many to Many will allow to delete only the entry with relation but not its relations"
+	@ignore = "Test Stub"
+	@priority = "4"
+	test CascadeDeletionManyToManyWillAllowDelete {
+
+		// TODO LPS-141670 CascadeDeletionManyToManyWillAllowDelete pending implementation
+
+	}
+
+	@description = "LPS-135401 - Verify if Cascade deletion type of Relationship One to Many will allow the entry with relation (from the child Object) to be deleted but not its relation"
+	@ignore = "Test Stub"
+	@priority = "4"
+	test CascadeDeletionOneToManyWillAllowDeleteChild {
+
+		// TODO LPS-141672 CascadeDeletionOneToManyWillAllowDeleteChild pending implementation
+
+	}
+
+	@description = "LPS-135401 - Verify if Cascade deletion type of Relationship One to Many will allow the entry with relation (from the parent Object) and its relations to be deleted"
+	@ignore = "Test Stub"
+	@priority = "5"
+	test CascadeDeletionOneToManyWillAllowDeleteParent {
+		property portal.acceptance = "true";
+
+		// TODO LPS-141671 CascadeDeletionOneToManyWillAllowDeleteParent pending implementation
+
+	}
+
+	@description = "LPS-135401 - Verify if Cascade deletion type of Relationship One to Many (self-reference) will allow the child entry with relation to be teleted but not its relation"
+	@ignore = "Test Stub"
+	@priority = "4"
+	test CascadeDeletionSelfOneToManyWillAllowDeleteChild {
+
+		// TODO LPS-141674 CascadeDeletionSelfOneToManyWillAllowDeleteChild pending implementation
+
+	}
+
+	@description = "LPS-135401 - Verify if Cascade deletion type of Relationship One to Many (self-reference) will allow the parent entry with relation and its relations to be deleted"
+	@ignore = "Test Stub"
+	@priority = "4"
+	test CascadeDeletionSelfOneToManyWillAllowDeleteParent {
+
+		// TODO LPS-141673 CascadeDeletionSelfOneToManyWillAllowDeleteParent pending implementation
+
+	}
+
+	@description = "LPS-135401 - Verify that when adding an entry that was already related to another it will keep related to both entries"
+	@ignore = "Test Stub"
+	@priority = "4"
+	test ChoosingAlreadyRelatedEntryWillKeepOnBothEntries {
+
+		// TODO LPS-141663 ChoosingAlreadyRelatedEntryWillKeepOnBothEntries pending implementation
+
 	}
 
 	@description = "LPS-135549 - Verify that the columns Name and Type are displayed for the Fields table"
@@ -1194,7 +2578,7 @@ definition {
 
 		ObjectAdmin.openObjectAdmin();
 
-		ObjectPortlet.selectCustomObject(name = "CustomObject");
+		ObjectPortlet.selectCustomObject(label = "Custom Object");
 
 		ObjectAdmin.goToFieldsTab();
 
@@ -1209,6 +2593,109 @@ definition {
 		ObjectAdmin.assertObjectColumnsAreDisplayed();
 	}
 
+	@description = "LPS-135649 - Verify that a completed entry is displayed with an Approved status"
+	@ignore = "Test Stub"
+	@priority = "5"
+	test CompletedEntryDisplaysApprovedStatus {
+		property portal.acceptance = "true";
+
+		// TODO LPS-141629 CompletedEntryDisplaysApprovedStatus pending implementation
+
+	}
+
+	@description = "LPS-135401 - Verify if Disassociate deletion type of Relationship Many to Many will allow the entry with relation to be deleted and its relations to be disassociated"
+	@ignore = "Test Stub"
+	@priority = "4"
+	test DisassociateDeletionManyToManyWillAllowDelete {
+
+		// TODO LPS-141675 DisassociateDeletionManyToManyWillAllowDelete pending implementation
+
+	}
+
+	@description = "LPS-135401 - Verify if Disassociate deletion type of Relationship One to Many will allow the entry with relation (from the child Object) to be deleted and its relation to be disassociated"
+	@ignore = "Test Stub"
+	@priority = "4"
+	test DisassociateDeletionOneToManyWillAllowDeleteChild {
+
+		// TODO LPS-141677 DisassociateDeletionOneToManyWillAllowDeleteChild pending implementation
+
+	}
+
+	@description = "LPS-135401 - Verify if Disassociate deletion type of Relationship One to Many will allow the entry with relation (from the parent Object) to be deleted and its relations to be disassociated"
+	@ignore = "Test Stub"
+	@priority = "5"
+	test DisassociateDeletionOneToManyWillAllowDeleteParent {
+		property portal.acceptance = "true";
+
+		// TODO LPS-141676 DisassociateDeletionOneToManyWillAllowDeleteParent pending implementation
+
+	}
+
+	@description = "LPS-135401 - Verify if Disassociate deletion type of Relationship One to Many (self-reference) will allow the child entry with relation to be deleted and its relation to be disassociated"
+	@ignore = "Test Stub"
+	@priority = "4"
+	test DisassociateDeletionSelfOneToManyWillAllowDeleteChild {
+
+		// TODO LPS-141679 DisassociateDeletionSelfOneToManyWillAllowDeleteChild pending implementation
+
+	}
+
+	@description = "LPS-135401 - Verify if Disassociate deletion type of Relationship One to Many (self-reference) will allow the parent entry with relation to be deleted and its relations to be disassociated"
+	@ignore = "Test Stub"
+	@priority = "4"
+	test DisassociateDeletionSelfOneToManyWillAllowDeleteParent {
+
+		// TODO LPS-141678 DisassociateDeletionSelfOneToManyWillAllowDeleteParent pending implementation
+
+	}
+
+	@description = "LPS-135547 - Verify the empty state when searching for an Object returns nothing"
+	@ignore = "Test Stub"
+	@priority = "3"
+	test EmptyStateNoResultObject {
+
+		// TODO LPS-141637 EmptyStateNoResultObject pending implementation
+
+	}
+
+	@description = "LPS-135547 - Verify the empty state when searching for an Object field returns nothing"
+	@ignore = "Test Stub"
+	@priority = "3"
+	test EmptyStateNoResultObjectField {
+
+		// TODO LPS-141640 EmptyStateNoResultObjectField pending implementation
+
+	}
+
+	@description = "LPS-135400 - Verify the empty state message when there is no Relationship"
+	@priority = "3"
+	test EmptyStateWhenNoRelationship {
+		ObjectAdmin.addObjectViaAPI(
+			labelName = "Custom Object",
+			objectName = "CustomObject",
+			pluralLabelName = "Custom Objects");
+
+		ObjectAdmin.openObjectAdmin();
+
+		ObjectAdmin.selectKebabMenuOption(kebabOption = "View");
+
+		ObjectAdmin.gotoRelationshipsTab();
+
+		AssertTextEquals(
+			locator1 = "Message#EMPTY_INFO",
+			value1 = "No items were found.");
+	}
+
+	@description = "LPS-135400 - Entries are listed when clicking on the Relationship field"
+	@ignore = "Test Stub"
+	@priority = "5"
+	test EntriesListedOnRelationshipField {
+		property portal.acceptance = "true";
+
+		// TODO LPS-141650 EntriesListedOnRelationshipField pending implementation
+
+	}
+
 	@description = "LPS-135549 - Verify that the Field Name is autofilled when Label is filled"
 	@priority = "4"
 	test FieldNameIsAutofilled {
@@ -1221,13 +2708,40 @@ definition {
 
 		ObjectAdmin.openObjectAdmin();
 
-		ObjectPortlet.selectCustomObject(name = "CustomObject");
+		ObjectPortlet.selectCustomObject(label = "Custom Object");
 
 		ObjectAdmin.goToFieldsTab();
 
 		CreateObject.assertObjectFieldNameIsAutofilled(
 			fieldLabel = "Custom Field",
 			fieldName = "customField");
+	}
+
+	@description = "LPS-135397 - Verify if it's not possible to add a Field without Choose an Option Field"
+	@ignore = "Test Stub"
+	@priority = "4"
+	test FieldOptionRequired {
+
+		// TODO LPS-141509 FieldOptionRequired pending implementation
+
+	}
+
+	@description = "LPS-140097 - Verify that other fields are not deleted when a Relationship field is deleted after a Relationship is deleted"
+	@ignore = "Test Stub"
+	@priority = "4"
+	test FieldsAreNotDeletedWhenRelationshipDeleted {
+
+		// TODO LPS-141687 FieldsAreNotDeletedWhenRelationshipDeleted pending implementation
+
+	}
+
+	@description = "LPS-137874 - Verify that Objects created on a Virtual Instance are not displayed on the Forms Settings, Collection Providers and Display Page Template of the Main Instance and vice versa"
+	@ignore = "Test Stub"
+	@priority = "4"
+	test FormCollectionProvidersDisplayPageDisplayOnlyItsInstanceObjects {
+
+		// TODO LPS-141684 FormCollectionProvidersDisplayPageDisplayOnlyItsInstanceObjects pending implementation
+
 	}
 
 	@description = "LPS-135635 - Verify that the options Keyword and Text appears under the Searchable section when updating the field type to String"
@@ -1267,11 +2781,11 @@ definition {
 
 		ObjectAdmin.openObjectAdmin();
 
-		ObjectPortlet.selectCustomObject(name = "CustomObject");
+		ObjectPortlet.selectCustomObject(label = "Custom Object");
 
 		ObjectAdmin.goToFieldsTab();
 
-		ObjectAdmin.goToFieldsDetails(fieldName = "customField");
+		ObjectAdmin.goToFieldsDetails(label = "Custom Field");
 
 		ObjectAdmin.assertKeywordAndText();
 	}
@@ -1295,15 +2809,505 @@ definition {
 
 		ObjectAdmin.openObjectAdmin();
 
-		ObjectPortlet.selectCustomObject(name = "CustomObject");
+		ObjectPortlet.selectCustomObject(label = "Custom Object");
 
 		ObjectAdmin.goToFieldsTab();
 
-		ObjectAdmin.goToFieldsDetails(fieldName = "customField");
+		ObjectAdmin.goToFieldsDetails(label = "Custom Field");
 
 		ObjectAdmin.clickFieldsSearchableSectionRadioOption(radioOption = "Text");
 
 		ObjectAdmin.viewFieldSearchableSectionLanguage();
+	}
+
+	@description = "LPS-137741 - Verify that Objects created on a Virtual Instance are not displayed on the Object Admin of the Main Instance and vice versa"
+	@ignore = "Test Stub"
+	@priority = "4"
+	test ObjectAdminDisplaysOnlyItsInstanceObjects {
+
+		// TODO LPS-141682 ObjectAdminDisplaysOnlyItsInstanceObjects pending implementation
+
+	}
+
+	@description = "LPS-139005 - Verify that the Object is no longer displayed on the Collection Providers when inactivated"
+	@priority = "4"
+	test ObjectDisappearsCollectionProvidersWhenInactivated {
+		ObjectAdmin.addObjectViaAPI(
+			labelName = "Custom Object",
+			objectName = "CustomObject",
+			pluralLabelName = "Custom Objects");
+
+		ObjectAdmin.publishObjectViaAPI(objectName = "CustomObject");
+
+		ObjectAdmin.openObjectAdmin();
+
+		ObjectPortlet.selectCustomObject(label = "Custom Object");
+
+		CreateObject.checkToggleInactive();
+
+		CreateObject.saveObject();
+
+		VisualizeObjectCollectionDisplay.openObjectCollectionProvider();
+
+		AssertElementNotPresent(
+			key_labelName = "Custom Objects",
+			locator1 = "VisualizeObjectCollectionDisplay#VIEW_OBJECT_COLLECTION_DISPLAY");
+	}
+
+	@description = "LPS-139005 - Verify that the Object is no longer displayed on the Form's storage type when inactivated"
+	@priority = "4"
+	test ObjectDisappearsFormStorageSettingsWhenInactivated {
+		ObjectAdmin.addObjectViaAPI(
+			labelName = "Custom Object",
+			objectName = "CustomObject",
+			pluralLabelName = "Custom Objects");
+
+		ObjectAdmin.publishObjectViaAPI(objectName = "CustomObject");
+
+		ObjectAdmin.openObjectAdmin();
+
+		ObjectPortlet.selectCustomObject(label = "Custom Object");
+
+		CreateObject.checkToggleInactive();
+
+		CreateObject.saveObject();
+
+		PopulateObjectFormsConfiguration.openForm();
+
+		FormsAdminNavigator.gotoAddForm();
+
+		PopulateObjectFormsConfiguration.openFormSettings();
+
+		PopulateObjectFormsConfiguration.selectObject(label = "Object");
+
+		Click(locator1 = "PopulateObjectFormsConfiguration#DEFAULT_SELECT_OBJECT");
+
+		AssertElementNotPresent(
+			key_label = "Custom Object",
+			locator1 = "PopulateObjectFormsConfiguration#DISPLAY_SELECT_OBJECT");
+	}
+
+	@description = "LPS-139005 - Verify that the Object is no longer displayed on the Page Item Selector when inactivated"
+	@priority = "4"
+	test ObjectDisappearsPageItemSelectWhenInactivated {
+		ObjectAdmin.addObjectViaAPI(
+			labelName = "Custom Object",
+			objectName = "CustomObject",
+			pluralLabelName = "Custom Objects");
+
+		ObjectAdmin.publishObjectViaAPI(objectName = "CustomObject");
+
+		ObjectAdmin.openObjectAdmin();
+
+		ObjectPortlet.selectCustomObject(label = "Custom Object");
+
+		CreateObject.checkToggleInactive();
+
+		CreateObject.saveObject();
+
+		Navigator.openURL();
+
+		ContentPages.addPage(pageName = "Test Content Page Name");
+
+		PageEditor.addFragment(
+			collectionName = "Basic Components",
+			fragmentName = "Heading");
+
+		VisualizeObjectCollectionDisplay.openHeading();
+
+		Click.javaScriptClick(locator1 = "VisualizeObjectDisplayPage#SELECT_ITEM");
+
+		SelectFrame(
+			key_title = "Select",
+			locator1 = "IFrame#MODAL_ANY");
+
+		AssertElementNotPresent(
+			key_pluralLabelName = "Custom Objects",
+			locator1 = "VisualizeObjectDisplayPage#SELECT_OBJECT");
+	}
+
+	@description = "LPS-139005 - Verify that the Object is no longer displayed on the Page Template (subtype) when inactivated"
+	@priority = "4"
+	test ObjectDisappearsPageTemplateWhenInactivated {
+		ObjectAdmin.addObjectViaAPI(
+			labelName = "Custom Object",
+			objectName = "CustomObject",
+			pluralLabelName = "Custom Objects");
+
+		ObjectAdmin.publishObjectViaAPI(objectName = "CustomObject");
+
+		ObjectAdmin.openObjectAdmin();
+
+		ObjectPortlet.selectCustomObject(label = "Custom Object");
+
+		CreateObject.checkToggleInactive();
+
+		CreateObject.saveObject();
+
+		VisualizeObjectDisplayPage.openPageTemplate();
+
+		Click(locator1 = "VisualizeObjectDisplayPage#SELECT_BLANK_OBJECT_DISPLAY_PAGE_TEMPLATE");
+
+		Click(locator1 = "VisualizeObjectDisplayPage#OBJECT_CONTENT_TYPE");
+
+		AssertElementNotPresent(
+			key_type = "Custom Object",
+			locator1 = "VisualizeObjectDisplayPage#CONTENT_TYPE_OPTION",
+			value1 = "Custom Object");
+	}
+
+	@description = "LPS-139005 - Verify that the Object is no longer displayed on the Workflow Process Builder page when inactivated"
+	@priority = "4"
+	test ObjectDisappearsProcessBuilderWhenInactivated {
+		ObjectAdmin.addObjectViaAPI(
+			labelName = "Custom Object",
+			objectName = "CustomObject",
+			pluralLabelName = "Custom Objects");
+
+		ObjectAdmin.publishObjectViaAPI(objectName = "CustomObject");
+
+		ObjectAdmin.openObjectAdmin();
+
+		ObjectPortlet.selectCustomObject(label = "Custom Object");
+
+		CreateObject.checkToggleInactive();
+
+		CreateObject.saveObject();
+
+		ObjectAdmin.openWorkflowProcessBuilderConfiguration();
+
+		AssertElementNotPresent(
+			key_workflowResourceValue = "Custom Object",
+			locator1 = "WorkflowConfiguration#RESOURCE_TABLE_WORKFLOW");
+	}
+
+	@description = "LPS-139005 - Verify that the Object is no longer displayed on the Workflow Site Menu page when inactivated"
+	@priority = "4"
+	test ObjectDisappearsWorkflowSiteMenuWhenInactivated {
+		ObjectAdmin.addObjectViaAPI(
+			labelName = "Custom Object",
+			objectName = "CustomObject",
+			panelCategoryKey = "site_administration.content",
+			pluralLabelName = "Custom Objects",
+			scope = "site");
+
+		ObjectAdmin.publishObjectViaAPI(objectName = "CustomObject");
+
+		ObjectAdmin.openObjectAdmin();
+
+		ObjectPortlet.selectCustomObject(label = "Custom Object");
+
+		CreateObject.checkToggleInactive();
+
+		CreateObject.saveObject();
+
+		Navigator.openURL();
+
+		ProductMenu.gotoPortlet(
+			category = "Configuration",
+			portlet = "Workflow");
+
+		AssertElementNotPresent(
+			key_workflowResourceValue = "Custom Object",
+			locator1 = "WorkflowConfiguration#RESOURCE_TABLE_WORKFLOW");
+	}
+
+	@description = "LPS-139005 - Verify that the Object entries are not displayed on Page fragments from an Object that was inactivated"
+	@ignore = "Test Stub"
+	@priority = "4"
+	test ObjectEntriesDisappearsPageFragmentsWhenInactivated {
+
+		// TODO LPS-140867 ObjectEntriesDisappearsPageFragmentsWhenInactivated pending implementation
+
+	}
+
+	@description = "LPS-135649 - Verify that pending and completed Object entries disappears from Workflow Metrics page when they are deleted"
+	@ignore = "Test Stub"
+	@priority = "4"
+	test ObjectEntriesDisappearsWorkflowMetricsWhenDeleted {
+
+		// TODO LPS-141636 ObjectEntriesDisappearsWorkflowMetricsWhenDeleted pending implementation
+
+	}
+
+	@description = "LPS-139005 - Verify that pending and completed Object entries with workflow are not displayed on the Workflow Metrics page when inactivated"
+	@ignore = "Test Stub"
+	@priority = "4"
+	test ObjectEntriesDisappearsWorkflowMetricsWhenInactivated {
+
+		// TODO LPS-140866 ObjectEntriesDisappearsWorkflowMetricsWhenInactivated pending implementation
+
+	}
+
+	@description = "LPS-135649 - Verify that pending and completed Object entries disappears from Workflow pages (My Workflow Tasks, Submissions, and My Submissions) when they are deleted"
+	@ignore = "Test Stub"
+	@priority = "4"
+	test ObjectEntriesDisappearsWorkflowPagesWhenDeleted {
+
+		// TODO LPS-141635 ObjectEntriesDisappearsWorkflowPagesWhenDeleted pending implementation
+
+	}
+
+	@description = "LPS-139005 - Verify that pending and completed Object entries with workflow are not displayed on the workflow pages (My Workflow Tasks, My Submissions, and Submissions) when inactivated"
+	@priority = "4"
+	test ObjectEntriesDisappearsWorkflowPagesWhenInactivated {
+		ObjectAdmin.addObjectViaAPI(
+			labelName = "Custom Object",
+			objectName = "CustomObject",
+			pluralLabelName = "Custom Objects");
+
+		ObjectAdmin.addObjectFieldViaAPI(
+			fieldLabelName = "Custom Field",
+			fieldName = "customObjectField",
+			fieldType = "String",
+			isRequired = "false",
+			objectName = "CustomObject");
+
+		ObjectAdmin.publishObjectViaAPI(objectName = "CustomObject");
+
+		ObjectAdmin.openWorkflowProcessBuilderConfiguration();
+
+		Workflow.configureWorkflow(
+			workflowDefinition = "Single Approver",
+			workflowResourceValue = "Custom Object");
+
+		ObjectAdmin.addObjectSingleFieldEntryViaAPI(
+			fieldName = "customObjectField",
+			objectName = "CustomObject",
+			value = "Test");
+
+		ObjectAdmin.addObjectSingleFieldEntryViaAPI(
+			fieldName = "customObjectField",
+			objectName = "CustomObject",
+			value = "Test 2");
+
+		ObjectAdmin.openMyWorkflowTasks();
+
+		Navigator.gotoNavTab(navTab = "Assigned to My Roles");
+
+		LexiconEntry.gotoEllipsisMenuItem(menuItem = "Assign to Me");
+
+		Workflow.confirmWorkflowAction();
+
+		LexiconEntry.gotoEllipsisMenuItem(menuItem = "Approve");
+
+		Workflow.confirmWorkflowAction();
+
+		ObjectAdmin.openObjectAdmin();
+
+		ObjectPortlet.selectCustomObject(label = "Custom Object");
+
+		CreateObject.checkToggleInactive();
+
+		CreateObject.saveObject();
+
+		ObjectAdmin.openMyWorkflowTasks();
+
+		AssertElementNotPresent(
+			key_workflowAssetTitle = "Custom Object",
+			locator1 = "MyWorkflowTasks#ASSIGNED_TO_ME_TABLE_ASSET_TYPE");
+
+		Navigator.gotoNavTab(navTab = "Assigned to My Roles");
+
+		AssertElementNotPresent(
+			key_workflowAssetTitle = "Custom Object",
+			locator1 = "MyWorkflowTasks#ASSIGNED_TO_ME_TABLE_ASSET_TYPE");
+
+		ObjectAdmin.openMySubmissions();
+
+		AssertElementNotPresent(
+			key_submissionName = "Custom Object",
+			locator1 = "WorkflowSubmissions#SUBMISSION_BY_NAME");
+
+		ObjectAdmin.openSubmissions();
+
+		AssertElementNotPresent(
+			key_submissionName = "Custom Object",
+			locator1 = "WorkflowSubmissions#SUBMISSION_BY_NAME");
+	}
+
+	@description = "LPS-139005 - Verify that the Object entries are displayed again on Page fragments from an Object that was reactivated"
+	@priority = "4"
+	test ObjectEntriesReappearsPageFragmentsWhenReactivated {
+		ObjectAdmin.addObjectViaAPI(
+			labelName = "Custom Object",
+			objectName = "CustomObject",
+			pluralLabelName = "Custom Objects");
+
+		ObjectAdmin.addObjectFieldViaAPI(
+			fieldLabelName = "Custom Field",
+			fieldName = "customObjectField",
+			fieldType = "String",
+			isRequired = "false",
+			objectName = "CustomObject");
+
+		ObjectAdmin.publishObjectViaAPI(objectName = "CustomObject");
+
+		ObjectAdmin.addObjectSingleFieldEntryViaAPI(
+			fieldName = "customObjectField",
+			objectName = "CustomObject",
+			value = "Test 1");
+
+		Navigator.openURL();
+
+		ContentPages.addPage(pageName = "Test Content Page Name");
+
+		PageEditor.addFragment(
+			collectionName = "Basic Components",
+			fragmentName = "Heading");
+
+		VisualizeObjectCollectionDisplay.openHeading();
+
+		VisualizeObjectDisplayPage.addItem(
+			frameTitle = "Select",
+			pluralLabelName = "Custom Objects");
+
+		VisualizeObjectCollectionDisplay.mapFragment(fieldLabel = "Custom Field");
+
+		PageEditor.clickPublish();
+
+		ObjectAdmin.openObjectAdmin();
+
+		ObjectPortlet.selectCustomObject(label = "Custom Object");
+
+		CreateObject.checkToggleInactive();
+
+		CreateObject.saveObject();
+
+		CreateObject.checkToggleActive();
+
+		CreateObject.saveObject();
+
+		Navigator.openURL();
+
+		ProductMenu.gotoPortlet(
+			category = "Site Builder",
+			portlet = "Pages");
+
+		SitePages.gotoPageMenuItem(
+			menuItem = "View",
+			pageName = "Test Content Page Name");
+
+		VisualizeObjectDisplayPage.assertDisplayEntry(entry = "Test 1");
+	}
+
+	@description = "LPS-139005 - Verify that the Object entries with workflow are displayed again on the Workflow Metrics page when reactivated"
+	@ignore = "Test Stub"
+	@priority = "4"
+	test ObjectEntriesReappearsWorkflowMetricsWhenReactivated {
+
+		// TODO LPS-140888 ObjectEntriesReappearsWorkflowMetricsWhenReactivated pending implementation
+
+	}
+
+	@description = "LPS-139005 - Verify that pending and completed Object entries with workflow are displayed again on the workflow pages (My Workflow Tasks, My Submissions, and Submissions) when reactivated"
+	@priority = "4"
+	test ObjectEntriesReappearsWorkflowPagesWhenReactivated {
+		ObjectAdmin.addObjectViaAPI(
+			labelName = "Custom Object",
+			objectName = "CustomObject",
+			pluralLabelName = "Custom Objects");
+
+		ObjectAdmin.addObjectFieldViaAPI(
+			fieldLabelName = "Custom Field",
+			fieldName = "customObjectField",
+			fieldType = "String",
+			isRequired = "false",
+			objectName = "CustomObject");
+
+		ObjectAdmin.publishObjectViaAPI(objectName = "CustomObject");
+
+		ObjectAdmin.openWorkflowProcessBuilderConfiguration();
+
+		Workflow.configureWorkflow(
+			workflowDefinition = "Single Approver",
+			workflowResourceValue = "Custom Object");
+
+		ObjectAdmin.addObjectSingleFieldEntryViaAPI(
+			fieldName = "customObjectField",
+			objectName = "CustomObject",
+			value = "Test");
+
+		ObjectAdmin.addObjectSingleFieldEntryViaAPI(
+			fieldName = "customObjectField",
+			objectName = "CustomObject",
+			value = "Test 2");
+
+		ObjectAdmin.openMyWorkflowTasks();
+
+		Navigator.gotoNavTab(navTab = "Assigned to My Roles");
+
+		LexiconEntry.gotoEllipsisMenuItem(menuItem = "Assign to Me");
+
+		Workflow.confirmWorkflowAction();
+
+		LexiconEntry.gotoEllipsisMenuItem(menuItem = "Approve");
+
+		Workflow.confirmWorkflowAction();
+
+		ObjectAdmin.openObjectAdmin();
+
+		ObjectPortlet.selectCustomObject(label = "Custom Object");
+
+		CreateObject.checkToggleInactive();
+
+		CreateObject.saveObject();
+
+		CreateObject.checkToggleActive();
+
+		CreateObject.saveObject();
+
+		ObjectAdmin.openMyWorkflowTasks();
+
+		AssertElementPresent(
+			key_workflowAssetTitle = "Custom Object",
+			locator1 = "MyWorkflowTasks#ASSIGNED_TO_ME_TABLE_ASSET_TYPE");
+
+		Navigator.gotoNavTab(navTab = "Assigned to My Roles");
+
+		AssertElementPresent(
+			key_workflowAssetTitle = "Custom Object",
+			locator1 = "MyWorkflowTasks#ASSIGNED_TO_ME_TABLE_ASSET_TYPE");
+
+		ObjectAdmin.openMySubmissions();
+
+		AssertElementPresent(
+			key_submissionName = "Custom Object",
+			locator1 = "WorkflowSubmissions#SUBMISSION_BY_NAME");
+
+		ObjectAdmin.openSubmissions();
+
+		AssertElementPresent(
+			key_submissionName = "Custom Object",
+			locator1 = "WorkflowSubmissions#SUBMISSION_BY_NAME");
+	}
+
+	@description = "LPS-135649 - Verify the Asset Title, Asset Type and Item Subject of a Object's entry on the Workflow Metrics page"
+	@ignore = "Test Stub"
+	@priority = "4"
+	test ObjectInfoDisplayedOnWorkflowMetrics {
+
+		// TODO LPS-141631 ObjectInfoDisplayedOnWorkflowMetrics pending implementation
+
+	}
+
+	@description = "LPS-135551 - Verify that the Object's plural label is displayed on the chosen panel"
+	@ignore = "Test Stub"
+	@priority = "5"
+	test ObjectLabelDisplayedOnPanel {
+		property portal.acceptance = "true";
+
+		// TODO LPS-141647 ObjectLabelDisplayedOnPanel pending implementation
+
+	}
+
+	@description = "LPS-139603 - Verify that the Object Label is displayed on the Relationship tab when a Relationship is created"
+	@ignore = "Test Stub"
+	@priority = "4"
+	test ObjectLabelDisplayedOnTheRelationshipTab {
+
+		// TODO LPS-141681 ObjectLabelDisplayedOnTheRelationshipTab pending implementation
+
 	}
 
 	@description = "LPS-135549 - Verify that the Object Name is autofilled when Label is filled"
@@ -1318,6 +3322,513 @@ definition {
 		CreateObject.assertObjectDefinitionName(objectName = "CustomObject");
 	}
 
+	@description = "LPS-135649 - Verify that when Objects are not scoped by Site it should not be displayed on the Workflow settings from the Site Menu"
+	@ignore = "Test Stub"
+	@priority = "4"
+	test ObjectNotScopedBySiteNotDisplayedOnSiteMenu {
+
+		// TODO LPS-141633 ObjectNotScopedBySiteNotDisplayedOnSiteMenu pending implementation
+
+	}
+
+	@description = "LPS-139005 - Verify that the Object portlet is no longer displayed on the Open Menu when inactivated"
+	@priority = "5"
+	test ObjectPorletDisappearsOpenMenuWhenInactivated {
+		property portal.acceptance = "true";
+
+		ObjectAdmin.addObjectViaAPI(
+			labelName = "Custom Object",
+			objectName = "CustomObject",
+			pluralLabelName = "Custom Objects");
+
+		ObjectAdmin.publishObjectViaAPI(objectName = "CustomObject");
+
+		ObjectAdmin.openObjectAdmin();
+
+		ObjectPortlet.selectCustomObject(label = "Custom Object");
+
+		CreateObject.checkToggleInactive();
+
+		CreateObject.saveObject();
+
+		ApplicationsMenuHelper.openApplicationsMenu();
+
+		ApplicationsMenu.gotoPanel(panel = "Control Panel");
+
+		AssertElementNotPresent(
+			key_category = "Object",
+			key_portlet = "Custom Objects",
+			locator1 = "ApplicationsMenu#PORTLET");
+	}
+
+	@description = "LPS-139005 - Verify that the Object portlet is no longer displayed on the Site Menu when inactivated"
+	@priority = "4"
+	test ObjectPorletDisappearsSiteMenuWhenInactivated {
+		ObjectAdmin.addObjectViaAPI(
+			labelName = "Custom Object",
+			objectName = "CustomObject",
+			panelCategoryKey = "site_administration.content",
+			pluralLabelName = "Custom Objects",
+			scope = "site");
+
+		ObjectAdmin.publishObjectViaAPI(objectName = "CustomObject");
+
+		ObjectAdmin.openObjectAdmin();
+
+		ObjectPortlet.selectCustomObject(label = "Custom Object");
+
+		CreateObject.checkToggleInactive();
+
+		CreateObject.saveObject();
+
+		Navigator.openURL();
+
+		ProductMenuHelper.openProductMenu();
+
+		ProductMenuHelper.expandCategory(category = "Content & Data");
+
+		AssertElementNotPresent(
+			key_portlet = "Custom Object",
+			locator1 = "ProductMenu#PORTLET",
+			value1 = "Custom Object");
+	}
+
+	@description = "LPS-139005 - Verify that the Object portlet is displayed again on the Open Menu when reactivated"
+	@ignore = "Test Stub"
+	@priority = "4"
+	test ObjectPortletReappearsOpenMenuWhenReactivated {
+
+		// TODO LPS-140876 ObjectPortletReappearsOpenMenuWhenReactivated pending implementation
+
+	}
+
+	@description = "LPS-139005 - Verify that the Object portlet is displayed again on the Site Menu when reactivated"
+	@ignore = "Test Stub"
+	@priority = "4"
+	test ObjectPortletReappearsSiteMenuWhenReactivated {
+
+		// TODO LPS-140877 ObjectPortletReappearsSiteMenuWhenReactivated pending implementation
+
+	}
+
+	@description = "LPS-139005 - Verify that the Object is displayed again on the Collection Providers when reactivated"
+	@priority = "4"
+	test ObjectReappearsCollectionProvidersWhenReactivated {
+		ObjectAdmin.addObjectViaAPI(
+			labelName = "Custom Object",
+			objectName = "CustomObject",
+			pluralLabelName = "Custom Objects");
+
+		ObjectAdmin.publishObjectViaAPI(objectName = "CustomObject");
+
+		ObjectAdmin.openObjectAdmin();
+
+		ObjectPortlet.selectCustomObject(label = "Custom Object");
+
+		CreateObject.checkToggleInactive();
+
+		CreateObject.saveObject();
+
+		CreateObject.checkToggleActive();
+
+		CreateObject.saveObject();
+
+		VisualizeObjectCollectionDisplay.openObjectCollectionProvider();
+
+		AssertElementPresent(
+			key_labelName = "Custom Objects",
+			locator1 = "VisualizeObjectCollectionDisplay#VIEW_OBJECT_COLLECTION_DISPLAY");
+	}
+
+	@description = "LPS-139005 - Verify that the Object is displayed again on the Form's storage type when reactivated"
+	@priority = "4"
+	test ObjectReappearsFormStorageTypeWhenReactivated {
+		ObjectAdmin.addObjectViaAPI(
+			labelName = "Custom Object",
+			objectName = "CustomObject",
+			pluralLabelName = "Custom Objects");
+
+		ObjectAdmin.publishObjectViaAPI(objectName = "CustomObject");
+
+		ObjectAdmin.openObjectAdmin();
+
+		ObjectPortlet.selectCustomObject(label = "Custom Object");
+
+		CreateObject.checkToggleInactive();
+
+		CreateObject.saveObject();
+
+		CreateObject.checkToggleActive();
+
+		CreateObject.saveObject();
+
+		PopulateObjectFormsConfiguration.openForm();
+
+		FormsAdminNavigator.gotoAddForm();
+
+		PopulateObjectFormsConfiguration.openFormSettings();
+
+		PopulateObjectFormsConfiguration.selectObject(label = "Object");
+
+		Click(locator1 = "PopulateObjectFormsConfiguration#DEFAULT_SELECT_OBJECT");
+
+		AssertElementPresent(
+			key_label = "Custom Object",
+			locator1 = "PopulateObjectFormsConfiguration#DISPLAY_SELECT_OBJECT");
+	}
+
+	@description = "LPS-139005 - Verify that the Object is displayed again on the Page Item Selector when reactivated"
+	@priority = "4"
+	test ObjectReappearsPageItemSelectorWhenReactivated {
+		ObjectAdmin.addObjectViaAPI(
+			labelName = "Custom Object",
+			objectName = "CustomObject",
+			pluralLabelName = "Custom Objects");
+
+		ObjectAdmin.publishObjectViaAPI(objectName = "CustomObject");
+
+		ObjectAdmin.openObjectAdmin();
+
+		ObjectPortlet.selectCustomObject(label = "Custom Object");
+
+		CreateObject.checkToggleInactive();
+
+		CreateObject.saveObject();
+
+		CreateObject.checkToggleActive();
+
+		CreateObject.saveObject();
+
+		Navigator.openURL();
+
+		ContentPages.addPage(pageName = "Test Content Page Name");
+
+		PageEditor.addFragment(
+			collectionName = "Basic Components",
+			fragmentName = "Heading");
+
+		VisualizeObjectCollectionDisplay.openHeading();
+
+		Click.javaScriptClick(locator1 = "VisualizeObjectDisplayPage#SELECT_ITEM");
+
+		SelectFrame(
+			key_title = "Select",
+			locator1 = "IFrame#MODAL_ANY");
+
+		AssertElementPresent(
+			key_pluralLabelName = "Custom Objects",
+			locator1 = "VisualizeObjectDisplayPage#SELECT_OBJECT");
+	}
+
+	@description = "LPS-139005 - Verify that the Object is displayed again on the Page Template (subtype) when reactivated"
+	@priority = "4"
+	test ObjectReappearsPageTemplateWhenReactivated {
+		ObjectAdmin.addObjectViaAPI(
+			labelName = "Custom Object",
+			objectName = "CustomObject",
+			pluralLabelName = "Custom Objects");
+
+		ObjectAdmin.publishObjectViaAPI(objectName = "CustomObject");
+
+		ObjectAdmin.openObjectAdmin();
+
+		ObjectPortlet.selectCustomObject(label = "Custom Object");
+
+		CreateObject.checkToggleInactive();
+
+		CreateObject.saveObject();
+
+		CreateObject.checkToggleActive();
+
+		CreateObject.saveObject();
+
+		VisualizeObjectDisplayPage.openPageTemplate();
+
+		Click(locator1 = "VisualizeObjectDisplayPage#SELECT_BLANK_OBJECT_DISPLAY_PAGE_TEMPLATE");
+
+		Click(locator1 = "VisualizeObjectDisplayPage#OBJECT_CONTENT_TYPE");
+
+		AssertElementPresent(
+			locator1 = "VisualizeObjectDisplayPage#OBJECT_CONTENT_TYPE",
+			value1 = "Custom Object");
+	}
+
+	@description = "LPS-139005 - Verify that the Object is displayed again on the Workflow Process Builder page when reactivated"
+	@ignore = "Test Stub"
+	@priority = "4"
+	test ObjectReappearsProcessBuilderWhenReactivated {
+
+		// TODO LPS-140878 ObjectReappearsProcessBuilderWhenReactivated pending implementation
+
+	}
+
+	@description = "LPS-139005 - Verify that the Object is displayed again on the Workflow Site Menu page when reactivated"
+	@ignore = "Test Stub"
+	@priority = "4"
+	test ObjectReappearsWorkflowSiteMenuWhenReactivated {
+
+		// TODO LPS-140879 ObjectReappearsWorkflowSiteMenuWhenReactivated pending implementation
+
+	}
+
+	@description = "LPS-135551 - Verify that when the Object is scoped by Site each site will have its own entries"
+	@ignore = "Test Stub"
+	@priority = "4"
+	test ObjectScopedBySiteEntries {
+
+		// TODO LPS-141649 ObjectScopedBySiteEntries pending implementation
+
+	}
+
+	@description = "LPS-137741 - Verify that Objects created on a Virtual Instance are not displayed on the Panel of the Main Instance and vice versa"
+	@ignore = "Test Stub"
+	@priority = "4"
+	test PanelDisplaysOnlyItsInstanceObjects {
+
+		// TODO LPS-141683 PanelDisplaysOnlyItsInstanceObjects pending implementation
+
+	}
+
+	@description = "LPS-135401 - Verify that by default the Prevent deletion type of Relationship is selected"
+	@ignore = "Test Stub"
+	@priority = "4"
+	test PreventDeletionIsDefault {
+
+		// TODO LPS-141664 PreventDeletionIsDefault pending implementation
+
+	}
+
+	@description = "LPS-135401 - Verify if Prevent deletion type of Relationship Many to Many won't allow the user to delete an entry with relation"
+	@ignore = "Test Stub"
+	@priority = "4"
+	test PreventDeletionManyToManyWontAllowDelete {
+
+		// TODO LPS-141665 PreventDeletionManyToManyWontAllowDelete pending implementation
+
+	}
+
+	@description = "LPS-135401 - Verify if Prevent deletion type of Relationship One to Many will allow the user to delete an entry with relation from the child Object"
+	@ignore = "Test Stub"
+	@priority = "4"
+	test PreventDeletionOneToManyWillAllowDelete {
+
+		// TODO LPS-141667 PreventDeletionOneToManyWillAllowDelete pending implementation
+
+	}
+
+	@description = "LPS-135401 - Verify if Prevent deletion type of Relationship One to Many won't allow the user to delete an entry with relation from the parent Object"
+	@ignore = "Test Stub"
+	@priority = "5"
+	test PreventDeletionOneToManyWontAllowDelete {
+		property portal.acceptance = "true";
+
+		// TODO LPS-141666 PreventDeletionOneToManyWontAllowDelete pending implementation
+
+	}
+
+	@description = "LPS-135401 - Verify if Prevent deletion type of Relationship One to Many (self-reference) will allow the user to delete a child entry with relation"
+	@ignore = "Test Stub"
+	@priority = "4"
+	test PreventDeletionSelfOneToManyWillAllowDelete {
+
+		// TODO LPS-141669 PreventDeletionSelfOneToManyWillAllowDelete pending implementation
+
+	}
+
+	@description = "LPS-135401 - Verify if Prevent deletion type of Relationship One to Many (self-reference) won't allow the user to delete a parent entry with relation"
+	@ignore = "Test Stub"
+	@priority = "4"
+	test PreventDeletionSelfOneToManyWontAllowDelete {
+
+		// TODO LPS-141668 PreventDeletionSelfOneToManyWontAllowDelete pending implementation
+
+	}
+
+	@description = "LPS-139418 - Verify that previous filled data is not kept when cancelling the creation of an Object"
+	@ignore = "Test Stub"
+	@priority = "4"
+	test PreviousFilledDataIsNotKeptAfterCancel {
+
+		// TODO LPS-141686 PreviousFilledDataIsNotKeptAfterCancel pending implementation
+
+	}
+
+	@description = "LPS-135400 - Verify that relationship field is automatically created"
+	@priority = "5"
+	test RelationshipFieldAutomaticallyCreated {
+		property portal.acceptance = "true";
+
+		ObjectAdmin.addObjectViaAPI(
+			labelName = "Custom Object A",
+			objectName = "CustomObjectA",
+			pluralLabelName = "Custom Objects");
+
+		ObjectAdmin.addObjectViaAPI(
+			labelName = "Custom Object B",
+			objectName = "CustomObjectB",
+			pluralLabelName = "Custom Objects");
+
+		ObjectAdmin.openObjectAdmin();
+
+		ObjectPortlet.selectCustomObject(label = "Custom Object A");
+
+		ObjectAdmin.gotoRelationshipsTab();
+
+		ObjectAdmin.addObjectRelationshipViaUI(
+			label = "Relationship",
+			object = "CustomObjectB",
+			type = "One to Many");
+
+		ObjectAdmin.openObjectAdmin();
+
+		ObjectPortlet.selectCustomObject(label = "Custom Object B");
+
+		ObjectAdmin.goToFieldsTab();
+
+		ObjectAdmin.assertObjectField(
+			fieldLabel = "Custom Object A",
+			fieldType = "Long");
+	}
+
+	@description = "LPS-139005 - Verify that the Relationship field will not be displayed on a Collection Display with List Style set as Table when the parent object is inactivated"
+	@ignore = "Test Stub"
+	@priority = "4"
+	test RelationshipFieldCannotBeDisplayedForCollectionDisplayTableWhenInactivated {
+
+		// TODO LPS-140871 RelationshipFieldCannotBeDisplayedForCollectionDisplayTableWhenInactivated pending implementation
+
+	}
+
+	@description = "LPS-139005 - Verify that the Relationship field will not be displayed to be selected for a Page fragment when the parent object is inactivated"
+	@ignore = "Test Stub"
+	@priority = "4"
+	test RelationshipFieldCannotBeSelectedForPageFragmentWhenInactivated {
+
+		// TODO LPS-140870 RelationshipFieldCannotBeSelectedForPageFragmentWhenInactivated pending implementation
+
+	}
+
+	@description = "LPS-139005 - Verify that the Relationship field is no longer displayed when the parent object is inactivated (One to Many)"
+	@priority = "4"
+	test RelationshipFieldDisappearsWhenInactivatedOneToMany {
+		for (var letter : list "A,B") {
+			ObjectAdmin.addObjectViaAPI(
+				labelName = "Custom Object ${letter}",
+				objectName = "CustomObject${letter}",
+				pluralLabelName = "Custom Objects ${letter}");
+		}
+
+		for (var letter : list "A,B") {
+			ObjectAdmin.addObjectFieldViaAPI(
+				fieldLabelName = "Custom Field ${letter}",
+				fieldName = "customObjectField${letter}",
+				fieldType = "String",
+				isRequired = "false",
+				objectName = "CustomObject${letter}");
+		}
+
+		ObjectAdmin.addObjectRelationshipViaAPI(
+			objectName_1 = "CustomObjectA",
+			objectName_2 = "CustomObjectB",
+			relationshipLabel = "Relationship",
+			relationshipName = "relationship",
+			relationshipType = "oneToMany");
+
+		ObjectAdmin.publishObjectViaAPI(objectName = "CustomObjectA");
+
+		ObjectAdmin.publishObjectViaAPI(objectName = "CustomObjectB");
+
+		ObjectAdmin.addObjectSingleFieldEntryViaAPI(
+			fieldName = "customObjectFieldB",
+			objectName = "CustomObjectB",
+			value = "Entry 1");
+
+		ObjectAdmin.openObjectAdmin();
+
+		ObjectPortlet.selectCustomObject(label = "Custom Object A");
+
+		CreateObject.checkToggleInactive();
+
+		CreateObject.saveObject();
+
+		Navigator.openURL();
+
+		ApplicationsMenu.gotoPortlet(
+			category = "Object",
+			panel = "Control Panel",
+			portlet = "Custom Objects B");
+
+		LexiconEntry.gotoAdd();
+
+		AssertElementNotPresent(
+			key_fieldLabelName = "Custom Field A",
+			locator1 = "ObjectPortlet#FIELD_LABEL_NAME",
+			value1 = "Custom Field A");
+
+		Navigator.gotoBack();
+
+		ObjectPortlet.viewEntryDetails(entry = "Entry 1");
+
+		AssertElementNotPresent(
+			key_fieldLabelName = "Custom Field A",
+			locator1 = "ObjectPortlet#FIELD_LABEL_NAME",
+			value1 = "Custom Field A");
+	}
+
+	@description = "LPS-135401 - Verify that the Relationship field is not created"
+	@ignore = "Test Stub"
+	@priority = "4"
+	test RelationshipFieldNotCreatedOnManyToMany {
+
+		// TODO LPS-141659 RelationshipFieldNotCreatedOnManyToMany pending implementation
+
+	}
+
+	@description = "LPS-139005 - Verify that the Relationship field is displayed again when the parent object is reactivated (One to Many)"
+	@ignore = "Test Stub"
+	@priority = "4"
+	test RelationshipFieldReappearsWhenReactivatedOneToMany {
+
+		// TODO LPS-140869 RelationshipFieldReappearsWhenReactivatedOneToMany pending implementation
+
+	}
+
+	@description = "LPS-139005 - Verify that the Relationship tab is no longer displayed when the other object is inactivated (Many to Many)"
+	@ignore = "Test Stub"
+	@priority = "4"
+	test RelationshipTabDisappearsWhenInactivatedManyToMany {
+
+		// TODO LPS-140874 RelationshipTabDisappearsWhenInactivatedManyToMany pending implementation
+
+	}
+
+	@description = "LPS-139005 - Verify that the Relationship tab is no longer displayed when the child object is inactivated (One to Many)"
+	@ignore = "Test Stub"
+	@priority = "4"
+	test RelationshipTabDisappearsWhenInactivatedOneToMany {
+
+		// TODO LPS-140872 RelationshipTabDisappearsWhenInactivatedOneToMany pending implementation
+
+	}
+
+	@description = "LPS-139005 - Verify that the Relationship tab is displayed again when the other object is reactivated (Many to Many)"
+	@ignore = "Test Stub"
+	@priority = "4"
+	test RelationshipTabReappearsWhenReactivatedManyToMany {
+
+		// TODO LPS-140875 RelationshipTabReappearsWhenReactivatedManyToMany pending implementation
+
+	}
+
+	@description = "LPS-139005 - Verify that the Relationship tab is displayed again when the child object is reactivated (One to Many)"
+	@ignore = "Test Stub"
+	@priority = "4"
+	test RelationshipTabReappearsWhenReactivatedOneToMany {
+
+		// TODO LPS-140873 RelationshipTabReappearsWhenReactivatedOneToMany pending implementation
+
+	}
+
 	@description = "LPS-135549 - Verify that the columns Name, System and Status displays the correct value on the Objects table when a Custom Object is created"
 	@priority = "4"
 	test TableDisplayCorrectValueWhenObjectCreated {
@@ -1329,9 +3840,18 @@ definition {
 		ObjectAdmin.openObjectAdmin();
 
 		ObjectAdmin.assertObjectColumnValue(
-			name = "CustomObject",
+			label = "Custom Object",
 			status = "Draft",
 			system = "No");
+	}
+
+	@description = "LPS-138213 - Verify that updated data is kept when clicking on the Publish button"
+	@ignore = "Test Stub"
+	@priority = "4"
+	test UpdatedDataIsKeptWhenPublishing {
+
+		// TODO LPS-141685 UpdatedDataIsKeptWhenPublishing pending implementation
+
 	}
 
 	@description = "LPS-135548 - Verify that user can view custom objects"
@@ -1346,7 +3866,7 @@ definition {
 
 		ObjectAdmin.openObjectAdmin();
 
-		ObjectAdmin.viewCustomObject(name = "CustomObject");
+		ObjectAdmin.viewCustomObject(name = "Custom Object");
 	}
 
 	@description = "LPS-135548 - Verify that user can view system objects"
@@ -1357,6 +3877,42 @@ definition {
 		ObjectAdmin.openObjectAdmin();
 
 		ObjectAdmin.viewSystemObject(name = "User");
+	}
+
+	@description = "LPS-135649 - Verify that a withdrawn pending entry is displayed with a Draft status"
+	@ignore = "Test Stub"
+	@priority = "4"
+	test WithdrawnEntryDisplaysDraftStatus {
+
+		// TODO LPS-141630 WithdrawnEntryDisplaysDraftStatus pending implementation
+
+	}
+
+	@description = "LPS-135649 - Verify that the workflow is triggered when submitting an entry through Forms"
+	@ignore = "Test Stub"
+	@priority = "4"
+	test WorkflowTriggeredWhenSubmitingEntryThroughForms {
+
+		// TODO LPS-141627 WorkflowTriggeredWhenSubmitingEntryThroughForms pending implementation
+
+	}
+
+	@description = "LPS-135649 - Verify that the workflow is triggered when submitting an entry through Custom Object portlet"
+	@ignore = "Test Stub"
+	@priority = "4"
+	test WorkflowTriggeredWhenSubmitingEntryThroughObjectPortlet {
+
+		// TODO LPS-141628 WorkflowTriggeredWhenSubmitingEntryThroughObjectPortlet pending implementation
+
+	}
+
+	@description = "LPS-135649 - Verify that the workflow is triggered when submitting an entry when Object is scoped by Site and the workflow was assigned on the Workflow settings from the Site Menu"
+	@ignore = "Test Stub"
+	@priority = "4"
+	test WorkflowTriggeredWhenSubmitingEntryThroughObjectPortletFromSiteMenu {
+
+		// TODO LPS-141632 WorkflowTriggeredWhenSubmitingEntryThroughObjectPortletFromSiteMenu pending implementation
+
 	}
 
 }

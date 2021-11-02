@@ -115,7 +115,7 @@ definition {
 	@description = "This is a test for LPS-136818. It checks that a folder with multiple files can be published using the SAP."
 	@priority = "4"
 	test CanPublishFolderWithMultipleFilesViaSAP {
-		JSONDocument.addFolder(
+		JSONFolder.addFolder(
 			dmFolderDescription = "DM Folder Description",
 			dmFolderName = "DM Folder Name",
 			groupName = "Site Name-staging");
@@ -476,18 +476,24 @@ definition {
 
 	@description = "This test covers LPS-82539."
 	@priority = "5"
-	@refactorneeded
+	@refactordone
 	test PendingEntryWillNotBePublishedToLive {
-		DMFolder.addCP(
+		JSONFolder.addFolder(
 			dmFolderDescription = "DM Folder Description",
-			dmFolderName = "DM Folder 1");
+			dmFolderName = "DM Folder 1",
+			groupName = "Site Name-staging");
+
+		DMNavigator.openDocumentsAndMediaAdmin(siteURLKey = "site-name-staging");
 
 		DMFolder.configureWorkflowCP(
 			dmFolderName = "DM Folder 1",
 			workflowDefinition = "Single Approver",
 			workflowRestriction = "Default Workflow");
 
-		DMFolder.viewCP(dmFolderName = "DM Folder 1");
+		DMNavigator.openToFolderInAdmin(
+			dmFolderName = "DM Folder 1",
+			groupName = "Site Name-staging",
+			siteURLKey = "site-name");
 
 		DMDocument.addWithWorkflowCP(
 			dmDocumentDescription = "DM Document in Folder 1",
@@ -499,26 +505,13 @@ definition {
 			locator1 = "DocumentsAndMedia#ICON_DOCUMENT_WORKFLOW_STATUS",
 			value1 = "Pending");
 
-		ProductMenu.gotoPortlet(
-			category = "Content &amp; Data",
-			portlet = "Documents and Media");
+		DMNavigator.openDocumentsAndMediaAdmin(siteURLKey = "site-name-staging");
 
 		Staging.publishViaSAP(
 			confirmMessage = "Are you sure you want to publish the selected folder?",
 			entry = "DM Folder 1");
 
-		ProductMenu.gotoLiveSite(site = "Guest");
-
-		ProductMenu.gotoPortlet(
-			category = "Content &amp; Data",
-			portlet = "Documents and Media");
-
-		LexiconEntry.changeDisplayStyle(displayStyle = "list");
-
-		AssertTextEquals(
-			key_dmFolderName = "DM Folder 1",
-			locator1 = "DocumentsAndMedia#DESCRIPTIVE_LIST_FOLDER_TITLE",
-			value1 = "DM Folder 1");
+		DMNavigator.openDocumentsAndMediaAdmin(siteURLKey = "site-name");
 
 		DMFolder.viewCP(dmFolderName = "DM Folder 1");
 
@@ -538,7 +531,7 @@ definition {
 			dmDocumentTypeFieldNames = "Text",
 			dmDocumentTypeName = "DM Document Type Name");
 
-		JSONDocument.addFolder(
+		JSONFolder.addFolder(
 			dmFolderDescription = "DM Folder Description",
 			dmFolderName = "DM Folder Name",
 			groupName = "Site Name-staging");
@@ -903,7 +896,7 @@ definition {
 	test PublishSubfolderWithDocumentsViaSAP {
 		property test.name.skip.portal.instance = "StagingDM#PublishSubfolderWithDocumentsViaSAP";
 
-		JSONDocument.addFolder(
+		JSONFolder.addFolder(
 			dmFolderDescription = "DM Folder Description",
 			dmFolderName = "DM Folder 1",
 			groupName = "Site Name-staging");
@@ -916,7 +909,7 @@ definition {
 			mimeType = "text/plain",
 			sourceFileName = "Document_1.txt");
 
-		JSONDocument.addFolder(
+		JSONFolder.addFolder(
 			dmFolderDescription = "DM Folder Description",
 			dmFolderName = "DM Folder 2",
 			groupName = "Site Name-staging",

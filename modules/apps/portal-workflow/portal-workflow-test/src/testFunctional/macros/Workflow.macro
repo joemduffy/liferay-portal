@@ -59,6 +59,36 @@ definition {
 			value1 = "${workflowActivityComment}");
 	}
 
+	macro addAssigneeToRegularRole {
+		Role._goToRoleAssigneeType(
+			assigneeType = "${assigneeType}",
+			roleTitle = "${roleTitle}");
+
+		LexiconEntry.gotoAdd();
+
+		WaitForLiferayEvent.initializeLiferayEventLog();
+
+		SelectFrame(locator1 = "IFrame#SELECT_ASSIGNEES");
+
+		Search.searchCP(searchTerm = "${assigneeName}");
+
+		var key_userScreenName = "${assigneeName}";
+
+		AssertTextEquals(
+			locator1 = "RolesAssignMembers#USER_TABLE_SCREEN_NAME",
+			value1 = "${assigneeName}");
+
+		var key_assigneeName = "${assigneeName}";
+
+		Check(locator1 = "RolesAssignMembers#ADD_ASSIGNEE_TABLE_CHECKBOX");
+
+		SelectFrameTop(value1 = "relative=top");
+
+		Button.clickAdd();
+
+		Alert.viewSuccessMessage();
+	}
+
 	macro addNewDefinition {
 		LexiconEntry.gotoAdd();
 
@@ -1038,9 +1068,27 @@ definition {
 			KaleoDesigner.viewSourceXMLTab();
 		}
 
-		UploadCommonFile.uploadCommonFileHiddenNoMouseOver(
-			locator1 = "TextInput#FILE",
-			value1 = "${workflowDefinitionFile}");
+		var projectDir = PropsUtil.get("project.dir");
+
+		if (isSet(workflowDefinitionFilePath)) {
+			UploadFile(
+				locator1 = "TextInput#FILE",
+				value1 = "${projectDir}/modules/${workflowDefinitionFilePath}/src/testFunctional/tests/dependencies/${workflowDefinitionFile}");
+		}
+		else {
+			var fileExists = FileUtil.exists("${projectDir}/modules/dxp/apps/portal-workflow/portal-workflow-metrics-test/src/testFunctional/tests/dependencies/${workflowDefinitionFile}");
+
+			if ("${fileExists}" == "true") {
+				UploadFile(
+					locator1 = "TextInput#FILE",
+					value1 = "${projectDir}/modules/dxp/apps/portal-workflow/portal-workflow-metrics-test/src/testFunctional/tests/dependencies/${workflowDefinitionFile}");
+			}
+			else {
+				UploadFile(
+					locator1 = "TextInput#FILE",
+					value1 = "${projectDir}/modules/apps/portal-workflow/portal-workflow-test/src/testFunctional/tests/dependencies/${workflowDefinitionFile}");
+			}
+		}
 
 		Alert.viewSuccessMessageText(successMessage = "Definition imported successfully.");
 

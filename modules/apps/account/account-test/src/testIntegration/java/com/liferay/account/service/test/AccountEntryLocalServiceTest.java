@@ -58,6 +58,7 @@ import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.LinkedHashMapBuilder;
 import com.liferay.portal.kernel.util.ListUtil;
+import com.liferay.portal.kernel.util.OrderByComparatorFactoryUtil;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.portal.search.test.util.SearchTestRule;
 import com.liferay.portal.test.rule.Inject;
@@ -540,6 +541,36 @@ public class AccountEntryLocalServiceTest {
 	}
 
 	@Test
+	public void testGetUserAccountEntriesOrderByComparator() throws Exception {
+		User user = UserTestUtil.addUser();
+
+		List<AccountEntry> accountEntries = Arrays.asList(
+			_addUserAccountEntry(
+				user.getUserId(), RandomTestUtil.randomString(), null,
+				AccountConstants.ACCOUNT_ENTRY_TYPE_BUSINESS, null),
+			_addUserAccountEntry(
+				user.getUserId(), RandomTestUtil.randomString(), null,
+				AccountConstants.ACCOUNT_ENTRY_TYPE_BUSINESS, null),
+			_addUserAccountEntry(
+				user.getUserId(), RandomTestUtil.randomString(), null,
+				AccountConstants.ACCOUNT_ENTRY_TYPE_BUSINESS, null));
+
+		accountEntries.sort(
+			Comparator.comparing(
+				AccountEntry::getName, String.CASE_INSENSITIVE_ORDER));
+
+		Assert.assertEquals(
+			accountEntries,
+			_accountEntryLocalService.getUserAccountEntries(
+				user.getUserId(), null, null,
+				new String[] {AccountConstants.ACCOUNT_ENTRY_TYPE_BUSINESS},
+				WorkflowConstants.STATUS_APPROVED, QueryUtil.ALL_POS,
+				QueryUtil.ALL_POS,
+				OrderByComparatorFactoryUtil.create(
+					"AccountEntry", "name", true)));
+	}
+
+	@Test
 	public void testGetUserAccountEntriesWithKeywords() throws Exception {
 		User user = UserTestUtil.addUser();
 
@@ -715,13 +746,24 @@ public class AccountEntryLocalServiceTest {
 		_assertSearchWithParams(
 			Collections.singletonList(businessAccountEntry),
 			_getLinkedHashMap(
-				"type", AccountConstants.ACCOUNT_ENTRY_TYPE_BUSINESS));
+				"types",
+				new String[] {AccountConstants.ACCOUNT_ENTRY_TYPE_BUSINESS}));
 		_assertSearchWithParams(
 			Collections.singletonList(personAccountEntry),
 			_getLinkedHashMap(
-				"type", AccountConstants.ACCOUNT_ENTRY_TYPE_PERSON));
+				"types",
+				new String[] {AccountConstants.ACCOUNT_ENTRY_TYPE_PERSON}));
 		_assertSearchWithParams(
-			Collections.emptyList(), _getLinkedHashMap("type", "invalidType"));
+			Arrays.asList(businessAccountEntry, personAccountEntry),
+			_getLinkedHashMap(
+				"types",
+				new String[] {
+					AccountConstants.ACCOUNT_ENTRY_TYPE_BUSINESS,
+					AccountConstants.ACCOUNT_ENTRY_TYPE_PERSON
+				}));
+		_assertSearchWithParams(
+			Collections.emptyList(),
+			_getLinkedHashMap("types", new String[] {"invalidType"}));
 	}
 
 	@Test

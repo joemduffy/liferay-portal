@@ -104,18 +104,17 @@ definition {
 		}
 
 		task ("View selected page is linked to Button fragment") {
-			var baseURL = PropsUtil.get("portal.url");
-
 			AssertVisible(
 				key_append = "/parent::div[contains(@class,'component-button')]",
-				key_URL = "${baseURL}/web/test-site-name/test-widget-page-name",
+				key_URL = "/web/test-site-name/test-widget-page-name",
 				locator1 = "Fragment#FRAGMENT_LINK");
 		}
 
 		task ("View the selected page is shown in Page field") {
-			AssertVisible(
-				key_contentName = "Test Widget Page Name",
-				locator1 = "PageEditor#ITEM_SELECTOR_CONTENT_INPUT");
+			AssertTextEquals(
+				key_fieldLabel = "Page",
+				locator1 = "PageEditor#ITEM_SELECTOR_CONTENT_INPUT",
+				value1 = "Test Widget Page Name");
 		}
 
 		task ("Link the content page to Button fragment") {
@@ -128,14 +127,15 @@ definition {
 		task ("View selected page is linked to Button fragment") {
 			AssertVisible(
 				key_append = "/parent::div[contains(@class,'component-button')]",
-				key_URL = "${baseURL}/web/test-site-name/test-content-page-name",
+				key_URL = "/web/test-site-name/test-content-page-name",
 				locator1 = "Fragment#FRAGMENT_LINK");
 		}
 
 		task ("View the selected page is shown in Page field") {
-			AssertVisible(
-				key_contentName = "Test Content Page Name",
-				locator1 = "PageEditor#ITEM_SELECTOR_CONTENT_INPUT");
+			AssertTextEquals(
+				key_fieldLabel = "Page",
+				locator1 = "PageEditor#ITEM_SELECTOR_CONTENT_INPUT",
+				value1 = "Test Content Page Name");
 		}
 
 		task ("Clear the selection") {
@@ -154,7 +154,7 @@ definition {
 		task ("View the text placeholder is shown in Page field") {
 			AssertAttributeValue(
 				attribute1 = "placeholder",
-				key_contentName = "",
+				key_fieldLabel = "Page",
 				locator1 = "PageEditor#ITEM_SELECTOR_CONTENT_INPUT",
 				value1 = "Select Page");
 		}
@@ -172,6 +172,7 @@ definition {
 
 	@description = "This is a test for LPS-98241 and LPS-99749. The user could configure the Card fragment in page editor."
 	@priority = "5"
+	@uitest
 	test ConfigureBasicComponentCard {
 		property portal.acceptance = "true";
 
@@ -276,7 +277,7 @@ definition {
 		}
 
 		task ("Remove the Heading") {
-			ContentPages.clickPencil();
+			ContentPages.gotoPageEditor();
 
 			PageEditor.removeFragment(fragmentName = "Heading");
 		}
@@ -300,6 +301,7 @@ definition {
 
 	@description = "This is a test for LPS-98241 and LPS-128667. The user could configure the Image fragment in page editor."
 	@priority = "5"
+	@uitest
 	test ConfigureBasicComponentImage {
 		property portal.acceptance = "true";
 
@@ -382,7 +384,7 @@ definition {
 		task ("View the text placeholder is shown in Image field") {
 			AssertAttributeValue(
 				attribute1 = "placeholder",
-				key_contentName = "",
+				key_fieldLabel = "Image",
 				locator1 = "PageEditor#ITEM_SELECTOR_CONTENT_INPUT",
 				value1 = "Select Image");
 		}
@@ -400,6 +402,7 @@ definition {
 
 	@description = "This is a test for LPS-98241 and LPS-128667. The user could configure the Paragraph fragment in page editor."
 	@priority = "5"
+	@uitest
 	test ConfigureBasicComponentParagraph {
 		property portal.acceptance = "true";
 
@@ -444,8 +447,10 @@ definition {
 
 		task ("View the Text Color of Paragraph") {
 			AssertCssValue(
-				key_fragmentName = "paragraph",
-				locator1 = "Fragment#FRAGMENT_BASIC_COMPONENT",
+				fragmentName = "paragraph",
+				id = "element-text",
+				index = "1",
+				locator1 = "Fragment#CONTRIBUTED_FRAGMENT_TEXT",
 				locator2 = "color",
 				value1 = "rgba(39, 40, 51, 1)");
 		}

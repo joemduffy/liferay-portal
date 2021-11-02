@@ -17,7 +17,6 @@ package com.liferay.layout.admin.web.internal.servlet.taglib.util;
 import com.liferay.frontend.taglib.clay.servlet.taglib.util.DropdownItem;
 import com.liferay.frontend.taglib.clay.servlet.taglib.util.DropdownItemListBuilder;
 import com.liferay.layout.admin.web.internal.display.context.LayoutsAdminDisplayContext;
-import com.liferay.layout.admin.web.internal.util.FFLayoutPreviewDraftConfigurationUtil;
 import com.liferay.petra.portlet.url.builder.PortletURLBuilder;
 import com.liferay.portal.kernel.bean.BeanPropertiesUtil;
 import com.liferay.portal.kernel.language.LanguageUtil;
@@ -216,9 +215,8 @@ public class LayoutActionDropdownItemsProvider {
 						}
 					).add(
 						() ->
-							FFLayoutPreviewDraftConfigurationUtil.enabled() &&
-							_layoutsAdminDisplayContext.isShowDraftActions(
-								layout),
+							_layoutsAdminDisplayContext.
+								isShowPreviewDraftActions(layout),
 						dropdownItem -> {
 							dropdownItem.put("symbolRight", "shortcut");
 							dropdownItem.setHref(
@@ -230,8 +228,9 @@ public class LayoutActionDropdownItemsProvider {
 							dropdownItem.setTarget("_blank");
 						}
 					).add(
-						() -> _layoutsAdminDisplayContext.isShowDraftActions(
-							layout),
+						() ->
+							_layoutsAdminDisplayContext.
+								isShowDiscardDraftActions(layout),
 						dropdownItem -> {
 							dropdownItem.putData("action", "discardDraft");
 							dropdownItem.putData(
@@ -281,13 +280,29 @@ public class LayoutActionDropdownItemsProvider {
 					).add(
 						() -> _isShowExportTranslationAction(layout),
 						dropdownItem -> {
-							dropdownItem.putData("action", "exportTranslation");
-							dropdownItem.putData(
-								"plid",
-								String.valueOf(
-									BeanPropertiesUtil.getLong(
-										draftLayout, "plid",
-										layout.getPlid())));
+							dropdownItem.setHref(
+								PortletURLBuilder.create(
+									_translationURLProvider.
+										getExportTranslationURL(
+											layout.getGroupId(),
+											PortalUtil.getClassNameId(
+												Layout.class.getName()),
+											BeanPropertiesUtil.getLong(
+												draftLayout, "plid",
+												layout.getPlid()),
+											RequestBackedPortletURLFactoryUtil.
+												create(_httpServletRequest))
+								).setRedirect(
+									PortalUtil.getCurrentURL(
+										_httpServletRequest)
+								).setPortletResource(
+									() -> {
+										PortletDisplay portletDisplay =
+											_themeDisplay.getPortletDisplay();
+
+										return portletDisplay.getId();
+									}
+								).buildString());
 							dropdownItem.setLabel(
 								LanguageUtil.get(
 									_httpServletRequest,
@@ -373,11 +388,22 @@ public class LayoutActionDropdownItemsProvider {
 							String messageKey =
 								"are-you-sure-you-want-to-delete-this-page";
 
-							if (layout.hasChildren()) {
+							if (layout.hasChildren() &&
+								_hasScopeGroup(layout)) {
+
+								messageKey =
+									"this-page-is-being-used-as-a-scope-for-" +
+										"content-and-also-has-child-pages";
+							}
+							else if (layout.hasChildren()) {
 								messageKey =
 									"this-page-has-child-pages-that-will-" +
-										"also-be-removed-are-you-sure-you-" +
-											"want-to-delete-this-page";
+										"also-be-removed";
+							}
+							else if (_hasScopeGroup(layout)) {
+								messageKey =
+									"this-page-is-being-used-as-a-scope-for-" +
+										"content";
 							}
 
 							dropdownItem.putData(
@@ -392,6 +418,20 @@ public class LayoutActionDropdownItemsProvider {
 				dropdownGroupItem.setSeparator(true);
 			}
 		).build();
+	}
+
+	private boolean _hasScopeGroup(Layout layout) throws Exception {
+		if (layout.hasScopeGroup()) {
+			return true;
+		}
+
+		Layout draftLayout = layout.fetchDraftLayout();
+
+		if (draftLayout == null) {
+			return false;
+		}
+
+		return draftLayout.hasScopeGroup();
 	}
 
 	private boolean _hasTranslatePermission() {

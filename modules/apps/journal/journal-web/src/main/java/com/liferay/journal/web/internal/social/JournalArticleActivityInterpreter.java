@@ -97,7 +97,8 @@ public class JournalArticleActivityInterpreter
 
 			if (layout != null) {
 				String groupFriendlyURL = _portal.getGroupFriendlyURL(
-					layout.getLayoutSet(), serviceContext.getThemeDisplay());
+					layout.getLayoutSet(), serviceContext.getThemeDisplay(),
+					false, false);
 
 				return StringBundler.concat(
 					groupFriendlyURL,
@@ -114,6 +115,28 @@ public class JournalArticleActivityInterpreter
 
 			return null;
 		}
+	}
+
+	@Override
+	protected Object[] getTitleArguments(
+			String groupName, SocialActivity activity, String link,
+			String title, ServiceContext serviceContext)
+		throws Exception {
+
+		if (activity.getType() == SocialActivityConstants.TYPE_ADD_COMMENT) {
+			String creatorUserName = getUserName(
+				activity.getUserId(), serviceContext);
+			String receiverUserName = getUserName(
+				activity.getReceiverUserId(), serviceContext);
+
+			return new Object[] {
+				groupName, creatorUserName, receiverUserName,
+				wrapLink(link, title)
+			};
+		}
+
+		return super.getTitleArguments(
+			groupName, activity, link, title, serviceContext);
 	}
 
 	@Override
@@ -135,6 +158,13 @@ public class JournalArticleActivityInterpreter
 			}
 
 			return "activity-journal-article-update-web-content-in";
+		}
+		else if (activityType == SocialActivityConstants.TYPE_ADD_COMMENT) {
+			if (Validator.isNull(groupName)) {
+				return "activity-journal-article-add-comment";
+			}
+
+			return "activity-journal-article-add-comment-in";
 		}
 		else if (activityType == SocialActivityConstants.TYPE_MOVE_TO_TRASH) {
 			if (Validator.isNull(groupName)) {

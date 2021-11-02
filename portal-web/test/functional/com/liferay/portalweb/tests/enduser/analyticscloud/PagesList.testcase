@@ -49,9 +49,11 @@ definition {
 		// AC Refactor: It is not possible to view the data because of timing problems
 		// AC Refactor ticket: LRAC-9342
 
+		var pageNameList = "AC Page - Site Name - Liferay DXP,AC Page 2 - Site Name - Liferay DXP,AC Page 3 - Site Name - Liferay DXP";
+
 		task ("Add pages") {
 			for (var layoutName : list "AC Page 2,AC Page 3") {
-				ACUtils.addSiteAndPage(layoutName = "${layoutName}");
+				ACUtils.addPage(layoutName = "${layoutName}");
 			}
 		}
 
@@ -77,7 +79,7 @@ definition {
 				userLoginFullName = "ac ac");
 
 			for (var pageName : list "AC Page,AC Page 2,AC Page 3") {
-				Navigator.gotoSitePage(
+				ACUtils.navigateToSitePage(
 					pageName = "${pageName}",
 					siteName = "Site Name");
 			}
@@ -106,19 +108,17 @@ definition {
 		task ("Search the Pages") {
 			ACUtils.searchBar(searchItem = "AC Page");
 
-			for (var assetName : list "AC Page - Site Name - Liferay DXP,AC Page 2 - Site Name - Liferay DXP,AC Page 3 - Site Name - Liferay DXP") {
-				ACAssets.viewAssets(assetName = "${assetName}");
-			}
+			ACUtils.viewNameList(nameList = "${pageNameList}");
 
 			// It is not possible to view the data because of timing problems
 
 			ACUtils.searchBar(searchItem = "2");
 
-			ACAssets.viewAssets(assetName = "AC Page 2 - Site Name - Liferay DXP");
+			ACUtils.viewNameList(nameList = "AC Page 2 - Site Name - Liferay DXP");
 
 			ACUtils.searchBar(searchItem = "3");
 
-			ACAssets.viewAssets(assetName = "AC Page 3 - Site Name - Liferay DXP");
+			ACUtils.viewNameList(nameList = "AC Page 3 - Site Name - Liferay DXP");
 		}
 	}
 
@@ -135,7 +135,7 @@ definition {
 		}
 
 		task ("Visit the site page") {
-			Navigator.gotoSitePage(
+			ACUtils.navigateToSitePage(
 				pageName = "AC Page",
 				siteName = "Site Name");
 		}
@@ -175,9 +175,7 @@ definition {
 		}
 
 		task ("Assert that the 24h filter page is not present on Custom Range filter") {
-			AssertElementNotPresent(
-				itemName = "AC Page",
-				locator1 = "ACSettings#ITEM_ON_LIST");
+			ACUtils.assertItemsNameNotPresent(itemList = "AC Page");
 		}
 
 		// Can't assert that the filter is working properly without past data
@@ -200,7 +198,7 @@ definition {
 		}
 
 		task ("Visit the site page") {
-			Navigator.gotoSitePage(
+			ACUtils.navigateToSitePage(
 				pageName = "AC Page",
 				siteName = "Site Name");
 		}
@@ -232,9 +230,7 @@ definition {
 		}
 
 		task ("Assert that the 24h filter page is not present on Last 180 Days filter") {
-			AssertElementNotPresent(
-				itemName = "AC Page",
-				locator1 = "ACSettings#ITEM_ON_LIST");
+			ACUtils.assertItemsNameNotPresent(itemList = "AC Page");
 		}
 
 		// Can't assert that the filter is working properly without past data
@@ -257,7 +253,7 @@ definition {
 		}
 
 		task ("Visit the site page") {
-			Navigator.gotoSitePage(
+			ACUtils.navigateToSitePage(
 				pageName = "AC Page",
 				siteName = "Site Name");
 		}
@@ -289,9 +285,7 @@ definition {
 		}
 
 		task ("Assert that the 24h filter page is not present on Last Year filter") {
-			AssertElementNotPresent(
-				itemName = "AC Page",
-				locator1 = "ACSettings#ITEM_ON_LIST");
+			ACUtils.assertItemsNameNotPresent(itemList = "AC Page");
 		}
 
 		// Can't assert that the filter is working properly without past data
@@ -311,7 +305,7 @@ definition {
 
 		task ("Add pages") {
 			for (var layoutName : list "AC Page 2,AC Page 3") {
-				ACUtils.addSiteAndPage(layoutName = "${layoutName}");
+				ACUtils.addPage(layoutName = "${layoutName}");
 			}
 		}
 
@@ -333,7 +327,7 @@ definition {
 				userLoginFullName = "ac ac");
 
 			for (var pageName : list "AC Page,AC Page 2,AC Page 3") {
-				Navigator.gotoSitePage(
+				ACUtils.navigateToSitePage(
 					pageName = "${pageName}",
 					siteName = "Site Name");
 			}

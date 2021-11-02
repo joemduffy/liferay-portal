@@ -25,14 +25,11 @@ import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
-import com.liferay.portal.kernel.util.ResourceBundleUtil;
+import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.Validator;
-
-import java.io.InputStream;
 
 import java.util.HashSet;
 import java.util.Objects;
-import java.util.ResourceBundle;
 import java.util.Set;
 
 import org.osgi.service.component.annotations.Component;
@@ -59,13 +56,8 @@ public class FragmentEntryValidatorImpl implements FragmentEntryValidator {
 			return;
 		}
 
-		InputStream configurationJSONSchemaInputStream =
-			FragmentEntryValidatorImpl.class.getResourceAsStream(
-				"dependencies/configuration-json-schema.json");
-
 		try {
-			JSONValidator.validate(
-				configuration, configurationJSONSchemaInputStream);
+			_jsonValidator.validate(configuration);
 
 			JSONObject configurationJSONObject =
 				JSONFactoryUtil.createJSONObject(configuration);
@@ -194,13 +186,14 @@ public class FragmentEntryValidatorImpl implements FragmentEntryValidator {
 	}
 
 	private String _getMessage(String message) {
-		ResourceBundle resourceBundle = ResourceBundleUtil.getBundle(
-			"content.Language", getClass());
-
 		return StringBundler.concat(
 			LanguageUtil.get(
-				resourceBundle, "fragment-configuration-is-invalid"),
+				LocaleUtil.getDefault(), "fragment-configuration-is-invalid"),
 			System.lineSeparator(), message);
 	}
+
+	private static final JSONValidator _jsonValidator = new JSONValidator(
+		FragmentEntryValidatorImpl.class.getResourceAsStream(
+			"dependencies/configuration-json-schema.json"));
 
 }

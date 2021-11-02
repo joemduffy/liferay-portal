@@ -187,7 +187,7 @@
 </tr>
 <tr>
 	<td>DETAIL_PAGE_SLA_ENGLISH_HOUR_FORMAT</td>
-	<td>//span[text()='${key_slaName}']/following-sibling::span[contains(text(), 'PM')]</td>
+	<td>//span[text()='${key_slaName}']/following-sibling::span[contains(text(), 'PM') or contains(text(), 'AM')]</td>
 	<td></td>
 </tr>
 <tr>
@@ -253,6 +253,11 @@
 <tr>
 	<td>WORKFLOW_ALL_ITEMS_ITEM_SUBJECT</td>
 	<td>//span[contains(@class, "text-truncate title") and text()="Item Subject"]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>WORKFLOW_ALL_ITEMS_CREATION_DATE</td>
+	<td>//span[contains(@class, "text-truncate title") and text()="Creation Date"]</td>
 	<td></td>
 </tr>
 <tr>
@@ -448,11 +453,6 @@
 <tr>
 	<td>WORKFLOW_SLA_STATUS_BEFORE_TITLE</td>
 	<td>//div[contains(@class,'modal-header')]/div[contains(@class,'modal-title')]/../..//div[contains(@class,'modal-body')]/h4[contains(.,'Due Date by SLA')]</td>
-	<td></td>
-</tr>
-<tr>
-	<td>WORKFLOW_ALL_ITEMS_SHOW_ALL_OR_LESS_BUTTON</td>
-	<td>//span[contains(@class,'show-all-button')] | //span[contains(@class,'show-less-button')]</td>
 	<td></td>
 </tr>
 <tr>

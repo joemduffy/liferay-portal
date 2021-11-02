@@ -105,12 +105,11 @@ public class ObjectEntryKeywordQueryContributor
 						new TermQueryImpl(Field.ENTRY_CLASS_PK, token),
 						BooleanClauseOccur.SHOULD);
 
-					String titleField =
-						"objectEntryTitle_" +
-							LocaleUtil.toLanguageId(searchContext.getLocale());
+					String titleField = "objectEntryTitle";
 
 					booleanQuery.add(
-						new MatchQuery(titleField, token),
+						new WildcardQueryImpl(
+							titleField, token + StringPool.STAR),
 						BooleanClauseOccur.SHOULD);
 
 					QueryConfig queryConfig = searchContext.getQueryConfig();
@@ -225,22 +224,20 @@ public class ObjectEntryKeywordQueryContributor
 			_log.error("Blob type is not indexable");
 		}
 		else if (Objects.equals(objectField.getType(), "Boolean")) {
+			String fieldName = null;
+
 			if (StringUtil.equalsIgnoreCase(token, "false") ||
 				StringUtil.equalsIgnoreCase(token, "true")) {
 
-				String fieldName = "nestedFieldArray.value_boolean";
-
-				nestedBooleanQuery.add(
-					new TermQueryImpl(fieldName, StringUtil.toLowerCase(token)),
-					BooleanClauseOccur.MUST);
-
-				queryConfig.addHighlightFieldNames(fieldName);
+				fieldName = "nestedFieldArray.value_boolean";
 			}
 			else if (StringUtil.equalsIgnoreCase(token, "no") ||
 					 StringUtil.equalsIgnoreCase(token, "yes")) {
 
-				String fieldName = "nestedFieldArray.value_keyword";
+				fieldName = "nestedFieldArray.value_keyword";
+			}
 
+			if (fieldName != null) {
 				nestedBooleanQuery.add(
 					new TermQueryImpl(fieldName, StringUtil.toLowerCase(token)),
 					BooleanClauseOccur.MUST);

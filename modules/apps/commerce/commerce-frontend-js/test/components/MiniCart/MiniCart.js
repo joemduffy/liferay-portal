@@ -12,6 +12,8 @@
  * details.
  */
 
+import '../../utils/polyfills';
+
 import '@testing-library/jest-dom/extend-expect';
 import {
 	act,
@@ -43,6 +45,7 @@ describe('MiniCart', () => {
 		cartActionURLs: {
 			checkoutURL: 'http://checkout.url',
 			orderDetailURL: 'http://order-detail.url',
+			productURLSeparator: 'p',
 			siteDefaultURL: 'http://site-default.url',
 		},
 		onAddToCart: jest.fn(),

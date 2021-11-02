@@ -1320,6 +1320,8 @@ public class PortletTracker
 				new long[] {companyId}, portletModel,
 				ArrayUtil.toStringArray(categoryNames), false, false);
 
+			_portletLocalService.clearCache();
+
 			return;
 		}
 
@@ -1461,13 +1463,11 @@ public class PortletTracker
 		Collections.singletonMap(
 			ContentTypes.TEXT_HTML,
 			SetUtil.fromArray(
-				new String[] {
-					String.valueOf(LiferayWindowState.EXCLUSIVE),
-					String.valueOf(LiferayWindowState.POP_UP),
-					String.valueOf(WindowState.MAXIMIZED),
-					String.valueOf(WindowState.MINIMIZED),
-					String.valueOf(WindowState.NORMAL)
-				}));
+				String.valueOf(LiferayWindowState.EXCLUSIVE),
+				String.valueOf(LiferayWindowState.POP_UP),
+				String.valueOf(WindowState.MAXIMIZED),
+				String.valueOf(WindowState.MINIMIZED),
+				String.valueOf(WindowState.NORMAL)));
 
 	private BundleContext _bundleContext;
 
@@ -1593,8 +1593,12 @@ public class PortletTracker
 
 			BundleContext bundleContext = _bundle.getBundleContext();
 
-			bundleContext.ungetService(
-				_servletContextHelperRegistrationServiceReference);
+			try {
+				bundleContext.ungetService(
+					_servletContextHelperRegistrationServiceReference);
+			}
+			catch (IllegalStateException illegalStateException) {
+			}
 		}
 
 		public synchronized void setPortletApp(PortletApp portletApp) {

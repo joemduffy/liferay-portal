@@ -63,6 +63,10 @@ public class Order implements Serializable {
 		return ObjectMapperUtil.readValue(Order.class, json);
 	}
 
+	public static Order unsafeToDTO(String json) {
+		return ObjectMapperUtil.unsafeReadValue(Order.class, json);
+	}
+
 	@Schema
 	@Valid
 	public Account getAccount() {
@@ -700,6 +704,38 @@ public class Order implements Serializable {
 	@GraphQLField
 	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 	protected Status orderStatusInfo;
+
+	@Schema
+	public String getOrderTypeExternalReferenceCode() {
+		return orderTypeExternalReferenceCode;
+	}
+
+	public void setOrderTypeExternalReferenceCode(
+		String orderTypeExternalReferenceCode) {
+
+		this.orderTypeExternalReferenceCode = orderTypeExternalReferenceCode;
+	}
+
+	@JsonIgnore
+	public void setOrderTypeExternalReferenceCode(
+		UnsafeSupplier<String, Exception>
+			orderTypeExternalReferenceCodeUnsafeSupplier) {
+
+		try {
+			orderTypeExternalReferenceCode =
+				orderTypeExternalReferenceCodeUnsafeSupplier.get();
+		}
+		catch (RuntimeException re) {
+			throw re;
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	@GraphQLField
+	@JsonProperty(access = JsonProperty.Access.READ_WRITE)
+	protected String orderTypeExternalReferenceCode;
 
 	@DecimalMin("0")
 	@Schema
@@ -3201,6 +3237,20 @@ public class Order implements Serializable {
 			sb.append("\"orderStatusInfo\": ");
 
 			sb.append(String.valueOf(orderStatusInfo));
+		}
+
+		if (orderTypeExternalReferenceCode != null) {
+			if (sb.length() > 1) {
+				sb.append(", ");
+			}
+
+			sb.append("\"orderTypeExternalReferenceCode\": ");
+
+			sb.append("\"");
+
+			sb.append(_escape(orderTypeExternalReferenceCode));
+
+			sb.append("\"");
 		}
 
 		if (orderTypeId != null) {

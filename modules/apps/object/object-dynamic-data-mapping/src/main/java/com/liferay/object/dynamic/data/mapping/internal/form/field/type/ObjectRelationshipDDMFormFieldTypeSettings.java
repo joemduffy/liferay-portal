@@ -22,6 +22,7 @@ import com.liferay.dynamic.data.mapping.annotations.DDMFormLayoutPage;
 import com.liferay.dynamic.data.mapping.annotations.DDMFormLayoutRow;
 import com.liferay.dynamic.data.mapping.annotations.DDMFormRule;
 import com.liferay.dynamic.data.mapping.form.field.type.DefaultDDMFormFieldTypeSettings;
+import com.liferay.dynamic.data.mapping.model.LocalizedValue;
 
 /**
  * @author Marco Leo
@@ -29,7 +30,17 @@ import com.liferay.dynamic.data.mapping.form.field.type.DefaultDDMFormFieldTypeS
 @DDMForm(
 	rules = {
 		@DDMFormRule(
-			actions = "setVisible('dataType', false)", condition = "TRUE"
+			actions = "setValue('required', isRequiredObjectField(getValue('objectFieldName')))",
+			condition = "hasObjectField(getValue('objectFieldName'))"
+		),
+		@DDMFormRule(
+			actions = {
+				"setEnabled('required', not(hasObjectField(getValue('objectFieldName'))))",
+				"setVisible('dataType', false)",
+				"setVisible('objectDefinitionId', not(hasObjectField(getValue('objectFieldName'))))",
+				"setVisible('requiredErrorMessage', getValue('required'))"
+			},
+			condition = "TRUE"
 		)
 	}
 )
@@ -44,7 +55,9 @@ import com.liferay.dynamic.data.mapping.form.field.type.DefaultDDMFormFieldTypeS
 						@DDMFormLayoutColumn(
 							size = 12,
 							value = {
-								"label", "tip", "objectDefinitionId", "required"
+								"label", "placeholder", "tip",
+								"objectDefinitionId", "required",
+								"requiredErrorMessage"
 							}
 						)
 					}
@@ -60,7 +73,8 @@ import com.liferay.dynamic.data.mapping.form.field.type.DefaultDDMFormFieldTypeS
 							size = 12,
 							value = {
 								"fieldReference", "name", "objectFieldName",
-								"dataType", "nativeField", "showLabel"
+								"dataType", "nativeField", "showLabel",
+								"rulesActionDisabled", "rulesConditionDisabled"
 							}
 						)
 					}
@@ -81,8 +95,18 @@ public interface ObjectRelationshipDDMFormFieldTypeSettings
 		properties = {
 			"dataSourceType=data-provider", "ddmDataProviderInstanceId=objects"
 		},
-		type = "select"
+		required = true, type = "select"
 	)
 	public String objectDefinitionId();
+
+	@DDMFormField(
+		dataType = "string", label = "%placeholder-text",
+		properties = {
+			"tooltip=%enter-text-that-assists-the-user-but-is-not-submitted-as-a-field-value",
+			"visualProperty=true"
+		},
+		type = "text"
+	)
+	public LocalizedValue placeholder();
 
 }

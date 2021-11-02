@@ -14,7 +14,7 @@ definition {
 	}
 
 	macro openSearchAdmin {
-		Navigator.openWithAppendToBaseURL(urlAppend = "group/${siteURLKey}/~/control_panel/manage?p_p_id=com_liferay_portal_search_admin_web_portlet_SearchAdminPortlet");
+		Navigator.openWithAppendToBaseURL(urlAppend = "group/control_panel/manage?p_p_id=com_liferay_portal_search_admin_web_portlet_SearchAdminPortlet");
 	}
 
 	macro openSearchPage {
@@ -65,6 +65,15 @@ definition {
 		AssertElementNotPresent(
 			key_searchAssetTitle = "${searchAssetTitle}",
 			locator1 = "SearchResults#ASSET_ENTRY_TABLE_TITLE");
+	}
+
+	macro viewNotPresentInContentBody {
+		AssertClick(
+			key_rowEntry = "${siteName}",
+			locator1 = "ContentRow#ENTRY_CONTENT_ENTRY_NAME_LINK",
+			value1 = "${siteName}");
+
+		AssertElementNotPresent(locator1 = "//body[.='${elementValue}']");
 	}
 
 	macro viewResultAssetTitle {

@@ -60,23 +60,38 @@ const adaptiveMask = (rawValue: string, inputMaskFormat: string) => {
 
 const getMaskedValue = ({
 	dataType,
+	decimalPlaces,
 	includeThousandsSeparator = false,
 	inputMaskFormat,
+	maskChange,
 	symbols,
 	value,
 }: {
 	dataType: NumericDataType;
+	decimalPlaces: number;
 	includeThousandsSeparator?: boolean;
 	inputMaskFormat: string;
+	maskChange: boolean;
 	symbols: ISymbols;
 	value: string;
 }): IMaskedNumber => {
 	let mask;
 	if (dataType === 'double') {
+		const symbolsValue = value.match(NON_NUMERIC_REGEX);
+
+		if (
+			maskChange &&
+			symbolsValue &&
+			!value.includes(symbols.decimalSymbol)
+		) {
+			value = value.replace(symbolsValue[0], symbols.decimalSymbol);
+		}
+
 		const config: INumberMaskConfig = {
 			allowDecimal: true,
 			allowLeadingZeroes: true,
 			allowNegative: true,
+			decimalLimit: decimalPlaces,
 			decimalSymbol: symbols.decimalSymbol,
 			includeThousandsSeparator,
 			prefix: '',
@@ -104,7 +119,7 @@ const getMaskedValue = ({
 		masked,
 		placeholder:
 			dataType === 'double'
-				? `0${symbols.decimalSymbol}00`
+				? `0${symbols.decimalSymbol}${'0'.repeat(decimalPlaces)}`
 				: inputMaskFormat.replace(/\d/g, '_'),
 		raw: masked.replace(regex, ''),
 	};
@@ -157,6 +172,7 @@ const Numeric: React.FC<IProps> = ({
 	append,
 	appendType,
 	dataType = 'integer',
+	decimalPlaces,
 	defaultLanguageId,
 	id,
 	inputMask,
@@ -198,20 +214,26 @@ const Numeric: React.FC<IProps> = ({
 		return inputMask
 			? getMaskedValue({
 					dataType,
+					decimalPlaces,
 					includeThousandsSeparator: Boolean(
 						symbols.thousandsSeparator
 					),
 					inputMaskFormat: inputMaskFormat as string,
+					maskChange: true,
 					symbols,
 					value: newValue,
 			  })
 			: {
-					...getFormattedValue({dataType, symbols, value: newValue}),
+					...getFormattedValue({
+						dataType,
+						symbols,
+						value: newValue,
+					}),
 					placeholder,
 			  };
 	}, [
 		dataType,
-		symbols,
+		decimalPlaces,
 		defaultLanguageId,
 		editingLanguageId,
 		inputMask,
@@ -219,6 +241,7 @@ const Numeric: React.FC<IProps> = ({
 		localizedValue,
 		placeholder,
 		predefinedValue,
+		symbols,
 		value,
 	]);
 
@@ -241,7 +264,9 @@ const Numeric: React.FC<IProps> = ({
 		const {masked, raw} = inputMask
 			? getMaskedValue({
 					dataType,
+					decimalPlaces,
 					inputMaskFormat: inputMaskFormat as string,
+					maskChange: false,
 					symbols,
 					value,
 			  })
@@ -327,6 +352,7 @@ interface IProps {
 	append: string;
 	appendType: 'prefix' | 'suffix';
 	dataType: NumericDataType;
+	decimalPlaces: number;
 	defaultLanguageId: Locale;
 	id: string;
 	inputMask?: boolean;
@@ -334,7 +360,7 @@ interface IProps {
 	localizedValue?: LocalizedValue<string>;
 	name: string;
 	onBlur: FocusEventHandler<HTMLInputElement>;
-	onChange: (event: {target: {value: string}}) => void;
+	onChange: FieldChangeEventHandler<String>;
 	onFocus: FocusEventHandler<HTMLInputElement>;
 	placeholder?: string;
 	predefinedValue?: string;

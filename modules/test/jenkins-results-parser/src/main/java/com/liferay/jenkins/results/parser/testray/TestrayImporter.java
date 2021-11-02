@@ -24,7 +24,6 @@ import com.liferay.jenkins.results.parser.GitWorkingDirectoryFactory;
 import com.liferay.jenkins.results.parser.JenkinsMaster;
 import com.liferay.jenkins.results.parser.JenkinsResultsParserUtil;
 import com.liferay.jenkins.results.parser.Job;
-import com.liferay.jenkins.results.parser.LocalGitBranch;
 import com.liferay.jenkins.results.parser.NotificationUtil;
 import com.liferay.jenkins.results.parser.ParallelExecutor;
 import com.liferay.jenkins.results.parser.PluginsBranchInformationBuild;
@@ -43,6 +42,8 @@ import com.liferay.jenkins.results.parser.PullRequestBuild;
 import com.liferay.jenkins.results.parser.QAWebsitesBranchInformationBuild;
 import com.liferay.jenkins.results.parser.QAWebsitesTopLevelBuild;
 import com.liferay.jenkins.results.parser.TopLevelBuild;
+import com.liferay.jenkins.results.parser.Workspace;
+import com.liferay.jenkins.results.parser.WorkspaceBuild;
 import com.liferay.jenkins.results.parser.test.clazz.group.AxisTestClassGroup;
 import com.liferay.jenkins.results.parser.test.clazz.group.CucumberAxisTestClassGroup;
 import com.liferay.jenkins.results.parser.test.clazz.group.FunctionalAxisTestClassGroup;
@@ -1212,9 +1213,19 @@ public class TestrayImporter {
 	}
 
 	public void setup() {
-		_checkoutPortalBranch();
+		TopLevelBuild topLevelBuild = getTopLevelBuild();
 
-		_checkoutPortalBaseBranch();
+		if (topLevelBuild instanceof WorkspaceBuild) {
+			WorkspaceBuild workspaceBuild = (WorkspaceBuild)topLevelBuild;
+
+			Workspace workspace = workspaceBuild.getWorkspace();
+
+			workspace.setUp();
+
+			return;
+		}
+
+		_checkoutPortalBranch();
 
 		_setupProfileDXP();
 
@@ -1341,60 +1352,6 @@ public class TestrayImporter {
 		}
 		catch (IOException ioException) {
 			throw new RuntimeException(ioException);
-		}
-	}
-
-	private void _checkoutPortalBaseBranch() {
-		if (!(_topLevelBuild instanceof PortalBranchInformationBuild)) {
-			return;
-		}
-
-		PortalBranchInformationBuild portalBranchInformationBuild =
-			(PortalBranchInformationBuild)_topLevelBuild;
-
-		Build.BranchInformation branchInformation =
-			portalBranchInformationBuild.getPortalBaseBranchInformation();
-
-		if (branchInformation == null) {
-			return;
-		}
-
-		PortalGitWorkingDirectory portalBaseGitWorkingDirectory =
-			GitWorkingDirectoryFactory.newPortalGitWorkingDirectory(
-				branchInformation.getUpstreamBranchName());
-
-		portalBaseGitWorkingDirectory.clean();
-
-		LocalGitBranch portalBaseLocalGitBranch =
-			portalBaseGitWorkingDirectory.checkoutLocalGitBranch(
-				branchInformation);
-
-		portalBaseGitWorkingDirectory.displayLog();
-
-		PortalGitWorkingDirectory portalGitWorkingDirectory =
-			_getPortalGitWorkingDirectory();
-
-		portalGitWorkingDirectory.fetch(
-			portalBaseLocalGitBranch.getName(), portalBaseLocalGitBranch);
-
-		try {
-			JenkinsResultsParserUtil.write(
-				new File(
-					portalGitWorkingDirectory.getWorkingDirectory(),
-					"git-commit-portal"),
-				portalBaseLocalGitBranch.getSHA());
-		}
-		catch (IOException ioException) {
-			throw new RuntimeException(ioException);
-		}
-
-		try {
-			AntUtil.callTarget(
-				portalGitWorkingDirectory.getWorkingDirectory(),
-				"build-working-dir.xml", "prepare-working-dir");
-		}
-		catch (AntException antException) {
-			throw new RuntimeException(antException);
 		}
 	}
 

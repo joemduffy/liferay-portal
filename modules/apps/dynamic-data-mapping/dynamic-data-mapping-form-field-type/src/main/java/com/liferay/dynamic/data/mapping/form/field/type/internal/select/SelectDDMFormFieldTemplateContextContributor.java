@@ -32,6 +32,7 @@ import com.liferay.portal.kernel.util.AggregateResourceBundle;
 import com.liferay.portal.kernel.util.CollatorUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.HashMapBuilder;
+import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.LocaleThreadLocal;
 import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.ResourceBundleUtil;
@@ -88,8 +89,9 @@ public class SelectDDMFormFieldTemplateContextContributor
 		).put(
 			"predefinedValue",
 			getValue(
-				DDMFormFieldTypeUtil.getPredefinedValue(
-					ddmFormField, ddmFormFieldRenderingContext))
+				DDMFormFieldTypeUtil.getPropertyValue(
+					ddmFormField, ddmFormFieldRenderingContext.getLocale(),
+					"predefinedValue"))
 		).put(
 			"showEmptyOption",
 			GetterUtil.getBoolean(
@@ -224,7 +226,7 @@ public class SelectDDMFormFieldTemplateContextContributor
 				_log.debug(jsonException, jsonException);
 			}
 
-			jsonArray = jsonFactory.createJSONArray();
+			return ListUtil.fromString(valueString);
 		}
 
 		List<String> values = new ArrayList<>(jsonArray.length());

@@ -20,7 +20,6 @@
 	background-color: #f1f2f5;
 	display: flex;
 	flex-direction: column;
-	height: calc(100vh - 118px);
 	justify-content: space-between;
 	overflow: auto;
 
@@ -28,4 +27,13 @@
 	&__footer {
 		padding: 1.5rem;
 	}
+
+	&--layout {
+		height: calc(100vh - 118px);
+	}
+}
+
+.text-small {
+	color: #a7a9bc !important;
+	font-size: 0.75rem;
 }

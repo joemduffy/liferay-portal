@@ -15,6 +15,7 @@
 package com.liferay.dynamic.data.mapping.form.field.type.internal.numeric.input.mask;
 
 import com.liferay.dynamic.data.mapping.form.field.type.BaseDDMFormFieldTypeSettingsTestCase;
+import com.liferay.dynamic.data.mapping.form.field.type.internal.configuration.FFDecimalPlacesSettings;
 import com.liferay.dynamic.data.mapping.model.DDMFormField;
 import com.liferay.dynamic.data.mapping.render.DDMFormFieldRenderingContext;
 import com.liferay.portal.json.JSONFactoryImpl;
@@ -28,7 +29,6 @@ import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.SetUtil;
 
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
 
@@ -54,6 +54,7 @@ public class NumericInputMaskDDMFormFieldTemplateContextContributorTest
 	public void setUp() throws Exception {
 		super.setUp();
 
+		_setUpFFDecimalPlacesSettings();
 		_setUpJSONFactory();
 		_setUpJSONFactoryUtil();
 		_setUpLanguageUtil();
@@ -70,6 +71,7 @@ public class NumericInputMaskDDMFormFieldTemplateContextContributorTest
 
 		Assert.assertEquals("$", parameters.get("append"));
 		Assert.assertEquals("prefix", parameters.get("appendType"));
+		Assert.assertEquals(2, parameters.get("decimalPlaces"));
 		Assert.assertEquals(",", parameters.get("decimalSymbol"));
 
 		List<Object> decimalSymbols = (List<Object>)parameters.get(
@@ -164,6 +166,8 @@ public class NumericInputMaskDDMFormFieldTemplateContextContributorTest
 			).put(
 				"appendType", "prefix"
 			).put(
+				"decimalPlaces", 2
+			).put(
 				"symbols",
 				JSONUtil.put(
 					"decimalSymbol", ","
@@ -173,6 +177,19 @@ public class NumericInputMaskDDMFormFieldTemplateContextContributorTest
 			).toString());
 
 		return ddmFormFieldRenderingContext;
+	}
+
+	private void _setUpFFDecimalPlacesSettings() throws Exception {
+		FFDecimalPlacesSettings ffDecimalPlacesSettings = PowerMockito.mock(
+			FFDecimalPlacesSettings.class);
+
+		PowerMockito.field(
+			NumericInputMaskDDMFormFieldTemplateContextContributor.class,
+			"_ffDecimalPlacesSettings"
+		).set(
+			_numericInputMaskDDMFormFieldTemplateContextContributor,
+			ffDecimalPlacesSettings
+		);
 	}
 
 	private void _setUpJSONFactory() throws Exception {
@@ -206,7 +223,7 @@ public class NumericInputMaskDDMFormFieldTemplateContextContributorTest
 		when(
 			language.getAvailableLocales()
 		).thenReturn(
-			SetUtil.fromArray(new Locale[] {LocaleUtil.US})
+			SetUtil.fromArray(LocaleUtil.US)
 		);
 
 		when(

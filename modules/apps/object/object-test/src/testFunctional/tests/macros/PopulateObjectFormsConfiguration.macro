@@ -22,6 +22,8 @@ definition {
 		Click(
 			key_fieldLabelName = "${fieldLabelName}",
 			locator1 = "PopulateObjectFormsConfiguration#MAP_OBJECT_FIELD");
+
+		WaitForPageLoad();
 	}
 
 	macro openForm {
@@ -63,6 +65,12 @@ definition {
 		AssertElementPresent(
 			key_label = "${label}",
 			locator1 = "PopulateObjectFormsConfiguration#DISPLAY_SELECT_OBJECT");
+	}
+
+	macro viewRequiredFieldOptionDisabled {
+		Form.gotoBasicTab();
+
+		AssertElementPresent(locator1 = "PopulateObjectFormsConfiguration#REQUIRED_FIELD_OPTION_DISABLED");
 	}
 
 	macro viewUnmappedFormField () {

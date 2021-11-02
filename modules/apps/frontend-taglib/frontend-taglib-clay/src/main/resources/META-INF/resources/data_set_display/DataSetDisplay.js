@@ -59,6 +59,7 @@ function DataSetDisplay({
 	currentURL,
 	filters: filtersProp,
 	formId,
+	formName,
 	id,
 	inlineAddingSettings,
 	inlineEditingSettings,
@@ -94,16 +95,16 @@ function DataSetDisplay({
 		showPagination &&
 			(pagination.initialDelta || pagination.deltas[0].label)
 	);
-	const [filters, updateFilters] = useState(filtersProp);
+	const [filters, setFilters] = useState(filtersProp);
 	const [highlightedItemsValue, setHighlightedItemsValue] = useState([]);
-	const [items, updateItems] = useState(itemsProp);
-	const [itemsChanges, updateItemsChanges] = useState({});
+	const [items, setItems] = useState(itemsProp);
+	const [itemsChanges, setItemsChanges] = useState({});
 	const [pageNumber, setPageNumber] = useState(1);
-	const [searchParam, updateSearchParam] = useState('');
+	const [searchParam, setSearchParam] = useState('');
 	const [selectedItemsValue, setSelectedItemsValue] = useState(
 		selectedItems || []
 	);
-	const [sorting, updateSorting] = useState(sortingProp);
+	const [sorting, setSorting] = useState(sortingProp);
 	const [total, setTotal] = useState(0);
 	const [{activeView}, dispatch] = useContext(ViewsContext);
 
@@ -174,7 +175,7 @@ function DataSetDisplay({
 
 	function updateDataSetItems(dataSetData) {
 		setTotal(dataSetData.totalCount);
-		updateItems(dataSetData.items);
+		setItems(dataSetData.items);
 	}
 
 	useEffect(() => {
@@ -244,6 +245,14 @@ function DataSetDisplay({
 
 				if (isMounted()) {
 					updateDataSetItems(data);
+
+					const itemKeys = new Set(
+						data.items.map((item) => item[selectedItemsKey])
+					);
+
+					setSelectedItemsValue(
+						selectedItemsValue.filter((item) => itemKeys.has(item))
+					);
 
 					setDataLoading(false);
 
@@ -327,7 +336,7 @@ function DataSetDisplay({
 				creationMenu={creationMenu}
 				filters={filters}
 				fluid={style === 'fluid'}
-				onFiltersChange={updateFilters}
+				onFiltersChange={setFilters}
 				selectAllItems={() =>
 					selectItems(items.map((item) => item[selectedItemsKey]))
 				}
@@ -372,7 +381,8 @@ function DataSetDisplay({
 
 	const formRef = useRef(null);
 
-	const wrappedView = formId ? view : <form ref={formRef}>{view}</form>;
+	const wrappedView =
+		formId || formName ? view : <form ref={formRef}>{view}</form>;
 
 	const paginationComponent =
 		showPagination && pagination && items?.length ? (
@@ -441,14 +451,14 @@ function DataSetDisplay({
 			valuePath
 		);
 
-		updateItemsChanges({
+		setItemsChanges({
 			...itemsChanges,
 			[itemKey]: itemChanges,
 		});
 	}
 
 	function toggleItemInlineEdit(itemKey) {
-		updateItemsChanges(({[itemKey]: foundItem, ...itemsChanges}) => {
+		setItemsChanges(({[itemKey]: foundItem, ...itemsChanges}) => {
 			return foundItem
 				? itemsChanges
 				: {
@@ -469,7 +479,7 @@ function DataSetDisplay({
 				...newItemBodyContent,
 			}),
 			headers: {
-				Accept: 'application/json',
+				'Accept': 'application/json',
 				'Content-Type': 'application/json',
 			},
 			method: inlineAddingSettings.method || 'POST',
@@ -487,7 +497,7 @@ function DataSetDisplay({
 						);
 				}
 
-				updateItemsChanges((itemsChanges) => ({
+				setItemsChanges((itemsChanges) => ({
 					...itemsChanges,
 					[0]: {},
 				}));
@@ -523,7 +533,7 @@ function DataSetDisplay({
 				...formatItemChanges(itemsChanges[itemKey]),
 			}),
 			headers: {
-				Accept: 'application/json',
+				'Accept': 'application/json',
 				'Content-Type': 'application/json',
 			},
 			method: itemToBeUpdated.actions.update.method,
@@ -569,6 +579,7 @@ function DataSetDisplay({
 				createInlineItem,
 				executeAsyncItemAction,
 				formId,
+				formName,
 				formRef,
 				highlightItems,
 				highlightedItemsValue,
@@ -596,8 +607,8 @@ function DataSetDisplay({
 				toggleItemInlineEdit,
 				updateDataSetItems,
 				updateItem,
-				updateSearchParam,
-				updateSorting,
+				updateSearchParam: setSearchParam,
+				updateSorting: setSorting,
 			}}
 		>
 			<Modal id={dataSetDisplaySupportModalId} onClose={refreshData} />
@@ -651,6 +662,7 @@ DataSetDisplay.propTypes = {
 	}),
 	filters: PropTypes.array,
 	formId: PropTypes.string,
+	formName: PropTypes.string,
 	id: PropTypes.string.isRequired,
 	inlineAddingSettings: PropTypes.shape({
 		apiURL: PropTypes.string.isRequired,

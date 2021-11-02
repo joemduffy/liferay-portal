@@ -17,13 +17,12 @@ package com.liferay.account.admin.web.internal.display.context;
 import com.liferay.account.admin.web.internal.constants.AccountWebKeys;
 import com.liferay.account.admin.web.internal.display.AccountEntryDisplay;
 import com.liferay.account.admin.web.internal.security.permission.resource.AccountEntryPermission;
-import com.liferay.account.admin.web.internal.security.permission.resource.AccountPermission;
 import com.liferay.account.constants.AccountActionKeys;
 import com.liferay.account.constants.AccountConstants;
 import com.liferay.frontend.taglib.clay.servlet.taglib.display.context.SearchContainerManagementToolbarDisplayContext;
 import com.liferay.frontend.taglib.clay.servlet.taglib.util.CreationMenu;
 import com.liferay.frontend.taglib.clay.servlet.taglib.util.CreationMenuBuilder;
-import com.liferay.frontend.taglib.clay.servlet.taglib.util.DropdownGroupItem;
+import com.liferay.frontend.taglib.clay.servlet.taglib.util.DropdownGroupItemBuilder;
 import com.liferay.frontend.taglib.clay.servlet.taglib.util.DropdownItem;
 import com.liferay.frontend.taglib.clay.servlet.taglib.util.DropdownItemBuilder;
 import com.liferay.frontend.taglib.clay.servlet.taglib.util.DropdownItemList;
@@ -40,6 +39,7 @@ import com.liferay.portal.kernel.portlet.LiferayPortletRequest;
 import com.liferay.portal.kernel.portlet.LiferayPortletResponse;
 import com.liferay.portal.kernel.portlet.PortletURLUtil;
 import com.liferay.portal.kernel.security.permission.ActionKeys;
+import com.liferay.portal.kernel.service.permission.PortalPermissionUtil;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.Constants;
 import com.liferay.portal.kernel.util.GetterUtil;
@@ -296,24 +296,23 @@ public class ViewAccountEntriesManagementToolbarDisplayContext
 			(ThemeDisplay)httpServletRequest.getAttribute(
 				WebKeys.THEME_DISPLAY);
 
-		return AccountPermission.contains(
-			themeDisplay.getPermissionChecker(), themeDisplay.getScopeGroupId(),
+		return PortalPermissionUtil.contains(
+			themeDisplay.getPermissionChecker(),
 			AccountActionKeys.ADD_ACCOUNT_ENTRY);
 	}
 
 	protected void addFilterTypeDropdownItems(
 		List<DropdownItem> filterDropdownItems) {
 
-		DropdownGroupItem filterDropdownItemsGroup = new DropdownGroupItem();
-
-		filterDropdownItemsGroup.setDropdownItems(
-			getDropdownItems(
-				getDefaultEntriesMap(getFilterByTypeKeys()), getPortletURL(),
-				"type", getType()));
-		filterDropdownItemsGroup.setLabel(
-			LanguageUtil.get(httpServletRequest, "filter-by-type"));
-
-		filterDropdownItems.add(1, filterDropdownItemsGroup);
+		filterDropdownItems.add(
+			1,
+			DropdownGroupItemBuilder.setDropdownItems(
+				getDropdownItems(
+					getDefaultEntriesMap(getFilterByTypeKeys()),
+					getPortletURL(), "type", getType())
+			).setLabel(
+				LanguageUtil.get(httpServletRequest, "filter-by-type")
+			).build());
 	}
 
 	protected String[] getFilterByTypeKeys() {

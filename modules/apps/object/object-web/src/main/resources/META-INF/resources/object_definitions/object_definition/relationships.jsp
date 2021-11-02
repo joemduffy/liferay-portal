@@ -26,14 +26,14 @@ ObjectDefinitionsRelationshipsDisplayContext objectDefinitionsRelationshipsDispl
 portletDisplay.setShowBackIcon(true);
 portletDisplay.setURLBack(backURL);
 
-renderResponse.setTitle(objectDefinition.getShortName());
+renderResponse.setTitle(objectDefinition.getLabel(locale, true));
 %>
 
 <clay:headless-data-set-display
 	apiURL="<%= objectDefinitionsRelationshipsDisplayContext.getAPIURL() %>"
 	clayDataSetActionDropdownItems="<%= objectDefinitionsRelationshipsDisplayContext.getClayDataSetActionDropdownItems() %>"
 	creationMenu="<%= objectDefinitionsRelationshipsDisplayContext.getCreationMenu() %>"
-	formId="fm"
+	formName="fm"
 	id="<%= ObjectDefinitionsClayDataSetDisplayNames.OBJECT_RELATIONSHIPS %>"
 	itemsPerPage="<%= 20 %>"
 	namespace="<%= liferayPortletResponse.getNamespace() %>"

@@ -200,6 +200,13 @@ public class BatchPlannerLogPersistenceTest {
 	}
 
 	@Test
+	public void testCountByCompanyId() throws Exception {
+		_persistence.countByCompanyId(RandomTestUtil.nextLong());
+
+		_persistence.countByCompanyId(0L);
+	}
+
+	@Test
 	public void testCountByBatchPlannerPlanId() throws Exception {
 		_persistence.countByBatchPlannerPlanId(RandomTestUtil.nextLong());
 
@@ -533,6 +540,12 @@ public class BatchPlannerLogPersistenceTest {
 	}
 
 	private void _assertOriginalValues(BatchPlannerLog batchPlannerLog) {
+		Assert.assertEquals(
+			Long.valueOf(batchPlannerLog.getBatchPlannerPlanId()),
+			ReflectionTestUtil.<Long>invoke(
+				batchPlannerLog, "getColumnOriginalValue",
+				new Class<?>[] {String.class}, "batchPlannerPlanId"));
+
 		Assert.assertEquals(
 			Long.valueOf(batchPlannerLog.getBatchPlannerPlanId()),
 			ReflectionTestUtil.<Long>invoke(

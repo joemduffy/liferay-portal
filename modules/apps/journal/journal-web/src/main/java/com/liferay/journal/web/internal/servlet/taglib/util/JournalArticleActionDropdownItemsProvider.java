@@ -137,6 +137,13 @@ public class JournalArticleActionDropdownItemsProvider {
 						_getEditArticleActionUnsafeConsumer()
 					).add(
 						() ->
+							_journalWebConfiguration.
+								journalArticleAutoSaveDraftEnabled() &&
+							hasUpdatePermission && _article.isDraft() &&
+							_article.hasApprovedVersion(),
+						_getDiscardDraftActionUnsafeConsumer()
+					).add(
+						() ->
 							hasViewPermission &&
 							(previewContentArticleAction != null),
 						previewContentArticleAction
@@ -460,6 +467,29 @@ public class JournalArticleActionDropdownItemsProvider {
 	}
 
 	private UnsafeConsumer<DropdownItem, Exception>
+		_getDiscardDraftActionUnsafeConsumer() {
+
+		return dropdownItem -> {
+			dropdownItem.putData("action", "discardArticleDraft");
+			dropdownItem.putData(
+				"discardArticleDraftURL",
+				PortletURLBuilder.createActionURL(
+					_liferayPortletResponse
+				).setActionName(
+					"/journal/discard_article_draft"
+				).setRedirect(
+					_getRedirect()
+				).setParameter(
+					"articleId", _article.getArticleId()
+				).setParameter(
+					"groupId", _article.getGroupId()
+				).buildString());
+			dropdownItem.setLabel(
+				LanguageUtil.get(_httpServletRequest, "discard-draft"));
+		};
+	}
+
+	private UnsafeConsumer<DropdownItem, Exception>
 		_getEditArticleActionUnsafeConsumer() {
 
 		return dropdownItem -> {
@@ -509,8 +539,24 @@ public class JournalArticleActionDropdownItemsProvider {
 		_getExportForTranslationActionUnsafeConsumer() {
 
 		return dropdownItem -> {
-			dropdownItem.putData("action", "exportTranslation");
-			dropdownItem.putData("articleEntryId", _article.getArticleId());
+			dropdownItem.setHref(
+				PortletURLBuilder.create(
+					_translationURLProvider.getExportTranslationURL(
+						_article.getGroupId(),
+						PortalUtil.getClassNameId(JournalArticle.class),
+						_article.getResourcePrimKey(),
+						RequestBackedPortletURLFactoryUtil.create(
+							_httpServletRequest))
+				).setRedirect(
+					_getRedirect()
+				).setPortletResource(
+					() -> {
+						PortletDisplay portletDisplay =
+							_themeDisplay.getPortletDisplay();
+
+						return portletDisplay.getId();
+					}
+				).build());
 			dropdownItem.setLabel(
 				LanguageUtil.get(
 					_httpServletRequest, "export-for-translation"));

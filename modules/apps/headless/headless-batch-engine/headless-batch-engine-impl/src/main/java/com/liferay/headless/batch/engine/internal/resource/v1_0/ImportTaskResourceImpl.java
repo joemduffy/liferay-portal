@@ -341,12 +341,15 @@ public class ImportTaskResourceImpl extends BaseImportTaskResourceImpl {
 				contentType = batchEngineImportTask.getContentType();
 				endTime = batchEngineImportTask.getEndTime();
 				errorMessage = batchEngineImportTask.getErrorMessage();
-				executeStatus = ImportTask.ExecuteStatus.valueOf(
+				executeStatus = ImportTask.ExecuteStatus.create(
 					batchEngineImportTask.getExecuteStatus());
 				id = batchEngineImportTask.getBatchEngineImportTaskId();
-				operation = ImportTask.Operation.valueOf(
+				operation = ImportTask.Operation.create(
 					batchEngineImportTask.getOperation());
+				processedItemsCount =
+					batchEngineImportTask.getProcessedItemsCount();
 				startTime = batchEngineImportTask.getStartTime();
+				totalItemsCount = batchEngineImportTask.getTotalItemsCount();
 			}
 		};
 	}

@@ -23,6 +23,8 @@ public class ObjectWebKeys {
 
 	public static final String LIST_TYPE_ENTRY = "LIST_TYPE_ENTRY";
 
+	public static final String OBJECT_ACTION = "OBJECT_ACTION";
+
 	public static final String OBJECT_DEFINITION = "OBJECT_DEFINITION";
 
 	public static final String OBJECT_ENTRY = "OBJECT_ENTRY";
@@ -31,6 +33,10 @@ public class ObjectWebKeys {
 
 	public static final String OBJECT_FIELD = "OBJECT_FIELD";
 
+	public static final String OBJECT_FIELDS = "OBJECT_FIELDS";
+
 	public static final String OBJECT_LAYOUT = "OBJECT_LAYOUT";
+
+	public static final String OBJECT_RELATIONSHIP = "OBJECT_RELATIONSHIP";
 
 }

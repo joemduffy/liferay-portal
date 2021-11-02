@@ -20,11 +20,15 @@ import com.liferay.layout.test.util.LayoutTestUtil;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.Layout;
+import com.liferay.portal.kernel.model.LayoutConstants;
 import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.service.ClassNameLocalServiceUtil;
 import com.liferay.portal.kernel.service.LayoutLocalService;
+import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.test.rule.DeleteAfterTestRun;
 import com.liferay.portal.kernel.test.util.GroupTestUtil;
+import com.liferay.portal.kernel.test.util.RandomTestUtil;
+import com.liferay.portal.kernel.test.util.ServiceContextTestUtil;
 import com.liferay.portal.kernel.test.util.TestPropsValues;
 import com.liferay.portal.kernel.util.HttpUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
@@ -65,6 +69,12 @@ public class LayoutLocalServiceTest {
 		FriendlyURLEntryLocalServiceUtil.deleteGroupFriendlyURLEntries(
 			_group.getGroupId(),
 			ClassNameLocalServiceUtil.getClassNameId(User.class));
+	}
+
+	@Test
+	public void testDeleteLayouts() throws Exception {
+		_testDeleteLayouts(false);
+		_testDeleteLayouts(true);
 	}
 
 	@Test
@@ -228,6 +238,31 @@ public class LayoutLocalServiceTest {
 			publicLayout,
 			_layoutLocalService.getFriendlyURLLayout(
 				_group.getGroupId(), false, friendlyURL));
+	}
+
+	private void _testDeleteLayouts(boolean system) throws Exception {
+		ServiceContext serviceContext =
+			ServiceContextTestUtil.getServiceContext(
+				_group.getGroupId(), TestPropsValues.getUserId());
+
+		_layoutLocalService.addLayout(
+			TestPropsValues.getUserId(), _group.getGroupId(), false,
+			LayoutConstants.DEFAULT_PARENT_LAYOUT_ID,
+			RandomTestUtil.randomString(), null, RandomTestUtil.randomString(),
+			LayoutConstants.TYPE_CONTENT, false, system, null, serviceContext);
+		_layoutLocalService.addLayout(
+			TestPropsValues.getUserId(), _group.getGroupId(), true,
+			LayoutConstants.DEFAULT_PARENT_LAYOUT_ID,
+			RandomTestUtil.randomString(), null, RandomTestUtil.randomString(),
+			LayoutConstants.TYPE_CONTENT, false, system, null, serviceContext);
+
+		_layoutLocalService.deleteLayouts(
+			_group.getGroupId(), true, new ServiceContext());
+		_layoutLocalService.deleteLayouts(
+			_group.getGroupId(), false, new ServiceContext());
+
+		Assert.assertEquals(
+			0, _layoutLocalService.getLayoutsCount(_group.getGroupId()));
 	}
 
 	@DeleteAfterTestRun

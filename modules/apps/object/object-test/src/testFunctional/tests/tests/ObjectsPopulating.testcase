@@ -25,22 +25,20 @@ definition {
 	@description = "LPS-133365 - Verify if it's possible to map an Object field and view its entries in a Field Group"
 	@priority = "4"
 	test CanMapAndViewEntriesForFieldGroup {
-		property test.name.skip.portal.instance = "PopulateObjectFormsConfiguration#CanMapAndViewEntriesForFieldGroup";
-
 		ObjectAdmin.addObjectViaAPI(
 			labelName = "Custom Object",
 			objectName = "CustomObject",
 			pluralLabelName = "Custom Objects");
 
 		ObjectAdmin.addObjectFieldViaAPI(
-			fieldLabelName = "Not Required Field",
+			fieldLabelName = "Integer",
 			fieldName = "integer",
 			fieldType = "Integer",
 			isRequired = "false",
 			objectName = "CustomObject");
 
 		ObjectAdmin.addObjectFieldViaAPI(
-			fieldLabelName = "Not Required Field",
+			fieldLabelName = "Text",
 			fieldName = "text",
 			fieldType = "String",
 			isRequired = "false",
@@ -68,13 +66,13 @@ definition {
 			key_fieldLabel = "Numeric",
 			key_fieldName = "Text");
 
-		PopulateObjectFormsConfiguration.mapFormField(fieldLabelName = "Not Required Field");
+		PopulateObjectFormsConfiguration.mapFormField(fieldLabelName = "Text");
 
 		Form.closeSidebar();
 
 		PopulateObjectFormsConfiguration.gotoFormField(formFieldName = "Numeric");
 
-		PopulateObjectFormsConfiguration.mapFormField(fieldLabelName = "Not Required Field");
+		PopulateObjectFormsConfiguration.mapFormField(fieldLabelName = "Integer");
 
 		Form.save();
 
@@ -104,8 +102,6 @@ definition {
 	@description = "LPS-133365 - Verify if it's possible to map an Object field of BigDecimal type and view its entries"
 	@priority = "4"
 	test CanMapBigDecimalTypeAndViewEntries {
-		property test.name.skip.portal.instance = "PopulateObjectFormsConfiguration#CanMapBigDecimalTypeAndViewEntries";
-
 		ObjectAdmin.addObjectViaAPI(
 			labelName = "Custom Object",
 			objectName = "CustomObject",
@@ -160,20 +156,60 @@ definition {
 	}
 
 	@description = "LPS-133365 - Verify if it's possible to map an Object field of Boolean type and view its entries"
-	@ignore = "Test Stub"
 	@priority = "4"
 	test CanMapBooleanTypeAndViewEntries {
-		property test.name.skip.portal.instance = "PopulateObjectFormsConfiguration#CanMapBooleanTypeAndViewEntries";
+		ObjectAdmin.addObjectViaAPI(
+			labelName = "Custom Object",
+			objectName = "CustomObject",
+			pluralLabelName = "Custom Objects");
 
-		// TODO LPS-138047 CanMapBooleanTypeAndViewEntries pending implementation
+		ObjectAdmin.addObjectFieldViaAPI(
+			fieldLabelName = "Custom Field",
+			fieldName = "customObjectField",
+			fieldType = "Boolean",
+			isRequired = "false",
+			objectName = "CustomObject");
 
+		ObjectAdmin.publishObjectViaAPI(objectName = "CustomObject");
+
+		PopulateObjectFormsConfiguration.openForm();
+
+		FormsAdminNavigator.gotoAddForm();
+
+		Form.editName(formName = "Form 1");
+
+		PopulateObjectFormsConfiguration.openFormSettings();
+
+		PopulateObjectFormsConfiguration.selectObject(label = "Object");
+
+		PopulateObjectFormsConfiguration.selectCustomObject(label = "Custom Object");
+
+		Form.gotoAddField(fieldType = "Boolean");
+
+		PopulateObjectFormsConfiguration.mapFormField(fieldLabelName = "Custom Field");
+
+		Form.save();
+
+		Form.publishForm();
+
+		FormsAdminNavigator.gotoPublishedForm();
+
+		Check.checkToggleSwitch(
+			checkboxName = "Boolean",
+			locator1 = "Checkbox#ANY_CHECKBOX");
+
+		FormPortlet.submitSuccessfully();
+
+		Navigator.openURL();
+
+		ObjectAdmin.goToCustomObject(objectName = "CustomObject");
+
+		ObjectPortlet.viewEntry(entry = "Yes");
 	}
 
 	@description = "LPS-133365 - Verify if it's possible to map an Object field of Date type and view its entries"
 	@priority = "4"
 	test CanMapDateTypeAndViewEntries {
-		property test.name.skip.portal.instance = "PopulateObjectFormsConfiguration#CanMapDateTypeAndViewEntries";
-
 		ObjectAdmin.addObjectViaAPI(
 			labelName = "Custom Object",
 			objectName = "CustomObject",
@@ -226,8 +262,6 @@ definition {
 	@description = "LPS-133365 - Verify if it's possible to map an Object field of Double type and view its entries"
 	@priority = "4"
 	test CanMapDoubleTypeAndViewEntries {
-		property test.name.skip.portal.instance = "PopulateObjectFormsConfiguration#CanMapDoubleTypeAndViewEntries";
-
 		ObjectAdmin.addObjectViaAPI(
 			labelName = "Custom Object",
 			objectName = "CustomObject",
@@ -284,8 +318,6 @@ definition {
 	@description = "LPS-133365 - Verify if it's possible to map an Object field of Integer type and view its entries"
 	@priority = "4"
 	test CanMapIntegerTypeAndViewEntries {
-		property test.name.skip.portal.instance = "PopulateObjectFormsConfiguration#CanMapIntegerTypeAndViewEntries";
-
 		ObjectAdmin.addObjectViaAPI(
 			labelName = "Custom Object",
 			objectName = "CustomObject",
@@ -336,11 +368,8 @@ definition {
 	}
 
 	@description = "LPS-133365 - Verify if it's possible to map an Object field of Long type and view its entries"
-	@ignore = "true"
 	@priority = "4"
 	test CanMapLongTypeAndViewEntries {
-		property test.name.skip.portal.instance = "PopulateObjectFormsConfiguration#CanMapLongTypeAndViewEntries";
-
 		ObjectAdmin.addObjectViaAPI(
 			labelName = "Custom Object",
 			objectName = "CustomObject",
@@ -379,7 +408,7 @@ definition {
 
 		FormViewBuilder.editText(
 			fieldName = "Numeric",
-			fieldValue = "123456789123456789");
+			fieldValue = "12345678912345678");
 
 		FormPortlet.submitSuccessfully();
 
@@ -387,14 +416,22 @@ definition {
 
 		ObjectAdmin.goToCustomObject(objectName = "CustomObject");
 
-		ObjectPortlet.viewEntry(entry = "123456789123456789");
+		ObjectPortlet.viewEntry(entry = "12345678912345678");
+	}
+
+	@description = "LPS-138495 - Verify it is possible to map a Picklist for a Select From List field and view its entries"
+	@ignore = "Test Stub"
+	@priority = "4"
+	test CanMapPicklistTypeAndViewEntries {
+
+		// TODO LPS-141821 CanMapPicklistTypeAndViewEntries pending implementation
+
 	}
 
 	@description = "LPS-133365 - Verify if it's possible to map an Object field of String type and view its entries"
 	@priority = "5"
 	test CanMapStringTypeAndViewEntries {
 		property portal.acceptance = "true";
-		property test.name.skip.portal.instance = "PopulateObjectFormsConfiguration#CanMapStringTypeAndViewEntries";
 
 		ObjectAdmin.addObjectViaAPI(
 			labelName = "Custom Object",
@@ -445,11 +482,28 @@ definition {
 		ObjectPortlet.viewEntry(entry = "Test Text Test Text Test Text Test Text Test Text Test Text Test Text  Test");
 	}
 
+	@description = "LPS-137865 - Verify that it is possible to submit an entry with a Double field blank that is not required"
+	@ignore = "Test Stub"
+	@priority = "4"
+	test CanSubmitEntryWithDoubleFieldBlank {
+
+		// TODO LPS-141823 CanSubmitEntryWithDoubleFieldBlank pending implementation
+
+	}
+
+	@description = "LPS-139902 - Verify that entries Object entries added through forms are not deleted when form is deleted"
+	@ignore = "Test Stub"
+	@priority = "4"
+	test EntriesAreNotDeletedWhenFormIsDeleted {
+
+		// TODO LPS-141822 EntriesAreNotDeletedWhenFormIsDeleted pending implementation
+
+	}
+
 	@description = "LPS-136451 - Verify if it's possible to see the entries of a field with capitalized letters in the name"
 	@priority = "4"
 	test FieldWithCapitalizedLetters {
 		property portal.acceptance = "true";
-		property test.name.skip.portal.instance = "ObjectsPopulating#FieldWithCapitalizedLetters";
 
 		ObjectAdmin.addObjectViaAPI(
 			labelName = "Custom Object",

@@ -128,11 +128,15 @@ definition {
 
 		Staging.publishToLive();
 
+		JSONLayout.addWidgetToPublicLayout(
+			groupName = "Site Name (Staging)",
+			layoutName = "Test Page",
+			site = "false",
+			widgetName = "Asset Publisher");
+
 		Navigator.gotoStagedSitePage(
 			pageName = "Test Page",
 			siteName = "Site Name");
-
-		Portlet.addPG(portletName = "Asset Publisher");
 
 		AssetPublisherPortlet.selectAssetList(
 			assetListName = "Depot Manual Asset List",
@@ -142,10 +146,7 @@ definition {
 			pageName = "Test Page",
 			siteName = "Site Name");
 
-		AssertTextEquals(
-			key_assetTitle = "Document Title",
-			locator1 = "AP#ASSET_ABSTRACT_TITLE",
-			value1 = "Document Title");
+		AssetPublisherPortlet.viewAssetPG(assetTitle = "Document Title");
 
 		Staging.gotoPublishToLive();
 
@@ -155,10 +156,7 @@ definition {
 			pageName = "Test Page",
 			siteName = "Site Name");
 
-		AssertTextEquals(
-			key_assetTitle = "Document Title",
-			locator1 = "AP#ASSET_ABSTRACT_TITLE",
-			value1 = "Document Title");
+		AssetPublisherPortlet.viewAssetPG(assetTitle = "Document Title");
 	}
 
 	@description = "This ensures that a manual collection in a depot can be published in the site through the Asset Publisher for remote staging."
@@ -170,11 +168,8 @@ definition {
 		property custom.properties = "tunneling.servlet.shared.secret=1234567890123456${line.separator}auth.verifier.TunnelAuthVerifier.hosts.allowed=";
 		property databases.size = "1";
 		property minimum.slave.ram = "24";
+		property portal.acceptance = "true";
 		property test.name.skip.portal.instance = "DepotCollections#CanBePublishedViaRemoteStaging";
-
-		JSONDepot.addDepot(
-			depotDescription = "This is the description of a depot",
-			depotName = "Test Depot Name");
 
 		Depot.remoteStagingSetUp(
 			depotName = "Test Depot Name",
@@ -221,6 +216,11 @@ definition {
 
 		Staging.publishToLive(remoteStaging = "true");
 
+		JSONLayout.addWidgetToPublicLayout(
+			groupName = "Site Name",
+			layoutName = "Test Page",
+			widgetName = "Asset Publisher");
+
 		Navigator.openSitePage(
 			pageName = "Test Page",
 			siteName = "Site Name");
@@ -235,10 +235,7 @@ definition {
 			pageName = "Test Page",
 			siteName = "Site Name");
 
-		AssertTextEquals(
-			key_assetTitle = "Document Title",
-			locator1 = "AP#ASSET_ABSTRACT_TITLE",
-			value1 = "Document Title");
+		AssetPublisherPortlet.viewAssetPG(assetTitle = "Document Title");
 
 		Staging.gotoPublishToLive();
 
@@ -256,10 +253,7 @@ definition {
 			pageName = "Test Page",
 			siteName = "Remote Site");
 
-		AssertTextEquals(
-			key_assetTitle = "Document Title",
-			locator1 = "AP#ASSET_ABSTRACT_TITLE",
-			value1 = "Document Title");
+		AssetPublisherPortlet.viewAssetPG(assetTitle = "Document Title");
 
 		ApplicationsMenu.gotoPortlet(
 			category = "Sites",
@@ -395,10 +389,7 @@ definition {
 			pageName = "Asset Publisher Page",
 			siteName = "Site Name");
 
-		AssertTextEquals(
-			key_assetTitle = "WC WebContent Title",
-			locator1 = "AP#ASSET_ABSTRACT_TITLE",
-			value1 = "WC WebContent Title");
+		AssetPublisherPortlet.viewAssetPG(assetTitle = "WC WebContent Title");
 	}
 
 	@description = "This ensures that the asset types will not be displayed when disabling the applications."
@@ -659,10 +650,7 @@ definition {
 			pageName = "Asset Publisher Page",
 			siteName = "Site Name");
 
-		AssertTextEquals(
-			key_assetTitle = "Document Title",
-			locator1 = "AP#ASSET_ABSTRACT_TITLE",
-			value1 = "Document Title");
+		AssetPublisherPortlet.viewAssetPG(assetTitle = "Document Title");
 	}
 
 	@description = "This ensures that tagged the web content is displayed by AP through dynamic selection in a depot."
@@ -736,10 +724,7 @@ definition {
 			pageName = "Asset Publisher Page",
 			siteName = "Site Name");
 
-		AssertTextEquals(
-			key_assetTitle = "Web Content Title",
-			locator1 = "AP#ASSET_ABSTRACT_TITLE",
-			value1 = "Web Content Title");
+		AssetPublisherPortlet.viewAssetPG(assetTitle = "Web Content Title");
 	}
 
 	@description = "This ensures that images are excluded with the dynamic selection that does not contain the keyword "Image" in a depot."

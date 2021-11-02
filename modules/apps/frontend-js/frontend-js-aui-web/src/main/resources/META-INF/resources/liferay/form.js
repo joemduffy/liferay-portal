@@ -25,11 +25,26 @@ AUI.add(
 
 		var TABS_SECTION_STR = 'TabsSection';
 
+		var REGEX_CUSTOM_ELEMENT_NAME = /^[a-z]([a-z]|[0-9]|-|\.|_)*-([a-z]|[0-9]|-|\.|_)*/;
+
 		var REGEX_EMAIL = /^[\w!#$%&'*+/=?^_`{|}~-]+(?:\.[\w!#$%&'*+/=?^_`{|}~-]+)*@(?:\w(?:[\w-]*\w)?\.)+(\w(?:[\w-]*\w))$/;
 
 		var REGEX_NUMBER = /^[+-]?(\d+)([.|,]\d+)*([eE][+-]?\d+)?$/;
 
 		var REGEX_URL = /((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=+$,\w]+@)?[A-Za-z0-9.-]+|(https?:\/\/|www.|[-;:&=+$,\w]+@)[A-Za-z0-9.-]+)((?:\/[+~%/.\w-_]*)?\??(?:[-+=&;%@.\w_]*)#?(?:[\w]*))((.*):(\d*)\/?(.*))?)/;
+
+		var REGEX_URL_ALLOW_RELATIVE = /((([A-Za-z]{3,9}:(?:\/\/)?)|\/(?:[-;:&=+$,\w]+@)?[A-Za-z0-9.-]+|(https?:\/\/|www.|[-;:&=+$,\w]+@)[A-Za-z0-9.-]+)((?:\/[+~%/.\w-_]*)?\??(?:[-+=&;%@.\w_]*)#?(?:[\w]*))((.*):(\d*)\/?(.*))?)/;
+
+		var RESERVED_CUSTOM_ELEMENT_NAMES = new Set([
+			'annotation-xml',
+			'color-profile',
+			'font-face',
+			'font-face-format',
+			'font-face-name',
+			'font-face-src',
+			'font-face-uri',
+			'missing-glyph',
+		]);
 
 		var acceptFiles = function (val, node, ruleValue) {
 			if (ruleValue && ruleValue.split(',').includes('*')) {
@@ -37,6 +52,13 @@ AUI.add(
 			}
 
 			return defaultAcceptFiles(val, node, ruleValue);
+		};
+
+		var customElementName = function (val, _node, _ruleValue) {
+			return (
+				REGEX_CUSTOM_ELEMENT_NAME.test(val) &&
+				!RESERVED_CUSTOM_ELEMENT_NAMES.has(val)
+			);
 		};
 
 		var email = function (val) {
@@ -61,14 +83,22 @@ AUI.add(
 			return REGEX_URL && REGEX_URL.test(val);
 		};
 
+		var urlAllowRelative = function (val) {
+			return (
+				REGEX_URL_ALLOW_RELATIVE && REGEX_URL_ALLOW_RELATIVE.test(val)
+			);
+		};
+
 		A.mix(
 			DEFAULTS_FORM_VALIDATOR.RULES,
 			{
 				acceptFiles,
+				customElementName,
 				email,
 				maxFileSize,
 				number,
 				url,
+				urlAllowRelative,
 			},
 			true
 		);
@@ -85,6 +115,9 @@ AUI.add(
 				),
 				alphanum: Liferay.Language.get(
 					'please-enter-only-alphanumeric-characters'
+				),
+				customElementName: Liferay.Language.get(
+					'please-enter-a-valid-html-element-name'
 				),
 				date: Liferay.Language.get('please-enter-a-valid-date'),
 				digits: Liferay.Language.get('please-enter-only-digits'),
@@ -118,6 +151,9 @@ AUI.add(
 				),
 				required: Liferay.Language.get('this-field-is-required'),
 				url: Liferay.Language.get('please-enter-a-valid-url'),
+				urlAllowRelative: Liferay.Language.get(
+					'please-enter-a-valid-url'
+				),
 			},
 			true
 		);

@@ -19,6 +19,7 @@ import com.liferay.account.service.AccountEntryOrganizationRelLocalService;
 import com.liferay.account.service.AccountEntryUserRelLocalService;
 import com.liferay.account.service.AccountGroupLocalService;
 import com.liferay.account.service.AccountGroupRelLocalService;
+import com.liferay.account.service.AccountRoleLocalService;
 import com.liferay.commerce.account.internal.upgrade.v1_1_0.CommerceAccountUpgradeProcess;
 import com.liferay.commerce.account.internal.upgrade.v1_2_0.CommerceAccountGroupCommerceAccountRelUpgradeProcess;
 import com.liferay.commerce.account.internal.upgrade.v1_2_0.CommerceAccountGroupRelUpgradeProcess;
@@ -36,6 +37,8 @@ import com.liferay.portal.kernel.model.Release;
 import com.liferay.portal.kernel.service.ClassNameLocalService;
 import com.liferay.portal.kernel.service.GroupLocalService;
 import com.liferay.portal.kernel.service.ResourceLocalService;
+import com.liferay.portal.kernel.service.ResourcePermissionLocalService;
+import com.liferay.portal.kernel.service.RoleLocalService;
 import com.liferay.portal.kernel.service.WorkflowDefinitionLinkLocalService;
 import com.liferay.portal.kernel.service.WorkflowInstanceLinkLocalService;
 import com.liferay.portal.kernel.upgrade.DummyUpgradeProcess;
@@ -122,6 +125,19 @@ public class CommerceAccountUpgradeStepRegistrator
 				CommerceAccountGroupCommerceAccountRelUpgradeProcess(
 					_accountGroupRelLocalService));
 
+		registry.register(
+			"9.0.0", "9.1.0",
+			new com.liferay.commerce.account.internal.upgrade.v9_1_0.
+				CommerceAccountRoleUpgradeProcess(
+					_accountRoleLocalService, _classNameLocalService,
+					_groupLocalService, _resourcePermissionLocalService,
+					_roleLocalService));
+
+		registry.register(
+			"9.1.0", "9.1.1",
+			new com.liferay.commerce.account.internal.upgrade.v9_0_1.
+				CommerceAccountPortletUpgradeProcess());
+
 		if (_log.isInfoEnabled()) {
 			_log.info("Commerce account upgrade step registrator finished");
 		}
@@ -147,6 +163,9 @@ public class CommerceAccountUpgradeStepRegistrator
 	private AccountGroupRelLocalService _accountGroupRelLocalService;
 
 	@Reference
+	private AccountRoleLocalService _accountRoleLocalService;
+
+	@Reference
 	private ClassNameLocalService _classNameLocalService;
 
 	@Reference
@@ -165,6 +184,12 @@ public class CommerceAccountUpgradeStepRegistrator
 
 	@Reference
 	private ResourceLocalService _resourceLocalService;
+
+	@Reference
+	private ResourcePermissionLocalService _resourcePermissionLocalService;
+
+	@Reference
+	private RoleLocalService _roleLocalService;
 
 	@Reference
 	private WorkflowDefinitionLinkLocalService

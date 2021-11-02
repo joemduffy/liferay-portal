@@ -17,6 +17,8 @@ package com.liferay.template.service.impl;
 import com.liferay.portal.aop.AopService;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.model.User;
+import com.liferay.portal.kernel.service.ServiceContext;
+import com.liferay.portal.kernel.service.UserLocalService;
 import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.template.model.TemplateEntry;
 import com.liferay.template.service.base.TemplateEntryLocalServiceBaseImpl;
@@ -24,6 +26,7 @@ import com.liferay.template.service.base.TemplateEntryLocalServiceBaseImpl;
 import java.util.List;
 
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * @author Eudaldo Alonso
@@ -38,15 +41,17 @@ public class TemplateEntryLocalServiceImpl
 	@Override
 	public TemplateEntry addTemplateEntry(
 			long userId, long groupId, long ddmTemplateId,
-			String infoItemClassName, String infoItemFormVariationKey)
+			String infoItemClassName, String infoItemFormVariationKey,
+			ServiceContext serviceContext)
 		throws PortalException {
 
 		TemplateEntry templateEntry = templateEntryPersistence.create(
 			counterLocalService.increment());
 
+		templateEntry.setUuid(serviceContext.getUuid());
 		templateEntry.setGroupId(groupId);
 
-		User user = userLocalService.getUser(userId);
+		User user = _userLocalService.getUser(userId);
 
 		templateEntry.setCompanyId(user.getCompanyId());
 		templateEntry.setUserId(user.getUserId());
@@ -81,6 +86,22 @@ public class TemplateEntryLocalServiceImpl
 	}
 
 	@Override
+	public List<TemplateEntry> getTemplateEntries(
+		long groupId, String infoItemClassName, String infoItemFormVariationKey,
+		int start, int end,
+		OrderByComparator<TemplateEntry> orderByComparator) {
+
+		return templateEntryPersistence.findByG_IICN_IIFVK(
+			groupId, infoItemClassName, infoItemFormVariationKey, start, end,
+			orderByComparator);
+	}
+
+	@Override
+	public List<TemplateEntry> getTemplateEntries(long[] groupIds) {
+		return templateEntryPersistence.findByGroupId(groupIds);
+	}
+
+	@Override
 	public int getTemplateEntriesCount(long groupId) {
 		return templateEntryPersistence.countByGroupId(groupId);
 	}
@@ -94,5 +115,8 @@ public class TemplateEntryLocalServiceImpl
 
 		return templateEntryPersistence.update(templateEntry);
 	}
+
+	@Reference
+	private UserLocalService _userLocalService;
 
 }

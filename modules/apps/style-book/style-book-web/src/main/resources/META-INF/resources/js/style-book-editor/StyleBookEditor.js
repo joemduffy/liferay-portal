@@ -18,13 +18,14 @@ import React, {useEffect, useState} from 'react';
 import LayoutPreview from './LayoutPreview';
 import Sidebar from './Sidebar';
 import {StyleBookContextProvider} from './StyleBookContext';
+import Toolbar from './Toolbar';
 import {config, initializeConfig} from './config';
 import {DRAFT_STATUS} from './constants/draftStatusConstants';
+import {LAYOUT_TYPES} from './constants/layoutTypes';
 import {useCloseProductMenu} from './useCloseProductMenu';
 
 const StyleBookEditor = ({
 	frontendTokensValues: initialFrontendTokensValues,
-	initialPreviewLayout,
 }) => {
 	useCloseProductMenu();
 
@@ -32,7 +33,10 @@ const StyleBookEditor = ({
 		initialFrontendTokensValues
 	);
 	const [draftStatus, setDraftStatus] = useState(DRAFT_STATUS.notSaved);
-	const [previewLayout, setPreviewLayout] = useState(initialPreviewLayout);
+	const [previewLayout, setPreviewLayout] = useState(
+		getMostRecentLayout(config.previewOptions)
+	);
+	const [loading, setLoading] = useState(true);
 
 	useEffect(() => {
 		if (frontendTokensValues === initialFrontendTokensValues) {
@@ -64,49 +68,54 @@ const StyleBookEditor = ({
 			value={{
 				draftStatus,
 				frontendTokensValues,
+				loading,
 				previewLayout,
 				setFrontendTokensValues,
+				setLoading,
 				setPreviewLayout,
 			}}
 		>
 			<div className="cadmin style-book-editor">
-				<LayoutPreview />
-				<Sidebar />
+				{config.templatesPreviewEnabled && <Toolbar />}
+
+				<div className="d-flex">
+					<LayoutPreview />
+					<Sidebar />
+				</div>
 			</div>
 		</StyleBookContextProvider>
 	);
 };
 
 export default function ({
+	defaultUserId,
 	frontendTokenDefinition = [],
 	frontendTokensValues = {},
-	initialPreviewLayout,
 	layoutsTreeURL,
 	namespace,
+	previewOptions,
 	publishURL,
 	redirectURL,
 	saveDraftURL,
 	styleBookEntryId,
+	templatesPreviewEnabled,
 	themeName,
 } = {}) {
 	initializeConfig({
+		defaultUserId,
 		frontendTokenDefinition,
-		initialPreviewLayout,
 		layoutsTreeURL,
 		namespace,
+		previewOptions,
 		publishURL,
 		redirectURL,
 		saveDraftURL,
 		styleBookEntryId,
+		templatesPreviewEnabled,
 		themeName,
 	});
 
-	return (
-		<StyleBookEditor
-			frontendTokensValues={frontendTokensValues}
-			initialPreviewLayout={initialPreviewLayout}
-		/>
-	);
+	return <StyleBookEditor frontendTokensValues={frontendTokensValues} />;
 }
 
 function saveDraft(frontendTokensValues, styleBookEntryId) {
@@ -138,4 +147,25 @@ function saveDraft(frontendTokensValues, styleBookEntryId) {
 
 			return body;
 		});
+}
+
+function getMostRecentLayout(previewOptions) {
+	const types = [
+		LAYOUT_TYPES.page,
+		LAYOUT_TYPES.master,
+		LAYOUT_TYPES.pageTemplate,
+		LAYOUT_TYPES.displayPageTemplate,
+	];
+
+	for (let i = 0; i < types.length; i++) {
+		const layouts = previewOptions.find(
+			(option) => option.type === types[i]
+		).data.recentLayouts;
+
+		if (layouts.length) {
+			return layouts[0];
+		}
+	}
+
+	return null;
 }

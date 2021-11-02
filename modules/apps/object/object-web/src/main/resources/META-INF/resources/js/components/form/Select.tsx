@@ -24,9 +24,7 @@ interface ISelectProps extends React.HTMLAttributes<HTMLElement> {
 	disabled?: boolean;
 	error?: string;
 	feedbackMessage?: string;
-	id: string;
 	label: string;
-	name: string;
 	options: string[];
 	required?: boolean;
 }
@@ -63,6 +61,7 @@ const Select: React.FC<ISelectProps> = ({
 				disabled={disabled}
 				id={id}
 				onChange={onChange}
+				placeholder={Liferay.Language.get('choose-an-option')}
 			>
 				{options.map((label, index) => (
 					<ClaySelect.Option

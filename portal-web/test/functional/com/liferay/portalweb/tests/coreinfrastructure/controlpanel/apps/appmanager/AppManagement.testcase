@@ -486,7 +486,7 @@ definition {
 	@priority = "5"
 	test CanDeactivateAndActivateTranslation {
 		property test.name.skip.portal.instance = "AppManagement#CanDeactivateAndActivateTranslation";
-		property testray.main.component.name = "Translation Management";
+		property testray.main.component.name = "Translations Management";
 
 		ApplicationsMenu.gotoPortlet(
 			category = "System",
@@ -584,9 +584,9 @@ definition {
 
 		AssertElementPresent(locator1 = "TextInput#FILE");
 
-		UploadCommonFile.uploadCommonFileHiddenNoMouseOver(
-			locator1 = "TextInput#FILE",
-			value1 = "title.zip");
+		UploadFileWithCustomPath.uploadArchiveFile(
+			fileName = "title.zip",
+			filePath = "enduser/wem/fragment");
 
 		Button.clickInstall();
 

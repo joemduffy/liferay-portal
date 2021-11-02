@@ -87,7 +87,6 @@ import com.liferay.portal.kernel.util.MapUtil;
 import com.liferay.portal.kernel.util.MimeTypesUtil;
 import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.PortletKeys;
-import com.liferay.portal.kernel.util.ResourceBundleUtil;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.UnicodeProperties;
 import com.liferay.portal.kernel.util.Validator;
@@ -107,9 +106,9 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
-import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.concurrent.Callable;
+import java.util.function.Consumer;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -166,29 +165,47 @@ public class LayoutPageTemplatesImporterImpl
 			String pageElementJSON, int position)
 		throws Exception {
 
-		PageElement pageElement = _objectMapper.readValue(
-			pageElementJSON, PageElement.class);
+		Consumer<LayoutStructure> consumer = processedLayoutStructure -> {
+			try {
+				_updateLayoutPageTemplateStructure(
+					layout, processedLayoutStructure);
+			}
+			catch (Exception exception) {
+				if (_log.isWarnEnabled()) {
+					_log.warn(exception, exception);
+				}
+			}
+		};
 
-		Set<String> warningMessages = new HashSet<>();
+		return _importPageElement(
+			consumer, layout, layoutStructure, parentItemId, pageElementJSON,
+			position);
+	}
 
-		_processPageElement(
-			layout, layoutStructure,
-			LayoutStructureConstants.LATEST_PAGE_DEFINITION_VERSION,
-			pageElement, parentItemId, position, warningMessages);
+	@Override
+	public List<FragmentEntryLink> importPageElement(
+			Layout layout, LayoutStructure layoutStructure, String parentItemId,
+			String pageElementJSON, int position, long segmentsExperienceId)
+		throws Exception {
 
-		List<FragmentEntryLink> fragmentEntryLinks = new ArrayList<>();
+		Consumer<LayoutStructure> consumer = processedLayoutStructure -> {
+			try {
+				_layoutPageTemplateStructureLocalService.
+					updateLayoutPageTemplateStructureData(
+						layout.getGroupId(), layout.getPlid(),
+						segmentsExperienceId,
+						processedLayoutStructure.toString());
+			}
+			catch (Exception exception) {
+				if (_log.isWarnEnabled()) {
+					_log.warn(exception, exception);
+				}
+			}
+		};
 
-		LayoutStructureItem parentLayoutStructureItem =
-			layoutStructure.getLayoutStructureItem(parentItemId);
-
-		fragmentEntryLinks.addAll(
-			_getFragmentEntryLinks(
-				layoutStructure,
-				parentLayoutStructureItem.getChildrenItemIds()));
-
-		_updateLayoutPageTemplateStructure(layout, layoutStructure);
-
-		return fragmentEntryLinks;
+		return _importPageElement(
+			consumer, layout, layoutStructure, parentItemId, pageElementJSON,
+			position);
 	}
 
 	private void _deleteExistingPortletPreferences(long plid) {
@@ -328,10 +345,7 @@ public class LayoutPageTemplatesImporterImpl
 			locale = _portal.getSiteDefaultLocale(groupId);
 		}
 
-		ResourceBundle resourceBundle = ResourceBundleUtil.getBundle(
-			locale, getClass());
-
-		return _language.format(resourceBundle, languageKey, arguments);
+		return _language.format(locale, languageKey, arguments);
 	}
 
 	private List<FragmentEntryLink> _getFragmentEntryLinks(
@@ -789,6 +803,37 @@ public class LayoutPageTemplatesImporterImpl
 		return null;
 	}
 
+	private List<FragmentEntryLink> _importPageElement(
+			Consumer<LayoutStructure> consumer, Layout layout,
+			LayoutStructure layoutStructure, String parentItemId,
+			String pageElementJSON, int position)
+		throws Exception {
+
+		PageElement pageElement = _objectMapper.readValue(
+			pageElementJSON, PageElement.class);
+
+		Set<String> warningMessages = new HashSet<>();
+
+		_processPageElement(
+			layout, layoutStructure,
+			LayoutStructureConstants.LATEST_PAGE_DEFINITION_VERSION,
+			pageElement, parentItemId, position, warningMessages);
+
+		List<FragmentEntryLink> fragmentEntryLinks = new ArrayList<>();
+
+		LayoutStructureItem parentLayoutStructureItem =
+			layoutStructure.getLayoutStructureItem(parentItemId);
+
+		fragmentEntryLinks.addAll(
+			_getFragmentEntryLinks(
+				layoutStructure,
+				parentLayoutStructureItem.getChildrenItemIds()));
+
+		consumer.accept(layoutStructure);
+
+		return fragmentEntryLinks;
+	}
+
 	private boolean _isDisplayPageTemplateFile(String fileName) {
 		if (fileName.endsWith(
 				CharPool.SLASH +
@@ -902,7 +947,7 @@ public class LayoutPageTemplatesImporterImpl
 		}
 	}
 
-	private void _processLayoutPageTemplateEntry(
+	private LayoutPageTemplateEntry _processLayoutPageTemplateEntry(
 			long classNameId, long classTypeId, long groupId,
 			long layoutPageTemplateCollectionId,
 			LayoutPageTemplateEntry layoutPageTemplateEntry, String name,
@@ -961,9 +1006,12 @@ public class LayoutPageTemplatesImporterImpl
 					layoutPageTemplateEntry.getLayoutPageTemplateEntryId(),
 					thumbnailZipEntry, zipFile);
 
-				_layoutPageTemplateEntryService.updateLayoutPageTemplateEntry(
-					layoutPageTemplateEntry.getLayoutPageTemplateEntryId(),
-					previewFileEntryId);
+				layoutPageTemplateEntry =
+					_layoutPageTemplateEntryService.
+						updateLayoutPageTemplateEntry(
+							layoutPageTemplateEntry.
+								getLayoutPageTemplateEntryId(),
+							previewFileEntryId);
 
 				_layoutPageTemplatesImporterResultEntries.add(
 					new LayoutPageTemplatesImporterResultEntry(
@@ -1009,7 +1057,11 @@ public class LayoutPageTemplatesImporterImpl
 						new String[] {
 							zipPath, _toTypeName(layoutPageTemplateEntryType)
 						})));
+
+			return null;
 		}
+
+		return layoutPageTemplateEntry;
 	}
 
 	private void _processMasterLayoutPageTemplateEntries(
@@ -1563,13 +1615,23 @@ public class LayoutPageTemplatesImporterImpl
 					fetchLayoutPageTemplateEntry(
 						_groupId, _displayPageTemplateEntry.getKey());
 
-			_processLayoutPageTemplateEntry(
+			layoutPageTemplateEntry = _processLayoutPageTemplateEntry(
 				classNameId, classTypeId, _groupId, 0, layoutPageTemplateEntry,
 				displayPageTemplate.getName(),
 				_displayPageTemplateEntry.getPageDefinition(),
 				LayoutPageTemplateEntryTypeConstants.TYPE_DISPLAY_PAGE,
 				_overwrite, _displayPageTemplateEntry.getThumbnailZipEntry(),
 				_displayPageTemplateEntry.getZipPath(), _zipFile);
+
+			boolean defaultTemplate = GetterUtil.getBoolean(
+				displayPageTemplate.getDefaultTemplate());
+
+			if ((layoutPageTemplateEntry != null) && defaultTemplate) {
+				_layoutPageTemplateEntryLocalService.
+					updateLayoutPageTemplateEntry(
+						layoutPageTemplateEntry.getLayoutPageTemplateEntryId(),
+						true);
+			}
 
 			return null;
 		}

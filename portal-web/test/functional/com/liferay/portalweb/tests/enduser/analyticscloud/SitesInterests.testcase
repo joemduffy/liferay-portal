@@ -30,23 +30,23 @@ definition {
 			JSONGroup.deleteGroupByName(groupName = "Site Name");
 		}
 
+		JSONUser.tearDownNonAdminUsers();
+
 		ACUtils.tearDownAC();
 	}
 
 	@description = "Feature ID: Legacy | Automation ID: LRAC-8283 | Test Summary: Site overview interests card shows what the top interests are"
 	@priority = "5"
 	test ShowsSitesTopInterests {
+		var pageNameList = "sports,technology,science";
+
 		task ("Connect DXP to AC") {
 			var propertyName = ACDXPSettings.connectDXPtoAnalyticsCloud(siteName = "Site Name");
 		}
 
 		task ("Add specific pages and web contents to Site as interest topics") {
-			Navigator.openSiteURL(siteName = "Site Name");
-
-			for (var layoutName : list "Sports,Technology,Science") {
-				JSONLayout.addPublicLayout(
-					groupName = "Site Name",
-					layoutName = "${layoutName}");
+			for (var layoutName : list "${pageNameList}") {
+				ACUtils.addPage(layoutName = "${layoutName}");
 
 				ACUtils.createWCAndAddToPage(
 					layoutName = "${layoutName}",
@@ -69,12 +69,10 @@ definition {
 				userLoginEmailAddress = "ac@liferay.com",
 				userLoginFullName = "ac ac");
 
-			for (var pageName : list "Sports,Technology,Science") {
-				Navigator.gotoSitePage(
+			for (var pageName : list "${pageNameList}") {
+				ACUtils.navigateToSitePage(
 					pageName = "${pageName}",
 					siteName = "Site Name");
-
-				Pause(locator1 = "3000");
 			}
 		}
 
@@ -101,7 +99,7 @@ definition {
 
 			ACTimeFilter.setLast24Hours();
 
-			for (var interests : list "liferay dxp,site,sports,science,technology") {
+			for (var interests : list "site,sports,technology") {
 				ACInterests.viewInterests(interestName = "${interests}");
 			}
 		}

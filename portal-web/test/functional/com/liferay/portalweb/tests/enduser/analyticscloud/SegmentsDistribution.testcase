@@ -21,14 +21,6 @@ definition {
 			ACUtils.addSiteAndPage();
 		}
 
-		JSONLayout.addPublicLayout(
-			groupName = "Site Name",
-			layoutName = "AC Page");
-
-		Navigator.gotoSitePage(
-			pageName = "AC Page",
-			siteName = "Site Name");
-
 		ACDXPSettings.connectDXPtoAnalyticsCloud(siteName = "Site Name");
 
 		task ("Add a new user") {
@@ -61,12 +53,20 @@ definition {
 			JSONGroup.deleteGroupByName(groupName = "Site Name");
 		}
 
+		JSONUser.tearDownNonAdminUsers();
+
 		ACUtils.tearDownAC();
 	}
 
 	@description = "Feature ID: Legacy | Automation ID: LRAC-8626 | Test Summary: Segment distribution chart can be filtered by date property"
 	@priority = "5"
 	test CanDistributionChartFilteredDateProperty {
+		property portal.upstream = "quarantine";
+
+		// It is not possible to check the percentage at the end of the test because of the bug
+		// AC Bug ticket: LRAC-9383
+		// AC Refactor ticket: LRAC-9397
+
 		task ("Get site assigned property name") {
 			var propertyName = ACDXPSettings.getAssignedPropertyName(siteName = "Site Name");
 		}
@@ -76,14 +76,14 @@ definition {
 				userLoginEmailAddress = "userea@liferay.com",
 				userLoginFullName = "userfn userln");
 
-			Navigator.gotoSitePage(
+			ACUtils.navigateToSitePage(
 				pageName = "AC Page",
 				siteName = "Site Name");
-
-			Pause(locator1 = "5000");
 		}
 
 		task ("Switch to new property in AC") {
+			ACUtils.closeAllSessionsAndWait();
+
 			ACUtils.launchAC();
 
 			ACProperties.switchProperty(propertyName = "${propertyName}");
@@ -118,6 +118,9 @@ definition {
 		}
 
 		task ("View Chart Entry") {
+
+			// It is not possible to check the percentage at the end of the test because of the bug
+
 			ACSegments.viewBreakdownChartsEntry(key_entry = "1986-05-31T00:00:00.000Z - 100.0%");
 		}
 	}
@@ -140,9 +143,11 @@ definition {
 				userLoginEmailAddress = "userea@liferay.com",
 				userLoginFullName = "userfn userln");
 
-			Navigator.gotoSitePage(
+			ACUtils.navigateToSitePage(
 				pageName = "AC Page",
 				siteName = "Site Name");
+
+			ACUtils.closeAllSessionsAndWait();
 		}
 
 		task ("Switch to new property in AC") {
@@ -202,6 +207,12 @@ definition {
 	@description = "Feature ID: Legacy | Automation ID: LRAC-8628 | Test Summary: Segment distribution chart can be filtered by text property"
 	@priority = "3"
 	test CanDistributionChartFilteredText {
+		property portal.upstream = "quarantine";
+
+		// AC Refactor: Chart fails to appear the right percentage when filtering with a givenName property.
+		// AC Refactor ticket: LRAC-9387
+		// AC Bug ticekt: LRAC-9383
+
 		task ("Get site assigned property name") {
 			var propertyName = ACDXPSettings.getAssignedPropertyName(siteName = "Site Name");
 		}
@@ -211,9 +222,11 @@ definition {
 				userLoginEmailAddress = "userea@liferay.com",
 				userLoginFullName = "userfn userln");
 
-			Navigator.gotoSitePage(
+			ACUtils.navigateToSitePage(
 				pageName = "AC Page",
 				siteName = "Site Name");
+
+			ACUtils.closeAllSessionsAndWait();
 		}
 
 		task ("Switch to new property in AC") {
@@ -251,6 +264,9 @@ definition {
 		}
 
 		task ("View Chart Entry") {
+
+			// Test will fail here because the percentage is wrong
+
 			ACSegments.viewBreakdownChartsEntry(key_entry = "userfn - 100.0%");
 		}
 	}
@@ -258,7 +274,11 @@ definition {
 	@description = "Feature ID: Legacy | Automation ID: LRAC-8625 | Test Summary: Search the Segment Profile Distribution"
 	@priority = "3"
 	test CanSearchTheSegmentProfileDistribution {
-		var userList = "DXP,LiferayAC";
+		var userList = "ac,dxp";
+
+		var emailList = "ac@liferay.com,dxp@liferay.com,userea@liferay.com";
+
+		var nameList = "ac ac,dxp dxp,userfn userln";
 
 		task ("Get site assigned property name") {
 			var propertyName = ACDXPSettings.getAssignedPropertyName(siteName = "Site Name");
@@ -278,17 +298,10 @@ definition {
 		ACDXPSettings.syncNewContactData();
 
 		task ("View AC Page as new user") {
-			for (var userLogin : list "${userList}") {
-				User.logoutAndLoginPG(
-					userLoginEmailAddress = "${userLogin}@liferay.com",
-					userLoginFullName = "${userLogin} ${userLogin}");
-
-				Navigator.gotoSitePage(
-					pageName = "AC Page",
-					siteName = "Site Name");
-
-				Pause(locator1 = "5000");
-			}
+			ACUtils.navigateToSitePageWithUser(
+				emailList = "${emailList}",
+				pageName = "AC Page",
+				siteName = "Site Name");
 		}
 
 		task ("Switch to new property in AC") {
@@ -308,9 +321,7 @@ definition {
 		}
 
 		task ("Add new user as member") {
-			for (var userAdd : list "${userList}") {
-				ACSegments.addStaticMember(tableMember = "${userAdd} ${userAdd}");
-			}
+			ACSegments.addStaticMultiMember(tableMember = "${nameList}");
 
 			ACSegments.saveSegment();
 		}
@@ -340,7 +351,7 @@ definition {
 		}
 
 		task ("Assert that a wrong word will be not found") {
-			ACSegments.searchTheSegmentProfile(searchTerm = "wrong");
+			ACSegments.searchTheSegmentProfile(searchTerm = "userfn");
 
 			ACUtils.viewNoResultsMessage(noResultMessage = "There are no items found.");
 		}
@@ -349,21 +360,22 @@ definition {
 	@description = "Feature ID: Legacy | Automation ID: LRAC-8624 | Test Summary: Order the Segment Profile Distribution"
 	@priority = "3"
 	test OrderSegmentProfileDistribution {
-		property portal.upstream = "quarantine";
+		var userList = "ac,liferay";
 
-		// AC Bug ticket: LRAC-9250
-		// Depends on the bug fix
+		var emailList = "ac@liferay.com,liferay@liferay.com";
+
+		var nameList = "ac ac,liferay liferay";
 
 		task ("Connect Analytics Cloud to DXP") {
 			var propertyName = ACDXPSettings.getAssignedPropertyName(siteName = "Site Name");
 		}
 
 		task ("Create page") {
-			ACUtils.addSiteAndPage(layoutName = "AC Page");
+			ACUtils.addPage(layoutName = "AC Page");
 		}
 
 		task ("Add two new users") {
-			for (var name : list "ac,liferay") {
+			for (var name : list "${userList}") {
 				JSONUser.addUser(
 					jobTitle = "QA",
 					userEmailAddress = "${name}@liferay.com",
@@ -376,17 +388,10 @@ definition {
 		}
 
 		task ("Login with the users and open the site") {
-			for (var name : list "ac,liferay") {
-				User.logoutAndLoginPG(
-					userLoginEmailAddress = "${name}@liferay.com",
-					userLoginFullName = "${name} ${name}");
-
-				Navigator.gotoSitePage(
-					pageName = "AC Page",
-					siteName = "Site Name");
-
-				Pause(locator1 = "5000");
-			}
+			ACUtils.navigateToSitePageWithUser(
+				emailList = "${emailList}",
+				pageName = "AC Page",
+				siteName = "Site Name");
 		}
 
 		task ("Launch AC and Switch to new property") {
@@ -408,9 +413,7 @@ definition {
 		}
 
 		task ("Add new user as member") {
-			for (var name : list "ac,liferay" ) {
-				ACSegments.addStaticMember(tableMember = "${name} ${name}");
-			}
+			ACSegments.addStaticMultiMember(tableMember = "${nameList}");
 
 			ACSegments.saveSegment();
 		}
@@ -441,8 +444,9 @@ definition {
 				locator1 = "FormViewBuilder#FIELD_LABEL_OPTION");
 		}
 
-		// Sorting the names in ascending order to work correctly depends on the bug fix
-
+		task ("Sort the Names in ascending order") {
+			ACInterests.viewIndividualInterestSpecificOrder(interestTopic = "liferay liferay,ac ac");
+		}
 	}
 
 }

@@ -14,6 +14,10 @@
 
 package com.liferay.layout.item.selector.web.internal.display.context;
 
+import com.liferay.item.selector.ItemSelectorReturnType;
+import com.liferay.item.selector.criteria.URLItemSelectorReturnType;
+import com.liferay.item.selector.criteria.UUIDItemSelectorReturnType;
+import com.liferay.layout.item.selector.LayoutItemSelectorReturnType;
 import com.liferay.layout.item.selector.criterion.LayoutItemSelectorCriterion;
 import com.liferay.petra.portlet.url.builder.PortletURLBuilder;
 import com.liferay.portal.kernel.exception.PortalException;
@@ -22,10 +26,12 @@ import com.liferay.portal.kernel.portlet.PortletURLUtil;
 import com.liferay.portal.kernel.servlet.taglib.ui.BreadcrumbEntry;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.JavaConstants;
+import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.util.WebKeys;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import javax.portlet.PortletException;
@@ -59,6 +65,35 @@ public class LayoutItemSelectorViewDisplayContext {
 		return _itemSelectedEventName;
 	}
 
+	public String getItemSelectedReturnType() {
+		if (_itemSelectedReturnType != null) {
+			return _itemSelectedReturnType;
+		}
+
+		String itemSelectedReturnType =
+			URLItemSelectorReturnType.class.getName();
+
+		for (ItemSelectorReturnType itemSelectorReturnType :
+				_layoutItemSelectorCriterion.
+					getDesiredItemSelectorReturnTypes()) {
+
+			Class<?> itemSelectorReturnTypeClass =
+				itemSelectorReturnType.getClass();
+
+			if (_supportedItemSelectorReturnTypesClassNames.contains(
+					itemSelectorReturnTypeClass.getName())) {
+
+				itemSelectedReturnType = itemSelectorReturnTypeClass.getName();
+
+				break;
+			}
+		}
+
+		_itemSelectedReturnType = itemSelectedReturnType;
+
+		return _itemSelectedReturnType;
+	}
+
 	public List<BreadcrumbEntry> getPortletBreadcrumbEntries()
 		throws PortalException, PortletException {
 
@@ -89,6 +124,10 @@ public class LayoutItemSelectorViewDisplayContext {
 
 	public boolean isShowBreadcrumb() {
 		return _layoutItemSelectorCriterion.isShowBreadcrumb();
+	}
+
+	public boolean isShowDraftPages() {
+		return _layoutItemSelectorCriterion.isShowDraftPages();
 	}
 
 	public boolean isShowHiddenPages() {
@@ -128,8 +167,17 @@ public class LayoutItemSelectorViewDisplayContext {
 		return breadcrumbEntry;
 	}
 
+	private static final List<String>
+		_supportedItemSelectorReturnTypesClassNames =
+			Collections.unmodifiableList(
+				ListUtil.fromArray(
+					LayoutItemSelectorReturnType.class.getName(),
+					URLItemSelectorReturnType.class.getName(),
+					UUIDItemSelectorReturnType.class.getName()));
+
 	private final HttpServletRequest _httpServletRequest;
 	private final String _itemSelectedEventName;
+	private String _itemSelectedReturnType;
 	private final LayoutItemSelectorCriterion _layoutItemSelectorCriterion;
 	private final PortletURL _portletURL;
 	private final boolean _privateLayout;
