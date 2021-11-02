@@ -47,6 +47,7 @@
 		<field name="endTime" type="Date" />
 		<field name="errorMessage" type="String">
 			<hint-collection name="CLOB" />
+
 		</field>
 		<field name="executeStatus" type="String" />
 		<field name="fieldNameMapping" type="Map" />
