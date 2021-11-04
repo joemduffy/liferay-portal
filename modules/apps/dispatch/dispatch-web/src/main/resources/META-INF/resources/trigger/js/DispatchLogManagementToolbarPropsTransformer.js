@@ -37,7 +37,7 @@ export default function propsTransformer({portletNamespace, ...otherProps}) {
 					if (form) {
 						postForm(form, {
 							data: {
-                                deleteDispatchLogIds: Liferay.Util.listCheckedExcept(
+								deleteDispatchLogIds: Liferay.Util.listCheckedExcept(
 									form,
 									`${portletNamespace}allRowIds`
 								),
