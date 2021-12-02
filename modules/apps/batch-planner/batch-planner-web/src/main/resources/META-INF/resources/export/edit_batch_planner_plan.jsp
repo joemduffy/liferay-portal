@@ -26,7 +26,7 @@ renderResponse.setTitle(LanguageUtil.get(request, "export"));
 
 <div class="container pt-4">
 	<form id="<portlet:namespace />fm" name="<portlet:namespace />fm">
-		<aui:input name="batchPlannerPlanId" type="hidden" value="<%= batchPlannerPlanId %>" />
+		<input class="form-control" id="<%= batchPlannerPlanId %>" name="<portlet:namespace />name" type="hidden" />
 		<aui:input name="export" type="hidden" value="<%= true %>" />
 		<aui:input name="name" type="hidden" />
 		<aui:input name="taskItemDelegateName" type="hidden" value="DEFAULT" />
