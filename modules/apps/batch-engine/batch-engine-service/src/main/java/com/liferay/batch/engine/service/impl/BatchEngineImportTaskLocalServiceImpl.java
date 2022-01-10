@@ -14,10 +14,13 @@
 
 package com.liferay.batch.engine.service.impl;
 
+import com.liferay.batch.engine.exception.BatchEngineImportTaskParameterException;
 import com.liferay.batch.engine.model.BatchEngineImportTask;
 import com.liferay.batch.engine.service.base.BatchEngineImportTaskLocalServiceBaseImpl;
+import com.liferay.petra.string.StringPool;
 import com.liferay.portal.aop.AopService;
 import com.liferay.portal.kernel.dao.jdbc.OutputBlob;
+import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.io.unsync.UnsyncByteArrayInputStream;
 import com.liferay.portal.kernel.transaction.Propagation;
 import com.liferay.portal.kernel.transaction.Transactional;
@@ -43,11 +46,12 @@ public class BatchEngineImportTaskLocalServiceImpl
 	@Override
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	public BatchEngineImportTask addBatchEngineImportTask(
-		long companyId, long userId, long batchSize, String callbackURL,
-		String className, byte[] content, String contentType,
-		String executeStatus, Map<String, String> fieldNameMappingMap,
-		String operation, Map<String, Serializable> parameters,
-		String taskItemDelegateName) {
+			long companyId, long userId, long batchSize, String callbackURL,
+			String className, byte[] content, String contentType,
+			String executeStatus, Map<String, String> fieldNameMappingMap,
+			String operation, Map<String, Serializable> parameters,
+			String taskItemDelegateName)
+		throws PortalException {
 
 		BatchEngineImportTask batchEngineImportTask =
 			batchEngineImportTaskPersistence.create(
@@ -72,6 +76,27 @@ public class BatchEngineImportTaskLocalServiceImpl
 		batchEngineImportTask.setOperation(operation);
 
 		if ((parameters != null) && !parameters.isEmpty()) {
+			String delimiter = (String)parameters.getOrDefault(
+				"delimiter", (Serializable)StringPool.COMMA);
+
+			if (delimiter.equals(StringPool.APOSTROPHE) ||
+				delimiter.equals(StringPool.QUOTE)) {
+
+				throw new BatchEngineImportTaskParameterException(
+					"Quote may be not be used as delimiter");
+			}
+
+			String enclosingCharacter = (String)parameters.getOrDefault(
+				"enclosingCharacter", null);
+
+			if ((enclosingCharacter != null) &&
+				!enclosingCharacter.equals(StringPool.QUOTE) &&
+				!enclosingCharacter.equals(StringPool.APOSTROPHE)) {
+
+				throw new BatchEngineImportTaskParameterException(
+					"Only Quote(\") or Apostrophe(') may be used as enclosing character");
+			}
+
 			batchEngineImportTask.setParameters(parameters);
 		}
 
