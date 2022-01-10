@@ -125,6 +125,62 @@ public class ImportTask implements Serializable {
 	@JsonProperty(access = JsonProperty.Access.READ_WRITE)
 	protected String contentType;
 
+	@Schema(description = "The field separator delimiter.")
+	public String getDelimiter() {
+		return delimiter;
+	}
+
+	public void setDelimiter(String delimiter) {
+		this.delimiter = delimiter;
+	}
+
+	@JsonIgnore
+	public void setDelimiter(
+		UnsafeSupplier<String, Exception> delimiterUnsafeSupplier) {
+
+		try {
+			delimiter = delimiterUnsafeSupplier.get();
+		}
+		catch (RuntimeException re) {
+			throw re;
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	@GraphQLField(description = "The field separator delimiter.")
+	@JsonProperty(access = JsonProperty.Access.READ_WRITE)
+	protected String delimiter;
+
+	@Schema(description = "The character used for enclosing strings")
+	public String getEnclosingCharacter() {
+		return enclosingCharacter;
+	}
+
+	public void setEnclosingCharacter(String enclosingCharacter) {
+		this.enclosingCharacter = enclosingCharacter;
+	}
+
+	@JsonIgnore
+	public void setEnclosingCharacter(
+		UnsafeSupplier<String, Exception> enclosingCharacterUnsafeSupplier) {
+
+		try {
+			enclosingCharacter = enclosingCharacterUnsafeSupplier.get();
+		}
+		catch (RuntimeException re) {
+			throw re;
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	@GraphQLField(description = "The character used for enclosing strings")
+	@JsonProperty(access = JsonProperty.Access.READ_WRITE)
+	protected String enclosingCharacter;
+
 	@Schema(description = "The end time of import task operation.")
 	public Date getEndTime() {
 		return endTime;
@@ -434,6 +490,34 @@ public class ImportTask implements Serializable {
 			sb.append("\"");
 
 			sb.append(_escape(contentType));
+
+			sb.append("\"");
+		}
+
+		if (delimiter != null) {
+			if (sb.length() > 1) {
+				sb.append(", ");
+			}
+
+			sb.append("\"delimiter\": ");
+
+			sb.append("\"");
+
+			sb.append(_escape(delimiter));
+
+			sb.append("\"");
+		}
+
+		if (enclosingCharacter != null) {
+			if (sb.length() > 1) {
+				sb.append(", ");
+			}
+
+			sb.append("\"enclosingCharacter\": ");
+
+			sb.append("\"");
+
+			sb.append(_escape(enclosingCharacter));
 
 			sb.append("\"");
 		}
