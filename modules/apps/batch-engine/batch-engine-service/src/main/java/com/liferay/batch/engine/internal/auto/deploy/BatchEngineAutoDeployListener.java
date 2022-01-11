@@ -30,6 +30,7 @@ import com.liferay.portal.kernel.deploy.auto.AutoDeployException;
 import com.liferay.portal.kernel.deploy.auto.AutoDeployListener;
 import com.liferay.portal.kernel.deploy.auto.AutoDeployer;
 import com.liferay.portal.kernel.deploy.auto.context.AutoDeploymentContext;
+import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.util.StringUtil;
@@ -118,7 +119,7 @@ public class BatchEngineAutoDeployListener implements AutoDeployListener {
 		return true;
 	}
 
-	private void _deploy(ZipFile zipFile) throws Exception {
+	private void _deploy(ZipFile zipFile) throws Exception, PortalException {
 		if (_log.isInfoEnabled()) {
 			_log.info("Deploying batch engine file " + zipFile.getName());
 		}
