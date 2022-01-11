@@ -58,7 +58,8 @@ public class VulcanBatchEngineImportTaskResourceImpl
 		_initializeContext();
 
 		return _importTaskResource.postImportTask(
-			name, callbackURL, fields, _getTaskItemDelegateName(), object);
+			name, callbackURL, null, null, fields, _getTaskItemDelegateName(),
+			object);
 	}
 
 	@Override
