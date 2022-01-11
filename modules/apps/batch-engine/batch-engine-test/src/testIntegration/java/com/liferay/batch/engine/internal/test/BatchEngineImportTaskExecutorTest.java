@@ -18,6 +18,7 @@ import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
 import com.liferay.batch.engine.BatchEngineImportTaskExecutor;
 import com.liferay.batch.engine.BatchEngineTaskExecuteStatus;
 import com.liferay.batch.engine.BatchEngineTaskOperation;
+import com.liferay.batch.engine.exception.BatchEngineImportTaskParameterException;
 import com.liferay.batch.engine.model.BatchEngineImportTask;
 import com.liferay.batch.engine.service.BatchEngineImportTaskLocalService;
 import com.liferay.blogs.model.BlogsEntry;
@@ -808,8 +809,9 @@ public class BatchEngineImportTaskExecutorTest
 	}
 
 	private void _importBlogPostings(
-		BatchEngineTaskOperation batchEngineTaskOperation, byte[] content,
-		String contentType, Map<String, String> fieldNameMappingMap) {
+			BatchEngineTaskOperation batchEngineTaskOperation, byte[] content,
+			String contentType, Map<String, String> fieldNameMappingMap)
+		throws PortalException {
 
 		_batchEngineImportTask =
 			_batchEngineImportTaskLocalService.addBatchEngineImportTask(
