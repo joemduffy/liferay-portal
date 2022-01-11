@@ -32,6 +32,7 @@ import com.liferay.petra.io.StreamUtil;
 import com.liferay.petra.io.unsync.UnsyncByteArrayInputStream;
 import com.liferay.petra.io.unsync.UnsyncByteArrayOutputStream;
 import com.liferay.portal.configuration.metatype.bnd.util.ConfigurableUtil;
+import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.util.File;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.PropsUtil;
@@ -92,7 +93,7 @@ public class ImportTaskResourceImpl extends BaseImportTaskResourceImpl {
 	public ImportTask deleteImportTask(
 			String className, String callbackURL, String taskItemDelegateName,
 			Object object)
-		throws IOException {
+		throws IOException, PortalException {
 
 		String contentType = contextHttpServletRequest.getHeader(
 			HttpHeaders.CONTENT_TYPE);
@@ -112,7 +113,8 @@ public class ImportTaskResourceImpl extends BaseImportTaskResourceImpl {
 
 	@Override
 	public ImportTask postImportTask(
-			String className, String callbackURL, String fieldNameMapping,
+			String className, String callbackURL, String delimier,
+			String enclosingCharacter, String fieldNameMapping,
 			String taskItemDelegateName, MultipartBody multipartBody)
 		throws Exception {
 
@@ -124,7 +126,8 @@ public class ImportTaskResourceImpl extends BaseImportTaskResourceImpl {
 
 	@Override
 	public ImportTask postImportTask(
-			String className, String callbackURL, String fieldNameMapping,
+			String className, String callbackURL, String delimiter,
+			String enclosingCharacter, String fieldNameMapping,
 			String taskItemDelegateName, Object object)
 		throws Exception {
 
@@ -299,9 +302,11 @@ public class ImportTaskResourceImpl extends BaseImportTaskResourceImpl {
 	}
 
 	private ImportTask _importFile(
-		BatchEngineTaskOperation batchEngineTaskOperation, byte[] bytes,
-		String callbackURL, String className, String batchEngineTaskContentType,
-		String fieldNameMappingString, String taskItemDelegateName) {
+			BatchEngineTaskOperation batchEngineTaskOperation, byte[] bytes,
+			String callbackURL, String className,
+			String batchEngineTaskContentType, String fieldNameMappingString,
+			String taskItemDelegateName)
+		throws PortalException {
 
 		Class<?> clazz = _itemClassRegistry.getItemClass(className);
 
