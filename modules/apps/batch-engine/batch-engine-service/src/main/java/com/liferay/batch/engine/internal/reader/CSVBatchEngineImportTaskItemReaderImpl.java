@@ -15,11 +15,15 @@
 package com.liferay.batch.engine.internal.reader;
 
 import com.liferay.petra.io.unsync.UnsyncBufferedReader;
+import com.liferay.petra.string.StringPool;
+import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringUtil;
+import com.liferay.portal.kernel.util.Validator;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.Serializable;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -31,10 +35,14 @@ public class CSVBatchEngineImportTaskItemReaderImpl
 	implements BatchEngineImportTaskItemReader {
 
 	public CSVBatchEngineImportTaskItemReaderImpl(
-			String delimiter, InputStream inputStream)
+			String delimiter, Map<String, Serializable> parameters,
+			InputStream inputStream)
 		throws IOException {
 
-		_delimiter = delimiter;
+		_delimiter = (String)parameters.getOrDefault("delimiter", delimiter);
+
+		_delimiterRegex = _getDelimiterRegex(
+			_getEnclosingCharacter(parameters));
 
 		_inputStream = inputStream;
 
@@ -42,7 +50,7 @@ public class CSVBatchEngineImportTaskItemReaderImpl
 			new InputStreamReader(_inputStream));
 
 		_fieldNames = StringUtil.split(
-			_unsyncBufferedReader.readLine(), delimiter);
+			_unsyncBufferedReader.readLine(), _delimiter);
 	}
 
 	@Override
@@ -54,13 +62,12 @@ public class CSVBatchEngineImportTaskItemReaderImpl
 	public Map<String, Object> read() throws Exception {
 		String line = _unsyncBufferedReader.readLine();
 
-		if (line == null) {
+		if (Validator.isNull(line)) {
 			return null;
 		}
 
 		Map<String, Object> fieldNameValueMap = new HashMap<>();
-
-		String[] values = StringUtil.split(line, _delimiter);
+		String[] values = line.split(_delimiterRegex);
 
 		for (int i = 0; i < values.length; i++) {
 			String fieldName = _fieldNames[i];
@@ -89,7 +96,57 @@ public class CSVBatchEngineImportTaskItemReaderImpl
 		return fieldNameValueMap;
 	}
 
+	private String _getDelimiterRegex(String enclosingCharacter) {
+		String escapedDelimiter = _delimiter;
+
+		for (String delimiter : _ESCAPED_DELIMITERS) {
+			if (delimiter.equals(escapedDelimiter)) {
+				escapedDelimiter = StringPool.BACK_SLASH + _delimiter;
+
+				break;
+			}
+		}
+
+		if (Validator.isNull(enclosingCharacter)) {
+			return StringBundler.concat(
+				StringPool.OPEN_BRACKET, escapedDelimiter,
+				StringPool.CLOSE_BRACKET);
+		}
+
+		return StringBundler.concat(
+			escapedDelimiter, "(?=(?:[^", enclosingCharacter, "]*",
+			enclosingCharacter, "[^", enclosingCharacter, "]*",
+			enclosingCharacter, ")*[^", enclosingCharacter, "]*$)");
+	}
+
+	private String _getEnclosingCharacter(
+		Map<String, Serializable> parameters) {
+
+		String enclosingCharacter = (String)parameters.getOrDefault(
+			"enclosingCharacter", null);
+
+		if (Validator.isNull(enclosingCharacter)) {
+			return null;
+		}
+
+		if (enclosingCharacter.equals(StringPool.QUOTE)) {
+			return StringPool.BACK_SLASH + enclosingCharacter;
+		}
+
+		return enclosingCharacter;
+	}
+
+	private static final String[] _ESCAPED_DELIMITERS = {
+		StringPool.OPEN_BRACKET, StringPool.CLOSE_BRACKET,
+		StringPool.OPEN_PARENTHESIS, StringPool.CLOSE_PARENTHESIS,
+		StringPool.OPEN_CURLY_BRACE, StringPool.CLOSE_CURLY_BRACE,
+		StringPool.QUESTION, StringPool.PERIOD, StringPool.STAR,
+		StringPool.CARET, StringPool.DOLLAR, StringPool.PLUS,
+		StringPool.EXCLAMATION, StringPool.PIPE
+	};
+
 	private final String _delimiter;
+	private final String _delimiterRegex;
 	private final String[] _fieldNames;
 	private final InputStream _inputStream;
 	private final UnsyncBufferedReader _unsyncBufferedReader;
