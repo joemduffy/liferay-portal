@@ -22,6 +22,7 @@ import com.liferay.portal.test.rule.LiferayUnitTestRule;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.Serializable;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -340,6 +341,9 @@ public class CSVBatchEngineImportTaskItemReaderImplTest
 
 		return new CSVBatchEngineImportTaskItemReaderImpl(
 			delimiter,
+			HashMapBuilder.<String, Serializable>put(
+				"delimiter", StringPool.COMMA
+			).build(),
 			new ByteArrayInputStream(
 				_getContent(cellNames, delimiter, rowValues)));
 	}
