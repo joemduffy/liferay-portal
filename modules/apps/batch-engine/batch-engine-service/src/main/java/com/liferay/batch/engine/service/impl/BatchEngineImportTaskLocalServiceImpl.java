@@ -78,7 +78,7 @@ public class BatchEngineImportTaskLocalServiceImpl
 
 		if ((parameters != null) && !parameters.isEmpty()) {
 			_validateDelimiter(
-				(String)parameters.getOrDefault("delimiter", null));
+				(String)parameters.getOrDefault("delimiter", StringPool.COMMA));
 			_validateEnclosingCharacter(
 				(String)parameters.getOrDefault("enclosingCharacter", null));
 		}
@@ -123,7 +123,8 @@ public class BatchEngineImportTaskLocalServiceImpl
 		throws BatchEngineImportTaskParametersException {
 
 		if (Validator.isNull(delimiter)) {
-			return;
+			throw new BatchEngineImportTaskParametersException(
+				"Delimiter value cannot be null");
 		}
 
 		if (_VALID_ENCLOSING_CHARACTERS.contains(delimiter)) {
