@@ -34,6 +34,16 @@ import java.util.Map;
 public class CSVBatchEngineImportTaskItemReaderImpl
 	implements BatchEngineImportTaskItemReader {
 
+	public static final String[] ESCAPED_DELIMITERS = {
+		StringPool.OPEN_BRACKET, StringPool.CLOSE_BRACKET,
+		StringPool.OPEN_PARENTHESIS, StringPool.CLOSE_PARENTHESIS,
+		StringPool.OPEN_CURLY_BRACE, StringPool.CLOSE_CURLY_BRACE,
+		StringPool.QUESTION, StringPool.PERIOD, StringPool.STAR,
+		StringPool.CARET, StringPool.DOLLAR, StringPool.PLUS,
+		StringPool.EXCLAMATION, StringPool.PIPE, StringPool.LESS_THAN,
+		StringPool.GREATER_THAN, StringPool.MINUS, StringPool.COLON
+	};
+
 	public CSVBatchEngineImportTaskItemReaderImpl(
 			String delimiter, InputStream inputStream,
 			Map<String, Serializable> parameters)
@@ -41,11 +51,11 @@ public class CSVBatchEngineImportTaskItemReaderImpl
 
 		_delimiter = (String)parameters.getOrDefault("delimiter", delimiter);
 
-		_inputStream = inputStream;
-
 		_delimiterRegex = _getDelimiterRegex(
 			_getEnclosingCharacter(parameters));
 		_enclosingCharacter = _getEnclosingCharacter(parameters);
+
+		_inputStream = inputStream;
 
 		_unsyncBufferedReader = new UnsyncBufferedReader(
 			new InputStreamReader(_inputStream));
@@ -100,7 +110,7 @@ public class CSVBatchEngineImportTaskItemReaderImpl
 	private String _getDelimiterRegex(String enclosingCharacter) {
 		String escapedDelimiter = _delimiter;
 
-		for (String delimiter : _ESCAPED_DELIMITERS) {
+		for (String delimiter : ESCAPED_DELIMITERS) {
 			if (delimiter.equals(escapedDelimiter)) {
 				escapedDelimiter = StringPool.BACK_SLASH + _delimiter;
 
@@ -144,15 +154,6 @@ public class CSVBatchEngineImportTaskItemReaderImpl
 
 		return line;
 	}
-
-	private static final String[] _ESCAPED_DELIMITERS = {
-		StringPool.CARET, StringPool.CLOSE_BRACKET,
-		StringPool.CLOSE_CURLY_BRACE, StringPool.CLOSE_PARENTHESIS,
-		StringPool.DOLLAR, StringPool.EXCLAMATION, StringPool.OPEN_BRACKET,
-		StringPool.OPEN_CURLY_BRACE, StringPool.OPEN_PARENTHESIS,
-		StringPool.PERIOD, StringPool.PIPE, StringPool.PLUS,
-		StringPool.QUESTION, StringPool.STAR
-	};
 
 	private final String _delimiter;
 	private final String _delimiterRegex;
