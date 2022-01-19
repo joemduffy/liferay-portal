@@ -77,6 +77,22 @@ public abstract class BaseBatchEngineImportTaskItemReaderImplTestCase {
 	}
 
 	protected void validate(
+			String description, Long id,
+			Map<String, String> fieldNameMappingMap,
+			Map<String, Object> fieldNameValueMap, Map<String, String> nameMap)
+		throws ReflectiveOperationException {
+
+		Item item = BatchEngineImportTaskItemReaderUtil.convertValue(
+			Item.class,
+			BatchEngineImportTaskItemReaderUtil.mapFieldNames(
+				fieldNameMappingMap, fieldNameValueMap));
+
+		Assert.assertEquals(description, item.getDescription());
+		Assert.assertEquals(id, item.getId());
+		Assert.assertEquals(nameMap, item.getName());
+	}
+
+	protected void validate(
 			String createDateString, String description, Long id,
 			Map<String, String> fieldNameMappingMap,
 			Map<String, Object> fieldNameValueMap, Map<String, String> nameMap)
