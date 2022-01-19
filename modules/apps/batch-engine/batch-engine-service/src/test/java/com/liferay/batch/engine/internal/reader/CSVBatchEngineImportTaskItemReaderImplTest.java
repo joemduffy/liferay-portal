@@ -25,6 +25,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.Serializable;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -46,6 +47,32 @@ public class CSVBatchEngineImportTaskItemReaderImplTest
 		LiferayUnitTestRule.INSTANCE;
 
 	@Test
+	public void testAllDelimitersEnclosingCharacters() throws Exception {
+		String[] normalDelimiters = {",", ";"};
+
+		String[] allDelimiters = Arrays.copyOf(
+			normalDelimiters,
+			normalDelimiters.length +
+				CSVBatchEngineImportTaskItemReaderImpl.ESCAPED_DELIMITERS.
+					length);
+
+		System.arraycopy(
+			CSVBatchEngineImportTaskItemReaderImpl.ESCAPED_DELIMITERS, 0,
+			allDelimiters, normalDelimiters.length,
+			CSVBatchEngineImportTaskItemReaderImpl.ESCAPED_DELIMITERS.length);
+
+		String[] allEnclosingCharacters = {
+			null, StringPool.QUOTE, StringPool.APOSTROPHE
+		};
+
+		for (String delimiter : allDelimiters) {
+			for (String enclosingCharacter : allEnclosingCharacters) {
+				_delimiterEnclosingCharacterTest(delimiter, enclosingCharacter);
+			}
+		}
+	}
+
+	@Test
 	public void testColumnMapping() throws Exception {
 		try (CSVBatchEngineImportTaskItemReaderImpl
 				csvBatchEngineImportTaskItemReaderImpl =
@@ -63,7 +90,7 @@ public class CSVBatchEngineImportTaskItemReaderImplTest
 						})) {
 
 			validate(
-				createDateString, "sample description", 1L,
+				"sample description", 1L,
 				HashMapBuilder.put(
 					"createDate1", "createDate"
 				).put(
@@ -243,7 +270,6 @@ public class CSVBatchEngineImportTaskItemReaderImplTest
 		}
 	}
 
-
 	@Test
 	public void testReadRowsWithEnclosingCharacter() throws Exception {
 		try (CSVBatchEngineImportTaskItemReaderImpl
@@ -259,6 +285,28 @@ public class CSVBatchEngineImportTaskItemReaderImplTest
 
 			validate(
 				createDateString, "hey, here is comma inside", 1L,
+				Collections.emptyMap(),
+				csvBatchEngineImportTaskItemReaderImpl.read(),
+				HashMapBuilder.put(
+					"en", "sample name"
+				).put(
+					"hr", "naziv"
+				).build());
+		}
+
+		try (CSVBatchEngineImportTaskItemReaderImpl
+				csvBatchEngineImportTaskItemReaderImpl =
+					_getCSVBatchEngineImportTaskItemReader(
+						FIELD_NAMES, null, StringPool.APOSTROPHE,
+						new Object[][] {
+							{
+								createDateString, "'hey, here is comma inside'",
+								1, "sample name", "naziv"
+							}
+						})) {
+
+			validate(
+				createDateString, "'hey, here is comma inside'", 1L,
 				Collections.emptyMap(),
 				csvBatchEngineImportTaskItemReaderImpl.read(),
 				HashMapBuilder.put(
@@ -315,6 +363,39 @@ public class CSVBatchEngineImportTaskItemReaderImplTest
 					"en", "sample name 2"
 				).put(
 					"hr", "naziv 2"
+				).build());
+		}
+	}
+
+	private void _delimiterEnclosingCharacterTest(
+			String delimiter, String enclosingCharacter)
+		throws Exception {
+
+		try (CSVBatchEngineImportTaskItemReaderImpl
+				csvBatchEngineImportTaskItemReaderImpl =
+					_getCSVBatchEngineImportTaskItemReader(
+						new String[] {
+							"description1", "id1", "name1_en", "name1_hr"
+						},
+						delimiter, enclosingCharacter,
+						new Object[][] {
+							{"sample description", 1, "sample name", "naziv"}
+						})) {
+
+			validate(
+				"sample description", 1L,
+				HashMapBuilder.put(
+					"description1", "description"
+				).put(
+					"id1", "id"
+				).put(
+					"name1", "name"
+				).build(),
+				csvBatchEngineImportTaskItemReaderImpl.read(),
+				HashMapBuilder.put(
+					"en", "sample name"
+				).put(
+					"hr", "naziv"
 				).build());
 		}
 	}
