@@ -379,11 +379,16 @@ public class CSVBatchEngineImportTaskItemReaderImplTest
 						},
 						delimiter, enclosingCharacter,
 						new Object[][] {
-							{"sample description", 1, "sample name", "naziv"}
+							{
+								_enclose(
+									"sample description", enclosingCharacter),
+								1, _enclose("sample name", enclosingCharacter),
+								_enclose("naziv", enclosingCharacter)
+							}
 						})) {
 
 			validate(
-				"sample description", 1L,
+				_enclose("sample description", enclosingCharacter), 1L,
 				HashMapBuilder.put(
 					"description1", "description"
 				).put(
@@ -393,11 +398,19 @@ public class CSVBatchEngineImportTaskItemReaderImplTest
 				).build(),
 				csvBatchEngineImportTaskItemReaderImpl.read(),
 				HashMapBuilder.put(
-					"en", "sample name"
+					"en", _enclose("sample name", enclosingCharacter)
 				).put(
-					"hr", "naziv"
+					"hr", _enclose("naziv", enclosingCharacter)
 				).build());
 		}
+	}
+
+	private String _enclose(String string, String enclosingCharacter) {
+		if (Validator.isNull(enclosingCharacter)) {
+			return string;
+		}
+
+		return enclosingCharacter + string + enclosingCharacter;
 	}
 
 	private Object[] _encloseWithCharacter(
@@ -448,10 +461,11 @@ public class CSVBatchEngineImportTaskItemReaderImplTest
 		throws IOException {
 
 		return new CSVBatchEngineImportTaskItemReaderImpl(
-			StringPool.COMMA, _getProperties(delimiter, enclosingCharacter),
+			StringPool.COMMA,
 			new ByteArrayInputStream(
 				_getContent(
-					cellNames, delimiter, enclosingCharacter, rowValues)));
+					cellNames, delimiter, enclosingCharacter, rowValues)),
+			_getProperties(delimiter, enclosingCharacter));
 	}
 
 	private Map<String, Serializable> _getProperties(
