@@ -69,9 +69,7 @@ public class DispatchTriggerDisplayContextTest {
 			SynchronousDestinationTestRule.INSTANCE);
 
 	@Test
-	public void testGetDispatchTaskExecutorTypes()
-		throws Exception {
-
+	public void testGetDispatchTaskExecutorTypes() throws Exception {
 		Set<String> dispatchTaskExecutorTypes =
 			_dispatchTaskExecutorRegistry.getDispatchTaskExecutorTypes();
 
