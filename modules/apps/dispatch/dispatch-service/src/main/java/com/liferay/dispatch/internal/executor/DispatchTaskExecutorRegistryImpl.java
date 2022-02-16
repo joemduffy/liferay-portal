@@ -85,7 +85,7 @@ public class DispatchTaskExecutorRegistryImpl
 			dispatchTaskExecutor, dispatchTaskExecutorType);
 
 		if (!GetterUtil.getBoolean(
-				properties.get(_KEY_DISPATCH_TASK_EXECUTOR_HIDDEN_IN_UI))) {
+			properties.get(_KEY_DISPATCH_TASK_EXECUTOR_HIDDEN_IN_UI))) {
 
 			_dispatchTaskExecutorNames.put(
 				dispatchTaskExecutorType,
