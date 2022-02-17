@@ -19,6 +19,15 @@ package com.liferay.batch.engine.constants;
  */
 public class BatchEngineImportTaskConstants {
 
+	public static final String BATCH_ENGINE =
+		"com_liferay_batch_engine_web_internal_portlet_BatchEnginePortlet";
+
+	public static final String BATCH_ENGINE_ADMIN_IMPORT =
+		"com_liferay_batch_engine_web_internal_portlet_BatchEngineAdmin" +
+			"Portlet";
+
+	public static final int BATCH_IMPORT_COMPLETION = 42;
+
 	public static final int IMPORT_STRATEGY_ON_ERROR_CONTINUE = 1;
 
 	public static final int IMPORT_STRATEGY_ON_ERROR_FAIL = 2;
@@ -28,5 +37,8 @@ public class BatchEngineImportTaskConstants {
 
 	public static final String IMPORT_STRATEGY_STRING_ON_ERROR_FAIL =
 		"ON_ERROR_FAIL";
+
+	public static final String BATCH_RESOURCE_NAME =
+		"com.liferay.batch.engine";
 
 }

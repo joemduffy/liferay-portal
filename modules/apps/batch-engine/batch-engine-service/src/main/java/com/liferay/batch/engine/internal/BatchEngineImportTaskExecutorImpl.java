@@ -19,6 +19,7 @@ import com.liferay.batch.engine.BatchEngineTaskContentType;
 import com.liferay.batch.engine.BatchEngineTaskExecuteStatus;
 import com.liferay.batch.engine.BatchEngineTaskOperation;
 import com.liferay.batch.engine.configuration.BatchEngineTaskConfiguration;
+import com.liferay.batch.engine.constants.BatchEngineImportTaskConstants;
 import com.liferay.batch.engine.internal.item.BatchEngineTaskItemDelegateExecutor;
 import com.liferay.batch.engine.internal.item.BatchEngineTaskItemDelegateExecutorFactory;
 import com.liferay.batch.engine.internal.reader.BatchEngineImportTaskItemReader;
@@ -28,12 +29,16 @@ import com.liferay.batch.engine.internal.task.progress.BatchEngineTaskProgress;
 import com.liferay.batch.engine.internal.task.progress.BatchEngineTaskProgressFactory;
 import com.liferay.batch.engine.model.BatchEngineImportTask;
 import com.liferay.batch.engine.service.BatchEngineImportTaskLocalService;
+import com.liferay.batch.engine.internal.notifications.BatchEngineImportNotificationEventSender;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.configuration.metatype.bnd.util.ConfigurableUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.service.CompanyLocalService;
+import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.service.UserLocalService;
+import com.liferay.portal.kernel.service.UserLocalServiceUtil;
 import com.liferay.portal.kernel.transaction.Propagation;
 import com.liferay.portal.kernel.transaction.TransactionConfig;
 import com.liferay.portal.kernel.transaction.TransactionInvokerUtil;
@@ -89,6 +94,18 @@ public class BatchEngineImportTaskExecutorImpl
 			_updateBatchEngineImportTask(
 				BatchEngineTaskExecuteStatus.COMPLETED, batchEngineImportTask,
 				null);
+
+			try {
+				BatchEngineImportNotificationEventSender.notifySubscribers(
+					batchEngineImportTask, "localhost",
+					_getServiceContext(batchEngineImportTask));
+			}
+			catch (Throwable throwable) {
+				_log.error(
+					"Unable to notify on batch engine import task " +
+						batchEngineImportTask,
+					throwable);
+			}
 		}
 		catch (Throwable throwable) {
 			_log.error(
@@ -99,6 +116,18 @@ public class BatchEngineImportTaskExecutorImpl
 			_updateBatchEngineImportTask(
 				BatchEngineTaskExecuteStatus.FAILED, batchEngineImportTask,
 				throwable.getMessage());
+
+			try {
+				BatchEngineImportNotificationEventSender.notifySubscribers(
+					batchEngineImportTask, "FAILURE",
+					_getServiceContext(batchEngineImportTask));
+			}
+			catch (Throwable altThrowable) {
+				_log.error(
+					"Unable to notify on batch engine import task " +
+						batchEngineImportTask,
+					altThrowable);
+			}
 		}
 	}
 
@@ -233,6 +262,43 @@ public class BatchEngineImportTaskExecutorImpl
 			batchEngineImportTask.getBatchEngineImportTaskId());
 	}
 
+	private ServiceContext _getServiceContext(BatchEngineImportTask batchEngineImportTask)
+	{
+		ServiceContext serviceContext = new ServiceContext();
+		serviceContext.setCompanyId(batchEngineImportTask.getCompanyId());
+		serviceContext.setUserId(batchEngineImportTask.getUserId());
+		serviceContext.setUuid(batchEngineImportTask.getUuid());
+		serviceContext.setCreateDate(batchEngineImportTask.getCreateDate());
+		serviceContext.setLayoutURL("http://localhost:8080/group/guest/~/" +
+									"control_panel/manage?p_p_id=com_life" +
+									"ray_batch_planner_web_internal_portl" +
+									"et_BatchPlannerPortlet");
+		serviceContext.setLayoutFullURL("http://localhost:8080/group/guest/~/" +
+										"control_panel/manage?p_p_id=com_life" +
+										"ray_batch_planner_web_internal_portl" +
+										"et_BatchPlannerPortlet");
+		serviceContext.setUserDisplayURL("http://localhost:8080/group/guest/~/" +
+										 "control_panel/manage?p_p_id=com_life" +
+										 "ray_batch_planner_web_internal_portl" +
+										 "et_BatchPlannerPortlet");
+		serviceContext.setPortalURL("http://localhost:8080/group/guest/~/" +
+		"control_panel/manage?p_p_id=com_life" +
+		"ray_batch_planner_web_internal_portl" +
+		"et_BatchPlannerPortlet&p_p_lifecycle=0&p_p_state=maximized&p_v_l_" +
+									"s_g_id=38321&p_p_auth=JmrCRq2Y");
+		serviceContext.setPortletId("com_liferay_batch_planner_web_internal_" +
+									"portlet_BatchPlannerPortlet");
+		User user;
+		try {
+			user = UserLocalServiceUtil.getUserById(
+				batchEngineImportTask.getUserId());
+		}
+		catch (Exception e) {
+			user = null;
+		}
+		serviceContext.setScopeGroupId(user.getGroupId());
+		return serviceContext;
+	}
 	private static final Log _log = LogFactoryUtil.getLog(
 		BatchEngineImportTaskExecutorImpl.class);
 
